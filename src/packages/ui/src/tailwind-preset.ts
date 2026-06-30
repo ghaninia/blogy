@@ -91,12 +91,12 @@ const preset: Partial<Config> = {
       },
       keyframes: {
         'fade-in': { from: { opacity: '0' }, to: { opacity: '1' } },
-        'slide-in': { from: { transform: 'translateY(-8px)', opacity: '0' }, to: { transform: 'translateY(0)', opacity: '1' } },
+        'fade-out': { from: { opacity: '1' }, to: { opacity: '0' } },
         shimmer: { '100%': { transform: 'translateX(100%)' } },
       },
       animation: {
         'fade-in': 'fade-in 0.2s ease-out',
-        'slide-in': 'slide-in 0.2s ease-out',
+        'fade-out': 'fade-out 0.15s ease-in',
         shimmer: 'shimmer 1.5s infinite',
       },
     },

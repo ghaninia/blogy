@@ -24,9 +24,9 @@ export function MobileNav({ open, onOpenChange }: MobileNavProps) {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         className={cn(
-          'glass-strong !fixed !inset-y-0 !start-0 !end-auto !top-0 !h-full !w-72 !max-w-[85vw] !translate-y-0 !rounded-none !border-e !p-0 shadow-lg duration-300',
+          'glass-strong !fixed !inset-y-0 !start-0 !end-auto !top-0 !left-auto !h-full !w-72 !max-w-[85vw] !translate-x-0 !translate-y-0 !rounded-none !border-e !p-0 shadow-lg duration-300',
           'data-[state=open]:!translate-x-0 data-[state=closed]:!-translate-x-full rtl:data-[state=closed]:!translate-x-full',
-          'data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0',
+          'data-[state=open]:animate-fade-in data-[state=closed]:animate-fade-out',
         )}
       >
         <DialogTitle className="sr-only">{t('title')}</DialogTitle>

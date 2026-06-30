@@ -126,7 +126,7 @@ export function Toaster({ className }: { className?: string }) {
           key={t.id}
           role="status"
           className={cn(
-            'pointer-events-auto flex w-full items-start gap-3 rounded-lg border p-4 shadow-lg animate-slide-in',
+            'pointer-events-auto flex w-full items-start gap-3 rounded-lg border p-4 shadow-lg animate-fade-in',
             variantClasses[t.variant ?? 'default'],
           )}
         >
