@@ -2,8 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700&display=swap');
-
 @layer base {
   :root {
     --background: 220 30% 97%;
@@ -37,7 +35,6 @@
     --mesh-1: 221 83% 53% / 0.15;
     --mesh-2: 280 70% 60% / 0.1;
     --mesh-3: 199 89% 48% / 0.12;
-    --font-vazirmatn: 'Vazirmatn', system-ui, sans-serif;
   }
 
   .dark {
@@ -81,6 +78,17 @@
     @apply bg-background text-foreground antialiased;
     position: relative;
     min-height: 100vh;
+  }
+
+  html[lang='en'] body {
+    font-weight: 500;
+  }
+
+  html[lang='en'] h1,
+  html[lang='en'] h2,
+  html[lang='en'] h3,
+  html[lang='en'] h4 {
+    @apply font-bold tracking-tight;
   }
 
   body::before {

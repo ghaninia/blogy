@@ -1,4 +1,4 @@
-import { Inter } from 'next/font/google';
+import { iranSans, plusJakartaSans } from '@/shared/fonts';
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import { notFound } from 'next/navigation';
@@ -7,8 +7,6 @@ import { Providers } from '@/shared/components/providers';
 import { RecaptchaProvider } from '@/features/auth/components/recaptcha-provider';
 import { AuthInitializer } from '@/shared/components/auth-initializer';
 import '@gh/ui/globals.css';
-
-const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 
 export function generateStaticParams() {
   return locales.map((locale) => ({ locale }));
@@ -30,7 +28,9 @@ export default async function LocaleLayout({
 
   return (
     <html lang={locale} dir={dir}>
-      <body className={`${inter.variable} ${fontClass} min-h-screen bg-background text-foreground antialiased`}>
+      <body
+        className={`${plusJakartaSans.variable} ${iranSans.variable} ${fontClass} min-h-screen bg-background text-foreground antialiased`}
+      >
         <NextIntlClientProvider messages={messages}>
           <RecaptchaProvider>
             <Providers>
