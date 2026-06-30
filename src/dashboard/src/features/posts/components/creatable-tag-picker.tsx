@@ -28,7 +28,7 @@ function slugify(text: string): string {
 }
 
 export function CreatableTagPicker({ locale, tags, selectedIds, onChange }: CreatableTagPickerProps) {
-  const t = useTranslations('dashboard.tags');
+  const t = useTranslations('dashboard.tagPicker');
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [query, setQuery] = useState('');

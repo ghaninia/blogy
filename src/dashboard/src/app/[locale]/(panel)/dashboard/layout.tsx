@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useRouter, useParams, usePathname } from 'next/navigation';
 import { Header } from '@/features/layout/components/header';
 import { DashboardSidebar } from '@/features/layout/components/sidebar';
@@ -15,18 +15,26 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const pathname = usePathname();
   const locale = params.locale as string;
   const { user, isLoading } = useAuthStore();
+  const redirected = useRef(false);
 
   useEffect(() => {
-    if (!isLoading) {
-      if (!user) router.push(`/${locale}/login`);
-      else if (!['ADMIN', 'EDITOR', 'AUTHOR'].includes(user.role)) {
-        router.push(`/${locale}`);
-      } else if (
-        user.role !== 'ADMIN' &&
-        ADMIN_ONLY.some((p) => pathname.includes(p))
-      ) {
-        router.push(`/${locale}/dashboard`);
-      }
+    if (isLoading || redirected.current) return;
+
+    if (!user) {
+      redirected.current = true;
+      router.replace(`/${locale}/login`);
+      return;
+    }
+
+    if (!['ADMIN', 'EDITOR', 'AUTHOR'].includes(user.role)) {
+      redirected.current = true;
+      router.replace(`/${locale}`);
+      return;
+    }
+
+    if (user.role !== 'ADMIN' && ADMIN_ONLY.some((p) => pathname.includes(p))) {
+      redirected.current = true;
+      router.replace(`/${locale}/dashboard`);
     }
   }, [user, isLoading, router, locale, pathname]);
 

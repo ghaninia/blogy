@@ -150,7 +150,7 @@
         "seo": "سئو"
       }
     },
-    "media": {
+    "mediaManager": {
       "title": "مدیریت رسانه",
       "search": "جستجوی فایل...",
       "upload": "آپلود",
@@ -161,7 +161,7 @@
       "empty": "فایلی یافت نشد",
       "done": "تمام"
     },
-    "tags": {
+    "tagPicker": {
       "searchOrCreate": "جستجو یا نام برچسب جدید...",
       "create": "ایجاد «{name}»",
       "created": "برچسب ایجاد شد",

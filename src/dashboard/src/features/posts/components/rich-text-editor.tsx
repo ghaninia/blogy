@@ -1,6 +1,6 @@
 'use client';
 
-import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
+import { forwardRef, useEffect, useImperativeHandle, useMemo, useRef } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Image from '@tiptap/extension-image';
@@ -45,11 +45,13 @@ export const RichTextEditor = forwardRef<RichTextEditorHandle, RichTextEditorPro
   ) {
     const isCompact = variant === 'compact';
     const skipSync = useRef(false);
+    const onChangeRef = useRef(onChange);
+    onChangeRef.current = onChange;
 
-    const editor = useEditor({
-      extensions: [
+    const extensions = useMemo(
+      () => [
         StarterKit.configure({
-          codeBlock: isCompact ? false : false,
+          codeBlock: false,
           heading: isCompact ? false : undefined,
         }),
         Underline,
@@ -58,27 +60,37 @@ export const RichTextEditor = forwardRef<RichTextEditorHandle, RichTextEditorPro
         Placeholder.configure({ placeholder }),
         ...(isCompact ? [] : [CodeBlockLowlight.configure({ lowlight })]),
       ],
-      content,
-      onUpdate: ({ editor: e }) => {
-        skipSync.current = true;
-        onChange(e.getHTML());
-      },
-      editorProps: {
-        attributes: {
-          class: cn(
-            'prose prose-sm max-w-none px-4 py-3 focus:outline-none dark:prose-invert',
-            isCompact ? 'min-h-[120px]' : 'min-h-[200px] sm:prose',
-          ),
+      [isCompact, placeholder],
+    );
+
+    const editor = useEditor(
+      {
+        immediatelyRender: false,
+        extensions,
+        content,
+        onUpdate: ({ editor: e }) => {
+          skipSync.current = true;
+          onChangeRef.current(e.getHTML());
+        },
+        editorProps: {
+          attributes: {
+            class: cn(
+              'prose prose-sm max-w-none px-4 py-3 focus:outline-none dark:prose-invert',
+              isCompact ? 'min-h-[120px]' : 'min-h-[200px] sm:prose',
+            ),
+          },
         },
       },
-    });
+      [extensions],
+    );
 
     useEffect(() => {
       if (!editor || skipSync.current) {
         skipSync.current = false;
         return;
       }
-      if (editor.getHTML() !== content) {
+      const current = editor.getHTML();
+      if (current !== content) {
         editor.commands.setContent(content, false);
       }
     }, [content, editor]);

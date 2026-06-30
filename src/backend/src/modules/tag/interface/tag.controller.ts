@@ -23,6 +23,15 @@ router.get('/', validate(tagQuerySchema, 'query'), async (req, res, next) => {
   }
 });
 
+router.get('/:id', async (req, res, next) => {
+  try {
+    const tag = await tagService.getById(paramId(req.params.id));
+    sendSuccess(res, tag);
+  } catch (e) {
+    next(e);
+  }
+});
+
 router.post(
   '/',
   authenticate,

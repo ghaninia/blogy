@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState, type Dispatch, type SetStateAction } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
@@ -67,7 +67,7 @@ interface Tag {
 interface PostFormProps {
   locale: string;
   form: PostFormData;
-  onChange: (form: PostFormData) => void;
+  onChange: Dispatch<SetStateAction<PostFormData>>;
   coverPath?: string;
   formId?: string;
   autoSlug?: boolean;
@@ -96,6 +96,7 @@ export function PostForm({ locale, form, onChange, coverPath, formId = 'post-for
   const t = useTranslations('dashboard');
   const tf = useTranslations('dashboard.form');
   const ts = useTranslations('status');
+  const [activeTab, setActiveTab] = useState('basic');
   const [mediaOpen, setMediaOpen] = useState(false);
   const [mediaTarget, setMediaTarget] = useState<'cover' | 'fa' | 'en'>('cover');
   const [coverPreview, setCoverPreview] = useState(coverPath ?? '');
@@ -115,18 +116,21 @@ export function PostForm({ locale, form, onChange, coverPath, formId = 'post-for
   });
 
   const { data: tags = [] } = useQuery({
-    queryKey: ['tags'],
+    queryKey: ['tags', 'all'],
     queryFn: async () => {
       const res = await api.get<Tag[]>('/api/tags', { limit: 500 });
       return res.data ?? [];
     },
   });
 
-  const set = (patch: Partial<PostFormData>) => onChange({ ...form, ...patch });
+  const set = useCallback(
+    (patch: Partial<PostFormData>) => onChange((prev) => ({ ...prev, ...patch })),
+    [onChange],
+  );
 
   return (
     <>
-      <Tabs defaultValue="basic" className="space-y-4">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
         <TabsList className="glass flex h-auto w-full flex-wrap gap-1 p-1">
           <TabsTrigger value="basic" className="flex-1 sm:flex-none">{tf('tabs.basic')}</TabsTrigger>
           <TabsTrigger value="content" className="flex-1 sm:flex-none">{tf('tabs.content')}</TabsTrigger>
@@ -157,10 +161,14 @@ export function PostForm({ locale, form, onChange, coverPath, formId = 'post-for
               />
               <div className="grid gap-4 lg:grid-cols-2">
                 <FormField label={tf('excerptFa')}>
-                  <RichTextEditor variant="compact" content={form.excerptFa} onChange={(html) => set({ excerptFa: html })} />
+                  {activeTab === 'basic' ? (
+                    <RichTextEditor variant="compact" content={form.excerptFa} onChange={(html) => set({ excerptFa: html })} />
+                  ) : null}
                 </FormField>
                 <FormField label={tf('excerptEn')}>
-                  <RichTextEditor variant="compact" content={form.excerptEn} onChange={(html) => set({ excerptEn: html })} />
+                  {activeTab === 'basic' ? (
+                    <RichTextEditor variant="compact" content={form.excerptEn} onChange={(html) => set({ excerptEn: html })} />
+                  ) : null}
                 </FormField>
               </div>
               <div className="grid gap-4 lg:grid-cols-2">
@@ -204,28 +212,32 @@ export function PostForm({ locale, form, onChange, coverPath, formId = 'post-for
         </TabsContent>
 
         <TabsContent value="content" className="space-y-4">
-          <Card variant="glass">
-            <CardHeader><CardTitle>{tf('contentFa')}</CardTitle></CardHeader>
-            <CardContent>
-              <RichTextEditor
-                ref={editorFaRef}
-                content={form.contentFa}
-                onChange={(html) => set({ contentFa: html })}
-                onImageRequest={() => { setMediaTarget('fa'); setMediaOpen(true); }}
-              />
-            </CardContent>
-          </Card>
-          <Card variant="glass">
-            <CardHeader><CardTitle>{tf('contentEn')}</CardTitle></CardHeader>
-            <CardContent>
-              <RichTextEditor
-                ref={editorEnRef}
-                content={form.contentEn}
-                onChange={(html) => set({ contentEn: html })}
-                onImageRequest={() => { setMediaTarget('en'); setMediaOpen(true); }}
-              />
-            </CardContent>
-          </Card>
+          {activeTab === 'content' ? (
+            <>
+              <Card variant="glass">
+                <CardHeader><CardTitle>{tf('contentFa')}</CardTitle></CardHeader>
+                <CardContent>
+                  <RichTextEditor
+                    ref={editorFaRef}
+                    content={form.contentFa}
+                    onChange={(html) => set({ contentFa: html })}
+                    onImageRequest={() => { setMediaTarget('fa'); setMediaOpen(true); }}
+                  />
+                </CardContent>
+              </Card>
+              <Card variant="glass">
+                <CardHeader><CardTitle>{tf('contentEn')}</CardTitle></CardHeader>
+                <CardContent>
+                  <RichTextEditor
+                    ref={editorEnRef}
+                    content={form.contentEn}
+                    onChange={(html) => set({ contentEn: html })}
+                    onImageRequest={() => { setMediaTarget('en'); setMediaOpen(true); }}
+                  />
+                </CardContent>
+              </Card>
+            </>
+          ) : null}
         </TabsContent>
 
         <TabsContent value="taxonomy">

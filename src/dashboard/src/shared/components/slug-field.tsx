@@ -27,11 +27,16 @@ export function SlugField({
 }: SlugFieldProps) {
   const tf = useTranslations('dashboard.form');
   const manualRef = useRef(false);
+  const onSlugChangeRef = useRef(onSlugChange);
+  onSlugChangeRef.current = onSlugChange;
 
   useEffect(() => {
     if (!autoSync || manualRef.current) return;
-    onSlugChange(slugifyFromEn(titleEn));
-  }, [titleEn, autoSync, onSlugChange]);
+    const next = slugifyFromEn(titleEn);
+    if (next && next !== slug) {
+      onSlugChangeRef.current(next);
+    }
+  }, [titleEn, autoSync, slug]);
 
   return (
     <FormField label={tf('slug')} required={required}>

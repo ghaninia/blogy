@@ -38,7 +38,7 @@ interface MediaManagerProps {
 }
 
 export function MediaManager({ open, onClose, onSelect, mode = 'single' }: MediaManagerProps) {
-  const t = useTranslations('dashboard.media');
+  const t = useTranslations('dashboard.mediaManager');
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [search, setSearch] = useState('');

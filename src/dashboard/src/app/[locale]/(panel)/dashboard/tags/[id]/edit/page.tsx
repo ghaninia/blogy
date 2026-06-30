@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
+import { useQuery } from '@tanstack/react-query';
 import { useLocale, useTranslations } from 'next-intl';
 import { ArrowLeft } from 'lucide-react';
 import {
@@ -21,6 +22,13 @@ import { SlugField } from '@/shared/components/slug-field';
 import { PageHeader } from '@/features/layout/components/page-header';
 import { useDeleteConfirm } from '@/shared/hooks/use-delete-confirm';
 
+interface Tag {
+  id: string;
+  slug: string;
+  nameFa: string;
+  nameEn: string;
+}
+
 export default function EditTagPage() {
   const t = useTranslations('dashboard');
   const tf = useTranslations('dashboard.form');
@@ -33,16 +41,20 @@ export default function EditTagPage() {
 
   const id = params.id as string;
   const [form, setForm] = useState({ slug: '', nameFa: '', nameEn: '' });
-  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
+  const { data: tag, isLoading } = useQuery({
+    queryKey: ['tags', id],
+    queryFn: async () => {
+      const res = await api.get<Tag>(`/api/tags/${id}`);
+      if (!res.data) throw new Error('Tag not found');
+      return res.data;
+    },
+  });
+
   useEffect(() => {
-    api.get<{ id: string; slug: string; nameFa: string; nameEn: string }[]>('/api/tags').then((res) => {
-      const tag = res.data?.find((x) => x.id === id);
-      if (tag) setForm({ slug: tag.slug, nameFa: tag.nameFa, nameEn: tag.nameEn });
-      setLoading(false);
-    }).catch(() => setLoading(false));
-  }, [id]);
+    if (tag) setForm({ slug: tag.slug, nameFa: tag.nameFa, nameEn: tag.nameEn });
+  }, [tag]);
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -72,7 +84,7 @@ export default function EditTagPage() {
     });
   };
 
-  if (loading) return <Skeleton className="h-64 w-full rounded-xl" />;
+  if (isLoading) return <Skeleton className="h-64 w-full rounded-xl" />;
 
   return (
     <div>
@@ -94,10 +106,10 @@ export default function EditTagPage() {
           <CardContent className="space-y-4">
             <div className="grid gap-4 lg:grid-cols-2">
               <FormField label={tf('nameFa')} required>
-                <Input value={form.nameFa} onChange={(e) => setForm({ ...form, nameFa: e.target.value })} required />
+                <Input value={form.nameFa} onChange={(e) => setForm((f) => ({ ...f, nameFa: e.target.value }))} required />
               </FormField>
               <FormField label={tf('nameEn')} required>
-                <Input value={form.nameEn} onChange={(e) => setForm({ ...form, nameEn: e.target.value })} required />
+                <Input value={form.nameEn} onChange={(e) => setForm((f) => ({ ...f, nameEn: e.target.value }))} required />
               </FormField>
             </div>
             <SlugField

@@ -12,16 +12,20 @@ interface ThemeContextValue {
 
 const ThemeContext = createContext<ThemeContextValue | null>(null);
 
+function readThemeFromDom(): Theme {
+  if (typeof document === 'undefined') return 'dark';
+  return document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+}
+
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>('dark');
-  const [mounted, setMounted] = useState(false);
+  const [theme, setThemeState] = useState<Theme>(readThemeFromDom);
 
   useEffect(() => {
     const stored = localStorage.getItem('gh-theme') as Theme | null;
-    const initial = stored ?? 'dark';
-    setThemeState(initial);
-    document.documentElement.classList.toggle('dark', initial === 'dark');
-    setMounted(true);
+    if (stored) {
+      setThemeState(stored);
+      document.documentElement.classList.toggle('dark', stored === 'dark');
+    }
   }, []);
 
   const setTheme = (next: Theme) => {
@@ -34,7 +38,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   return (
     <ThemeContext.Provider value={{ theme, setTheme, toggleTheme }}>
-      <div style={mounted ? undefined : { visibility: 'hidden' }}>{children}</div>
+      {children}
     </ThemeContext.Provider>
   );
 }

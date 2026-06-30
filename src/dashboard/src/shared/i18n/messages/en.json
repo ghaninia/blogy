@@ -150,7 +150,7 @@
         "seo": "SEO"
       }
     },
-    "media": {
+    "mediaManager": {
       "title": "Media Manager",
       "search": "Search files...",
       "upload": "Upload",
@@ -161,7 +161,7 @@
       "empty": "No files found",
       "done": "Done"
     },
-    "tags": {
+    "tagPicker": {
       "searchOrCreate": "Search or type new tag name...",
       "create": "Create \"{name}\"",
       "created": "Tag created",

@@ -27,7 +27,14 @@ export default async function LocaleLayout({
   const fontClass = locale === 'fa' ? 'font-fa' : 'font-sans';
 
   return (
-    <html lang={locale} dir={dir}>
+    <html lang={locale} dir={dir} suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem('gh-theme');if(t==='light'){document.documentElement.classList.remove('dark')}else{document.documentElement.classList.add('dark')}}catch(e){document.documentElement.classList.add('dark')}})();`,
+          }}
+        />
+      </head>
       <body
         className={`${plusJakartaSans.variable} ${iranSans.variable} ${fontClass} min-h-screen bg-background text-foreground antialiased`}
       >
