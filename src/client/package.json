@@ -1,0 +1,10 @@
+{
+  "name": "@gh/client",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Reserved for future public-facing client app (blog, portfolio, pages)",
+  "scripts": {
+    "dev": "echo 'Client app not implemented yet. See README.md'",
+    "build": "echo 'Client app not implemented yet'"
+  }
+}

@@ -1,0 +1,12 @@
+# TypeScript build output
+dist/
+
+# Local env overrides
+.env
+.env.local
+
+# Debug logs
+*.log
+
+# TypeScript cache
+*.tsbuildinfo

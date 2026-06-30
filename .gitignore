@@ -1,0 +1,43 @@
+# Dependencies
+node_modules
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Build outputs
+dist
+build
+.next
+out
+.turbo
+
+# Runtime / uploads
+uploads/*
+!uploads/.gitkeep
+
+# Logs & coverage
+*.log
+npm-debug.log*
+pnpm-debug.log*
+coverage
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.idea
+.vscode/*
+!.vscode/extensions.json
+
+# TypeScript
+*.tsbuildinfo
+
+# Prisma
+.prisma
+
+# Docker local overrides
+.docker/.env
+.pnpm-store

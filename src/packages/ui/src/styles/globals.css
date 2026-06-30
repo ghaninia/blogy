@@ -1,0 +1,124 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700&display=swap');
+
+@layer base {
+  :root {
+    --background: 220 30% 97%;
+    --foreground: 222 47% 11%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+    --primary: 221 83% 53%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222 47% 11%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%;
+    --accent: 210 40% 96%;
+    --accent-foreground: 222 47% 11%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --success: 142 76% 36%;
+    --success-foreground: 0 0% 100%;
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 100%;
+    --info: 199 89% 48%;
+    --info-foreground: 0 0% 100%;
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 221 83% 53%;
+    --radius: 0.75rem;
+    --glass-bg: 0 0% 100% / 0.55;
+    --glass-border: 0 0% 100% / 0.35;
+    --glass-highlight: 0 0% 100% / 0.6;
+    --glass-blur: 16px;
+    --mesh-1: 221 83% 53% / 0.15;
+    --mesh-2: 280 70% 60% / 0.1;
+    --mesh-3: 199 89% 48% / 0.12;
+    --font-vazirmatn: 'Vazirmatn', system-ui, sans-serif;
+  }
+
+  .dark {
+    --background: 222 47% 6%;
+    --foreground: 210 40% 98%;
+    --card: 222 47% 11%;
+    --card-foreground: 210 40% 98%;
+    --primary: 217 91% 60%;
+    --primary-foreground: 222 47% 11%;
+    --secondary: 217 33% 17%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217 33% 17%;
+    --muted-foreground: 215 20% 65%;
+    --accent: 217 33% 17%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62% 50%;
+    --destructive-foreground: 210 40% 98%;
+    --success: 142 70% 45%;
+    --success-foreground: 0 0% 100%;
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 100%;
+    --info: 199 89% 48%;
+    --info-foreground: 0 0% 100%;
+    --border: 217 33% 20%;
+    --input: 217 33% 20%;
+    --ring: 224 76% 48%;
+    --glass-bg: 222 47% 11% / 0.45;
+    --glass-border: 0 0% 100% / 0.08;
+    --glass-highlight: 0 0% 100% / 0.05;
+    --glass-blur: 20px;
+    --mesh-1: 217 91% 60% / 0.12;
+    --mesh-2: 280 70% 60% / 0.08;
+    --mesh-3: 199 89% 48% / 0.1;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    position: relative;
+    min-height: 100vh;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background:
+      radial-gradient(ellipse 80% 60% at 10% 20%, hsl(var(--mesh-1)), transparent 50%),
+      radial-gradient(ellipse 60% 50% at 90% 10%, hsl(var(--mesh-2)), transparent 45%),
+      radial-gradient(ellipse 70% 60% at 50% 90%, hsl(var(--mesh-3)), transparent 50%),
+      hsl(var(--background));
+    pointer-events: none;
+  }
+}
+
+@layer utilities {
+  .glass {
+    background: hsl(var(--glass-bg));
+    border: 1px solid hsl(var(--glass-border));
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    box-shadow:
+      0 4px 24px -4px hsl(0 0% 0% / 0.08),
+      inset 0 1px 0 0 hsl(var(--glass-highlight));
+  }
+
+  .glass-strong {
+    background: hsl(var(--glass-bg));
+    border: 1px solid hsl(var(--glass-border));
+    backdrop-filter: blur(calc(var(--glass-blur) * 1.5));
+    -webkit-backdrop-filter: blur(calc(var(--glass-blur) * 1.5));
+    box-shadow:
+      0 8px 32px -8px hsl(0 0% 0% / 0.15),
+      inset 0 1px 0 0 hsl(var(--glass-highlight));
+  }
+}
+
+[dir='rtl'] .prose blockquote {
+  @apply border-s-0 border-e-4 ps-0 pe-4;
+}

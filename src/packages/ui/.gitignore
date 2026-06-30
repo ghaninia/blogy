@@ -1,0 +1,5 @@
+# Build output (if compiled separately)
+dist/
+
+# TypeScript cache
+*.tsbuildinfo

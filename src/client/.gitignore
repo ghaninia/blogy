@@ -1,0 +1,11 @@
+# Dependencies (if installed locally)
+node_modules/
+
+# Build output (future)
+dist/
+.next/
+out/
+
+# Local env
+.env
+.env.local

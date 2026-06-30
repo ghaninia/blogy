@@ -1,0 +1,16 @@
+# Development Dashboard (Next.js) with hot reload
+
+FROM node:20-alpine
+RUN apk add --no-cache libc6-compat
+RUN corepack enable && corepack prepare pnpm@9.15.0 --activate
+WORKDIR /app
+
+COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
+COPY src/dashboard/package.json ./src/dashboard/
+COPY src/backend/package.json ./src/backend/
+COPY src/packages/ui/package.json ./src/packages/ui/
+
+RUN pnpm install --frozen-lockfile
+
+EXPOSE 3000
+CMD ["pnpm", "--filter", "@gh/dashboard", "dev"]

@@ -1,0 +1,243 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  EDITOR
+  AUTHOR
+  USER
+}
+
+enum PostStatus {
+  DRAFT
+  PUBLISHED
+  SCHEDULED
+}
+
+enum CommentStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  SPAM
+}
+
+enum PageType {
+  ABOUT
+  CONTACT
+  RESUME
+  CUSTOM
+}
+
+model User {
+  id           String         @id @default(uuid())
+  email        String         @unique
+  username     String         @unique
+  passwordHash String
+  displayName  String?
+  bio          String?
+  avatarUrl    String?
+  role         Role           @default(USER)
+  isActive     Boolean        @default(true)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  posts        Post[]
+  comments     Comment[]
+  refreshTokens RefreshToken[]
+
+  @@map("users")
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("refresh_tokens")
+}
+
+model Post {
+  id           String         @id @default(uuid())
+  slug         String         @unique
+  titleFa      String?
+  titleEn      String?
+  excerptFa    String?
+  excerptEn    String?
+  contentFa    String?        @db.Text
+  contentEn    String?        @db.Text
+  status       PostStatus     @default(DRAFT)
+  publishedAt  DateTime?
+  coverMediaId String?
+  authorId     String
+  metaTitleFa  String?
+  metaTitleEn  String?
+  metaDescFa   String?
+  metaDescEn   String?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  author       User           @relation(fields: [authorId], references: [id])
+  coverMedia   Media?         @relation("PostCover", fields: [coverMediaId], references: [id], onDelete: SetNull)
+  categories   PostCategory[]
+  tags         PostTag[]
+  comments     Comment[]
+
+  @@index([status, publishedAt])
+  @@index([authorId])
+  @@map("posts")
+}
+
+model Page {
+  id          String   @id @default(uuid())
+  slug        String   @unique
+  type        PageType @default(CUSTOM)
+  titleFa     String?
+  titleEn     String?
+  contentFa   String?  @db.Text
+  contentEn   String?  @db.Text
+  isPublished Boolean  @default(false)
+  metaTitleFa String?
+  metaTitleEn String?
+  metaDescFa  String?
+  metaDescEn  String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("pages")
+}
+
+model Category {
+  id            String         @id @default(uuid())
+  slug          String         @unique
+  nameFa        String
+  nameEn        String
+  descriptionFa String?
+  descriptionEn String?
+  parentId      String?
+  parent        Category?      @relation("CategoryTree", fields: [parentId], references: [id], onDelete: SetNull)
+  children      Category[]     @relation("CategoryTree")
+  posts         PostCategory[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  @@index([parentId])
+  @@map("categories")
+}
+
+model Tag {
+  id        String    @id @default(uuid())
+  slug      String    @unique
+  nameFa    String
+  nameEn    String
+  posts     PostTag[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@map("tags")
+}
+
+model PostCategory {
+  postId     String
+  categoryId String
+  post       Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@id([postId, categoryId])
+  @@map("post_categories")
+}
+
+model PostTag {
+  postId String
+  tagId  String
+  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  tag    Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([postId, tagId])
+  @@map("post_tags")
+}
+
+model Portfolio {
+  id            String   @id @default(uuid())
+  slug          String   @unique
+  titleFa       String
+  titleEn       String
+  descriptionFa String?  @db.Text
+  descriptionEn String?  @db.Text
+  projectUrl    String?
+  githubUrl     String?
+  technologies  String[] @default([])
+  coverMediaId  String?
+  galleryMediaIds String[] @default([])
+  isPublished   Boolean  @default(false)
+  sortOrder     Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  coverMedia    Media?   @relation("PortfolioCover", fields: [coverMediaId], references: [id], onDelete: SetNull)
+
+  @@index([isPublished, sortOrder])
+  @@map("portfolios")
+}
+
+model Media {
+  id           String      @id @default(uuid())
+  filename     String
+  originalName String
+  mimeType     String
+  size         Int
+  path         String
+  folder       String      @default("general")
+  altFa        String?
+  altEn        String?
+  width        Int?
+  height       Int?
+  variants     Json?
+  uploadedById String?
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  postCovers   Post[]      @relation("PostCover")
+  portfolioCovers Portfolio[] @relation("PortfolioCover")
+
+  @@index([folder])
+  @@index([mimeType])
+  @@map("media")
+}
+
+model Comment {
+  id        String        @id @default(uuid())
+  content   String        @db.Text
+  status    CommentStatus @default(PENDING)
+  postId    String
+  userId    String
+  parentId  String?
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+  post      Post          @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  parent    Comment?      @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies   Comment[]     @relation("CommentReplies")
+
+  @@index([postId, status])
+  @@index([userId])
+  @@index([parentId])
+  @@map("comments")
+}
+
+model Setting {
+  id        String   @id @default(uuid())
+  key       String   @unique
+  valueFa   String?  @db.Text
+  valueEn   String?  @db.Text
+  valueJson Json?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("settings")
+}

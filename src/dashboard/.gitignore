@@ -1,0 +1,18 @@
+# Next.js
+.next/
+out/
+
+# Local env overrides
+.env
+.env.local
+.env.*.local
+
+# TypeScript cache
+*.tsbuildinfo
+
+# Debug
+npm-debug.log*
+pnpm-debug.log*
+
+# Vercel
+.vercel

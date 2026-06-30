@@ -1,0 +1,29 @@
+{
+  "name": "gh-blog",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "pnpm --parallel --filter @gh/backend --filter @gh/dashboard dev",
+    "dev:backend": "pnpm --filter @gh/backend dev",
+    "dev:dashboard": "pnpm --filter @gh/dashboard dev",
+    "build": "pnpm --filter @gh/backend generate && pnpm --filter @gh/backend build && pnpm --filter @gh/dashboard build",
+    "lint": "pnpm -r lint",
+    "format": "prettier --write \"**/*.{ts,tsx,js,json,md}\"",
+    "db:generate": "pnpm --filter @gh/backend generate",
+    "db:migrate": "pnpm --filter @gh/backend migrate",
+    "db:migrate:deploy": "pnpm --filter @gh/backend migrate:deploy",
+    "db:seed": "pnpm --filter @gh/backend seed",
+    "db:studio": "pnpm --filter @gh/backend studio"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^8.18.0",
+    "@typescript-eslint/parser": "^8.18.0",
+    "eslint": "^9.17.0",
+    "prettier": "^3.4.2",
+    "typescript": "^5.7.2"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "packageManager": "pnpm@9.15.0"
+}
