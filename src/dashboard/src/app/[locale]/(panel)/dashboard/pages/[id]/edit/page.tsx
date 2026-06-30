@@ -88,7 +88,7 @@ export default function EditPagePage() {
         }
       />
       <form id="page-edit-form" onSubmit={handleSave}>
-        <PageForm form={form} onChange={setForm} />
+        <PageForm form={form} onChange={setForm} autoSlug={false} />
       </form>
       <DeleteDialog />
     </div>

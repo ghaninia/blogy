@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { pageTypeSchema, slugSchema } from './common.js';
+import { pageTypeSchema, paginationSchema, slugSchema } from './common.js';
 
 export const createPageSchema = z.object({
   slug: slugSchema,
@@ -17,5 +17,10 @@ export const createPageSchema = z.object({
 
 export const updatePageSchema = createPageSchema.partial();
 
+export const pageQuerySchema = paginationSchema.extend({
+  search: z.string().optional(),
+});
+
 export type CreatePageInput = z.infer<typeof createPageSchema>;
 export type UpdatePageInput = z.infer<typeof updatePageSchema>;
+export type PageQueryInput = z.infer<typeof pageQuerySchema>;

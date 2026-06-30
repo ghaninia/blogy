@@ -1,4 +1,4 @@
-import { prisma } from '../../../db/index.js';
+import { prisma, type Prisma } from '../../../db/index.js';
 
 export class PageRepository {
   findBySlug(slug: string) {
@@ -21,11 +21,17 @@ export class PageRepository {
     return prisma.page.delete({ where: { id } });
   }
 
-  findMany(publicOnly: boolean) {
+  findMany(where: Prisma.PageWhereInput, skip: number, take: number) {
     return prisma.page.findMany({
-      where: publicOnly ? { isPublished: true } : undefined,
+      where,
+      skip,
+      take,
       orderBy: { updatedAt: 'desc' },
     });
+  }
+
+  count(where: Prisma.PageWhereInput) {
+    return prisma.page.count({ where });
   }
 }
 

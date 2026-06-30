@@ -1,11 +1,14 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import { useLocale, useTranslations } from 'next-intl';
 import { Plus, Pencil, Trash2 } from 'lucide-react';
 import {
   Badge,
   Button,
+  Input,
+  Pagination,
   Table,
   TableBody,
   TableCell,
@@ -14,11 +17,13 @@ import {
   TableRow,
   useToast,
 } from '@gh/ui';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
 import { api } from '@/shared/api-client';
 import { getLocalizedField, isAdmin } from '@/shared/lib/localized';
 import { PageHeader } from '@/features/layout/components/page-header';
 import { DataTable } from '@/features/layout/components/data-table';
+import { useCrudList } from '@/shared/hooks/use-crud-list';
+import { useDebouncedValue } from '@/shared/hooks/use-debounce';
 import { useDeleteConfirm } from '@/shared/hooks/use-delete-confirm';
 import { useAuthStore } from '@/shared/store/auth';
 
@@ -42,11 +47,17 @@ export default function DashboardPortfolioPage() {
   const { user } = useAuthStore();
   const { confirmDelete, DeleteDialog } = useDeleteConfirm();
 
-  const { data: items = [], isLoading } = useQuery({
+  const [page, setPage] = useState(1);
+  const [search, setSearch] = useState('');
+  const debouncedSearch = useDebouncedValue(search);
+
+  const { items, meta, isLoading } = useCrudList<PortfolioItem>({
     queryKey: ['dashboard-portfolio'],
-    queryFn: async () => {
-      const res = await api.get<PortfolioItem[]>('/api/portfolio');
-      return res.data ?? [];
+    endpoint: '/api/portfolio',
+    params: {
+      page,
+      limit: 20,
+      search: debouncedSearch || undefined,
     },
   });
 
@@ -65,6 +76,19 @@ export default function DashboardPortfolioPage() {
     });
   };
 
+  const renderActions = (item: PortfolioItem) => (
+    <div className="flex justify-end gap-2">
+      <Link href={`/${locale}/dashboard/portfolio/${item.id}/edit`}>
+        <Button variant="ghost" size="icon"><Pencil className="h-4 w-4" /></Button>
+      </Link>
+      {user && isAdmin(user.role) ? (
+        <Button variant="ghost" size="icon" onClick={() => handleDelete(item)}>
+          <Trash2 className="h-4 w-4 text-destructive" />
+        </Button>
+      ) : null}
+    </div>
+  );
+
   return (
     <div>
       <PageHeader
@@ -76,7 +100,48 @@ export default function DashboardPortfolioPage() {
         }
       />
 
-      <DataTable isLoading={isLoading} isEmpty={!isLoading && items.length === 0}>
+      <div className="mb-4">
+        <Input
+          placeholder={tt('search')}
+          value={search}
+          onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+          className="max-w-xs"
+        />
+      </div>
+
+      <DataTable
+        isLoading={isLoading}
+        isEmpty={!isLoading && items.length === 0}
+        items={items}
+        mobileCardRender={(item) => (
+          <div className="space-y-2">
+            <div>
+              <p className="font-medium">{getLocalizedField(item, 'title', locale)}</p>
+              <p className="text-xs text-muted-foreground">{item.slug}</p>
+              <div className="mt-1 flex flex-wrap gap-1">
+                {item.technologies.slice(0, 3).map((tech) => (
+                  <Badge key={tech} variant="glass">{tech}</Badge>
+                ))}
+                {item.technologies.length > 3 ? (
+                  <Badge variant="secondary">+{item.technologies.length - 3}</Badge>
+                ) : null}
+              </div>
+              <div className="mt-1 flex gap-2">
+                <span className="text-xs text-muted-foreground">{tt('sortOrder')}: {item.sortOrder}</span>
+                <Badge variant={item.isPublished ? 'success' : 'secondary'}>
+                  {item.isPublished ? tt('published') : t('draft')}
+                </Badge>
+              </div>
+            </div>
+            {renderActions(item)}
+          </div>
+        )}
+        footer={
+          meta && meta.totalPages > 1 ? (
+            <Pagination page={page} totalPages={meta.totalPages} onPageChange={setPage} />
+          ) : undefined
+        }
+      >
         <Table>
           <TableHeader>
             <TableRow>
@@ -110,18 +175,7 @@ export default function DashboardPortfolioPage() {
                     {item.isPublished ? tt('published') : t('draft')}
                   </Badge>
                 </TableCell>
-                <TableCell className="text-end">
-                  <div className="flex justify-end gap-2">
-                    <Link href={`/${locale}/dashboard/portfolio/${item.id}/edit`}>
-                      <Button variant="ghost" size="icon"><Pencil className="h-4 w-4" /></Button>
-                    </Link>
-                    {user && isAdmin(user.role) ? (
-                      <Button variant="ghost" size="icon" onClick={() => handleDelete(item)}>
-                        <Trash2 className="h-4 w-4 text-destructive" />
-                      </Button>
-                    ) : null}
-                  </div>
-                </TableCell>
+                <TableCell className="text-end">{renderActions(item)}</TableCell>
               </TableRow>
             ))}
           </TableBody>

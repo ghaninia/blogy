@@ -1,4 +1,4 @@
-import type { CreateCategoryInput, UpdateCategoryInput } from '../../../types/index.js';
+import type { CategoryQueryInput, CreateCategoryInput, UpdateCategoryInput } from '../../../types/index.js';
 import { categoryRepository } from '../infrastructure/category.repository.js';
 import { categoryNotFound, slugExists } from '../domain/category.errors.js';
 
@@ -32,8 +32,48 @@ export class CategoryService {
     return category;
   }
 
-  async list() {
-    return categoryRepository.listRoots();
+  async list(query: CategoryQueryInput) {
+    const { all, page, limit, search } = query;
+    const wantsPagination =
+      all !== true && (page !== undefined || limit !== undefined || search !== undefined);
+
+    if (!wantsPagination) {
+      const items = await categoryRepository.listRoots();
+      return {
+        items,
+        total: items.length,
+        page: 1,
+        limit: items.length || 1,
+        totalPages: 1,
+      };
+    }
+
+    const resolvedPage = page ?? 1;
+    const resolvedLimit = limit ?? 20;
+    const skip = (resolvedPage - 1) * resolvedLimit;
+
+    const where = search
+      ? {
+          OR: [
+            { nameFa: { contains: search, mode: 'insensitive' as const } },
+            { nameEn: { contains: search, mode: 'insensitive' as const } },
+            { slug: { contains: search, mode: 'insensitive' as const } },
+          ],
+        }
+      : {};
+
+    const [items, total] = await Promise.all([
+      categoryRepository.findMany(where, skip, resolvedLimit),
+      categoryRepository.count(where),
+    ]);
+
+    return {
+      items,
+      total,
+      page: resolvedPage,
+      limit: resolvedLimit,
+      totalPages: Math.ceil(total / resolvedLimit),
+    };
   }
 }
 

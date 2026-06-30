@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { Role } from '../../../db/index.js';
-import { createPageSchema, updatePageSchema } from '../../../types/index.js';
+import { createPageSchema, pageQuerySchema, updatePageSchema } from '../../../types/index.js';
 import { pageService } from '../application/page.service.js';
 import { authenticate, authorize, optionalAuth, type AuthRequest } from '../../../shared/auth/middleware.js';
 import { validate } from '../../../shared/http/validate.js';
@@ -9,11 +9,16 @@ import { paramId, isEditorRole } from '../../../shared/http/params.js';
 
 const router: Router = Router();
 
-router.get('/', optionalAuth, async (req: AuthRequest, res, next) => {
+router.get('/', validate(pageQuerySchema, 'query'), optionalAuth, async (req: AuthRequest, res, next) => {
   try {
     const publicOnly = !req.user || !isEditorRole(req.user.role);
-    const pages = await pageService.list(publicOnly);
-    sendSuccess(res, pages);
+    const result = await pageService.list(req.query as never, publicOnly);
+    sendSuccess(res, result.items, 200, {
+      page: result.page,
+      limit: result.limit,
+      total: result.total,
+      totalPages: result.totalPages,
+    });
   } catch (e) {
     next(e);
   }

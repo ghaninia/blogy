@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { slugSchema } from './common.js';
+import { paginationSchema, slugSchema } from './common.js';
 
 export const createTagSchema = z.object({
   slug: slugSchema,
@@ -9,5 +9,10 @@ export const createTagSchema = z.object({
 
 export const updateTagSchema = createTagSchema.partial();
 
+export const tagQuerySchema = paginationSchema.extend({
+  search: z.string().optional(),
+});
+
 export type CreateTagInput = z.infer<typeof createTagSchema>;
 export type UpdateTagInput = z.infer<typeof updateTagSchema>;
+export type TagQueryInput = z.infer<typeof tagQuerySchema>;

@@ -106,7 +106,7 @@ export default function EditPortfolioPage() {
         }
       />
       <form id="portfolio-edit-form" onSubmit={handleSave}>
-        <PortfolioForm form={form} onChange={setForm} coverPath={coverPath} galleryPaths={galleryPaths} />
+        <PortfolioForm form={form} onChange={setForm} coverPath={coverPath} galleryPaths={galleryPaths} autoSlug={false} />
       </form>
       <DeleteDialog />
     </div>

@@ -17,7 +17,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/shared/lib/utils';
 
-const sidebarItems = [
+export const sidebarItems = [
   { key: 'overview', href: '/dashboard', icon: LayoutDashboard, exact: true },
   { key: 'posts', href: '/dashboard/posts', icon: FileText },
   { key: 'pages', href: '/dashboard/pages', icon: File },

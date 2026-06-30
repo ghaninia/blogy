@@ -92,11 +92,11 @@ export default function EditPostPage() {
   const showDelete = user ? canDeletePost(user.role) : false;
 
   return (
-    <div>
+    <div className="pb-20 md:pb-0">
       <PageHeader
         title={t('editPost')}
         action={
-          <div className="flex gap-2">
+          <div className="flex flex-col gap-2 sm:flex-row">
             <Link href={`/${locale}/dashboard/posts`}>
               <Button variant="outline">
                 <ArrowLeft className="me-2 h-4 w-4" />
@@ -108,7 +108,7 @@ export default function EditPostPage() {
                 {t('actions.delete')}
               </Button>
             ) : null}
-            <Button type="submit" form="post-edit-form" disabled={saving}>
+            <Button type="submit" form="post-edit-form" disabled={saving} className="hidden md:inline-flex">
               {t('actions.save')}
             </Button>
           </div>
@@ -116,8 +116,14 @@ export default function EditPostPage() {
       />
 
       <form id="post-edit-form" onSubmit={handleSave}>
-        <PostForm locale={locale} form={form} onChange={setForm} coverPath={coverPath} />
+        <PostForm locale={locale} form={form} onChange={setForm} autoSlug={false} coverPath={coverPath} />
       </form>
+
+      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/95 p-4 backdrop-blur md:hidden">
+        <Button type="submit" form="post-edit-form" disabled={saving} className="w-full">
+          {t('actions.save')}
+        </Button>
+      </div>
 
       <DeleteDialog />
     </div>

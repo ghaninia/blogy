@@ -140,7 +140,32 @@
       "bio": "Bio",
       "avatarUrl": "Avatar URL",
       "editMetadata": "Edit Metadata",
-      "editSetting": "Edit Setting"
+      "editSetting": "Edit Setting",
+      "searchCategories": "Search categories...",
+      "generateSlug": "Generate random slug",
+      "tabs": {
+        "basic": "Basic",
+        "content": "Content",
+        "taxonomy": "Taxonomy",
+        "seo": "SEO"
+      }
+    },
+    "media": {
+      "title": "Media Manager",
+      "search": "Search files...",
+      "upload": "Upload",
+      "uploading": "Uploading...",
+      "uploadSuccess": "File uploaded",
+      "uploadError": "Upload failed",
+      "loadError": "Failed to load",
+      "empty": "No files found",
+      "done": "Done"
+    },
+    "tags": {
+      "searchOrCreate": "Search or type new tag name...",
+      "create": "Create \"{name}\"",
+      "created": "Tag created",
+      "createError": "Failed to create tag"
     },
     "actions": {
       "new": "New",

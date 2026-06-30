@@ -1,12 +1,14 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
+import { useState } from 'react';
 import Link from 'next/link';
 import { useLocale, useTranslations } from 'next-intl';
 import { Plus, Pencil, Trash2 } from 'lucide-react';
 import {
   Badge,
   Button,
+  Input,
+  Pagination,
   Table,
   TableBody,
   TableCell,
@@ -15,13 +17,15 @@ import {
   TableRow,
   useToast,
 } from '@gh/ui';
+import { useQueryClient } from '@tanstack/react-query';
 import { api } from '@/shared/api-client';
 import { getLocalizedField, isAdmin } from '@/shared/lib/localized';
 import { PageHeader } from '@/features/layout/components/page-header';
 import { DataTable } from '@/features/layout/components/data-table';
+import { useCrudList } from '@/shared/hooks/use-crud-list';
+import { useDebouncedValue } from '@/shared/hooks/use-debounce';
 import { useDeleteConfirm } from '@/shared/hooks/use-delete-confirm';
 import { useAuthStore } from '@/shared/store/auth';
-import { useQueryClient } from '@tanstack/react-query';
 
 interface PageItem {
   id: string;
@@ -42,20 +46,26 @@ export default function DashboardPagesPage() {
   const { user } = useAuthStore();
   const { confirmDelete, DeleteDialog } = useDeleteConfirm();
 
-  const { data: items = [], isLoading } = useQuery({
+  const [page, setPage] = useState(1);
+  const [search, setSearch] = useState('');
+  const debouncedSearch = useDebouncedValue(search);
+
+  const { items, meta, isLoading } = useCrudList<PageItem>({
     queryKey: ['dashboard-pages'],
-    queryFn: async () => {
-      const res = await api.get<PageItem[]>('/api/pages');
-      return res.data ?? [];
+    endpoint: '/api/pages',
+    params: {
+      page,
+      limit: 20,
+      search: debouncedSearch || undefined,
     },
   });
 
-  const handleDelete = (page: PageItem) => {
+  const handleDelete = (pageItem: PageItem) => {
     confirmDelete({
       description: t('confirm.deletePage'),
       onConfirm: async () => {
         try {
-          await api.delete(`/api/pages/${page.id}`);
+          await api.delete(`/api/pages/${pageItem.id}`);
           toast({ title: tToast('deleted'), variant: 'success' });
           qc.invalidateQueries({ queryKey: ['dashboard-pages'] });
         } catch {
@@ -66,6 +76,19 @@ export default function DashboardPagesPage() {
   };
 
   const canDelete = user ? isAdmin(user.role) : false;
+
+  const renderActions = (pageItem: PageItem) => (
+    <div className="flex justify-end gap-2">
+      <Link href={`/${locale}/dashboard/pages/${pageItem.id}/edit`}>
+        <Button variant="ghost" size="icon"><Pencil className="h-4 w-4" /></Button>
+      </Link>
+      {canDelete ? (
+        <Button variant="ghost" size="icon" onClick={() => handleDelete(pageItem)}>
+          <Trash2 className="h-4 w-4 text-destructive" />
+        </Button>
+      ) : null}
+    </div>
+  );
 
   return (
     <div>
@@ -81,7 +104,40 @@ export default function DashboardPagesPage() {
         }
       />
 
-      <DataTable isLoading={isLoading} isEmpty={!isLoading && items.length === 0}>
+      <div className="mb-4">
+        <Input
+          placeholder={tt('search')}
+          value={search}
+          onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+          className="max-w-xs"
+        />
+      </div>
+
+      <DataTable
+        isLoading={isLoading}
+        isEmpty={!isLoading && items.length === 0}
+        items={items}
+        mobileCardRender={(pageItem) => (
+          <div className="space-y-2">
+            <div>
+              <p className="font-medium">{getLocalizedField(pageItem, 'title', locale) || pageItem.slug}</p>
+              <p className="text-xs text-muted-foreground">{pageItem.slug}</p>
+              <div className="mt-1 flex flex-wrap gap-2">
+                <Badge variant="secondary">{pageItem.type}</Badge>
+                <Badge variant={pageItem.isPublished ? 'success' : 'secondary'}>
+                  {pageItem.isPublished ? tt('published') : t('draft')}
+                </Badge>
+              </div>
+            </div>
+            {renderActions(pageItem)}
+          </div>
+        )}
+        footer={
+          meta && meta.totalPages > 1 ? (
+            <Pagination page={page} totalPages={meta.totalPages} onPageChange={setPage} />
+          ) : undefined
+        }
+      >
         <Table>
           <TableHeader>
             <TableRow>
@@ -92,30 +148,19 @@ export default function DashboardPagesPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {items.map((page) => (
-              <TableRow key={page.id}>
+            {items.map((pageItem) => (
+              <TableRow key={pageItem.id}>
                 <TableCell>
-                  <p className="font-medium">{getLocalizedField(page, 'title', locale) || page.slug}</p>
-                  <p className="text-xs text-muted-foreground">{page.slug}</p>
+                  <p className="font-medium">{getLocalizedField(pageItem, 'title', locale) || pageItem.slug}</p>
+                  <p className="text-xs text-muted-foreground">{pageItem.slug}</p>
                 </TableCell>
-                <TableCell>{page.type}</TableCell>
+                <TableCell>{pageItem.type}</TableCell>
                 <TableCell>
-                  <Badge variant={page.isPublished ? 'success' : 'secondary'}>
-                    {page.isPublished ? tt('published') : t('draft')}
+                  <Badge variant={pageItem.isPublished ? 'success' : 'secondary'}>
+                    {pageItem.isPublished ? tt('published') : t('draft')}
                   </Badge>
                 </TableCell>
-                <TableCell className="text-end">
-                  <div className="flex justify-end gap-2">
-                    <Link href={`/${locale}/dashboard/pages/${page.id}/edit`}>
-                      <Button variant="ghost" size="icon"><Pencil className="h-4 w-4" /></Button>
-                    </Link>
-                    {canDelete ? (
-                      <Button variant="ghost" size="icon" onClick={() => handleDelete(page)}>
-                        <Trash2 className="h-4 w-4 text-destructive" />
-                      </Button>
-                    ) : null}
-                  </div>
-                </TableCell>
+                <TableCell className="text-end">{renderActions(pageItem)}</TableCell>
               </TableRow>
             ))}
           </TableBody>

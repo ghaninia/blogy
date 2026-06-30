@@ -1,13 +1,26 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import Image from 'next/image';
-import { Upload, X, Search } from 'lucide-react';
-import { api, getMediaUrl } from '@/shared/api-client';
-import { Input } from '@gh/ui';
+import { useTranslations } from 'next-intl';
+import { Search, Upload } from 'lucide-react';
+import {
+  Button,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  EmptyState,
+  Input,
+  Pagination,
+  Spinner,
+  useToast,
+} from '@gh/ui';
+import { api, getMediaUrl, getPaginationMeta } from '@/shared/api-client';
+import { useDebouncedValue } from '@/shared/hooks/use-debounce';
 
-interface MediaItem {
+export interface MediaItem {
   id: string;
   filename: string;
   originalName: string;
@@ -21,17 +34,30 @@ interface MediaManagerProps {
   open: boolean;
   onClose: () => void;
   onSelect: (media: MediaItem) => void;
+  mode?: 'single' | 'multi';
 }
 
-export function MediaManager({ open, onClose, onSelect }: MediaManagerProps) {
+export function MediaManager({ open, onClose, onSelect, mode = 'single' }: MediaManagerProps) {
+  const t = useTranslations('dashboard.media');
+  const { toast } = useToast();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [search, setSearch] = useState('');
+  const [page, setPage] = useState(1);
   const [uploading, setUploading] = useState(false);
+  const debouncedSearch = useDebouncedValue(search);
 
-  const { data, refetch, isLoading } = useQuery({
-    queryKey: ['media', search],
+  const { data, refetch, isLoading, isError } = useQuery({
+    queryKey: ['media-picker', debouncedSearch, page],
     queryFn: async () => {
-      const res = await api.get<MediaItem[]>('/api/media', { search, limit: 48 });
-      return res.data ?? [];
+      const res = await api.get<MediaItem[]>('/api/media', {
+        search: debouncedSearch || undefined,
+        page,
+        limit: 24,
+      });
+      return {
+        items: res.data ?? [],
+        meta: getPaginationMeta(res),
+      };
     },
     enabled: open,
   });
@@ -43,60 +69,79 @@ export function MediaManager({ open, onClose, onSelect }: MediaManagerProps) {
     try {
       await api.upload('/api/media/upload', file);
       await refetch();
+      toast({ title: t('uploadSuccess'), variant: 'success' });
+    } catch (err) {
+      toast({
+        title: t('uploadError'),
+        description: err instanceof Error ? err.message : undefined,
+        variant: 'destructive',
+      });
     } finally {
       setUploading(false);
+      e.target.value = '';
     }
   };
 
-  if (!open) return null;
+  const handleSelect = (item: MediaItem) => {
+    onSelect(item);
+    if (mode === 'single') onClose();
+  };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div className="flex max-h-[90vh] w-full max-w-4xl flex-col rounded-xl bg-white shadow-xl">
-        <div className="flex items-center justify-between border-b px-6 py-4">
-          <h2 className="text-lg font-semibold">Media Manager</h2>
-          <button onClick={onClose} className="rounded-lg p-1 hover:bg-gray-100">
-            <X className="h-5 w-5" />
-          </button>
-        </div>
+    <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
+      <DialogContent className="glass flex max-h-[90vh] max-w-4xl flex-col gap-0 overflow-hidden p-0">
+        <DialogHeader className="border-b border-border px-4 py-4 sm:px-6">
+          <DialogTitle>{t('title')}</DialogTitle>
+        </DialogHeader>
 
-        <div className="flex items-center gap-3 border-b px-6 py-3">
+        <div className="flex flex-col gap-3 border-b border-border px-4 py-3 sm:flex-row sm:items-center sm:px-6">
           <div className="relative flex-1">
-            <Search className="absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+            <Search className="absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search files..."
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setPage(1);
+              }}
+              placeholder={t('search')}
               className="ps-9"
             />
           </div>
-          <label className="cursor-pointer">
-            <input type="file" className="hidden" accept="image/*,video/*,.pdf" onChange={handleUpload} />
-            <span className="inline-flex items-center justify-center rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white hover:bg-primary-700">
-              <Upload className="me-2 h-4 w-4" />
-              {uploading ? 'Uploading...' : 'Upload'}
-            </span>
-          </label>
+          <input
+            ref={fileInputRef}
+            type="file"
+            className="hidden"
+            accept="image/*,video/*,.pdf"
+            onChange={handleUpload}
+          />
+          <Button type="button" disabled={uploading} onClick={() => fileInputRef.current?.click()}>
+            <Upload className="me-2 h-4 w-4" />
+            {uploading ? t('uploading') : t('upload')}
+          </Button>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-6">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6">
           {isLoading ? (
-            <p className="text-center text-gray-500">Loading...</p>
+            <div className="flex justify-center py-12">
+              <Spinner />
+            </div>
+          ) : isError ? (
+            <EmptyState title={t('loadError')} />
+          ) : !data?.items.length ? (
+            <EmptyState title={t('empty')} />
           ) : (
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
-              {data?.map((item) => (
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
+              {data.items.map((item) => (
                 <button
                   key={item.id}
-                  onClick={() => {
-                    onSelect(item);
-                    onClose();
-                  }}
-                  className="group overflow-hidden rounded-lg border border-gray-200 hover:border-primary-500 hover:shadow-md"
+                  type="button"
+                  onClick={() => handleSelect(item)}
+                  className="group overflow-hidden rounded-lg border border-border bg-card transition hover:border-primary hover:shadow-md"
                 >
                   {item.mimeType.startsWith('image/') ? (
                     <div className="relative aspect-square">
                       <Image
-                        src={item.url ?? getMediaUrl(item.path)}
+                        src={getMediaUrl(item.path)}
                         alt={item.originalName}
                         fill
                         className="object-cover"
@@ -104,17 +149,29 @@ export function MediaManager({ open, onClose, onSelect }: MediaManagerProps) {
                       />
                     </div>
                   ) : (
-                    <div className="flex aspect-square items-center justify-center bg-gray-100 text-xs text-gray-500">
+                    <div className="flex aspect-square items-center justify-center bg-muted text-xs text-muted-foreground">
                       {item.mimeType}
                     </div>
                   )}
-                  <p className="truncate px-2 py-1 text-xs text-gray-600">{item.originalName}</p>
+                  <p className="truncate px-2 py-1.5 text-xs text-muted-foreground">{item.originalName}</p>
                 </button>
               ))}
             </div>
           )}
         </div>
-      </div>
-    </div>
+
+        {data?.meta && data.meta.totalPages > 1 ? (
+          <div className="flex justify-center border-t border-border px-4 py-3">
+            <Pagination page={page} totalPages={data.meta.totalPages} onPageChange={setPage} />
+          </div>
+        ) : null}
+
+        {mode === 'multi' ? (
+          <div className="flex justify-end border-t border-border px-4 py-3 sm:px-6">
+            <Button onClick={onClose}>{t('done')}</Button>
+          </div>
+        ) : null}
+      </DialogContent>
+    </Dialog>
   );
 }

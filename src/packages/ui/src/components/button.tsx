@@ -3,16 +3,21 @@ import { forwardRef, type ButtonHTMLAttributes } from 'react';
 import { cn } from '../lib/cn';
 
 const buttonVariants = cva(
-  'inline-flex items-center justify-center rounded-lg font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
+  'inline-flex items-center justify-center rounded-lg font-semibold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
   {
     variants: {
       variant: {
-        default: 'bg-primary text-primary-foreground hover:bg-primary/90',
-        secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
-        destructive: 'bg-destructive text-destructive-foreground hover:bg-destructive/90',
-        outline: 'border border-input bg-background hover:bg-accent hover:text-accent-foreground',
+        default:
+          'bg-primary text-primary-foreground border-b-[3px] border-b-[hsl(var(--primary-border))] shadow-[0_2px_0_hsl(var(--primary-border))] hover:brightness-105 active:translate-y-[2px] active:border-b active:shadow-none',
+        secondary:
+          'bg-secondary text-secondary-foreground border border-border hover:bg-secondary/80',
+        destructive:
+          'bg-destructive text-destructive-foreground border-b-[3px] border-b-destructive/80 shadow-[0_2px_0_hsl(var(--destructive)/0.6)] active:translate-y-[2px] active:border-b active:shadow-none',
+        outline:
+          'border border-input bg-background hover:bg-accent hover:text-accent-foreground',
         ghost: 'hover:bg-accent hover:text-accent-foreground',
-        link: 'text-primary underline-offset-4 hover:underline',
+        soft: 'bg-accent text-accent-foreground hover:bg-accent/80',
+        link: 'text-primary underline-offset-4 hover:underline font-medium',
       },
       size: {
         sm: 'h-8 px-3 text-xs',

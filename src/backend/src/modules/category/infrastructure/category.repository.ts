@@ -1,4 +1,4 @@
-import { prisma } from '../../../db/index.js';
+import { prisma, type Prisma } from '../../../db/index.js';
 
 export class CategoryRepository {
   findBySlug(slug: string) {
@@ -30,6 +30,20 @@ export class CategoryRepository {
       include: { children: { include: { children: true } } },
       orderBy: { nameEn: 'asc' },
     });
+  }
+
+  findMany(where: Prisma.CategoryWhereInput, skip: number, take: number) {
+    return prisma.category.findMany({
+      where,
+      skip,
+      take,
+      orderBy: { createdAt: 'desc' },
+      include: { parent: true },
+    });
+  }
+
+  count(where: Prisma.CategoryWhereInput) {
+    return prisma.category.count({ where });
   }
 }
 

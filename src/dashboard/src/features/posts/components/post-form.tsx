@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
@@ -10,7 +10,6 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-  Checkbox,
   FormField,
   Input,
   Select,
@@ -18,11 +17,17 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
   Textarea,
 } from '@gh/ui';
 import { api, getMediaUrl } from '@/shared/api-client';
-import { getLocalizedField } from '@/shared/lib/localized';
-import { RichTextEditor } from '@/features/posts/components/rich-text-editor';
+import { SlugField } from '@/shared/components/slug-field';
+import { RichTextEditor, type RichTextEditorHandle } from '@/features/posts/components/rich-text-editor';
+import { CreatableTagPicker } from '@/features/posts/components/creatable-tag-picker';
+import { CategoryCombobox } from '@/features/posts/components/category-combobox';
 import { MediaManager } from '@/features/media/components/media-manager';
 
 export interface PostFormData {
@@ -64,6 +69,8 @@ interface PostFormProps {
   form: PostFormData;
   onChange: (form: PostFormData) => void;
   coverPath?: string;
+  formId?: string;
+  autoSlug?: boolean;
 }
 
 export const emptyPostForm = (): PostFormData => ({
@@ -85,24 +92,24 @@ export const emptyPostForm = (): PostFormData => ({
   metaDescEn: '',
 });
 
-function flattenCategories(cats: Category[], depth = 0): { id: string; label: string }[] {
-  return cats.flatMap((cat) => [
-    { id: cat.id, label: `${'—'.repeat(depth)} ${cat.nameEn || cat.slug}` },
-    ...(cat.children ? flattenCategories(cat.children, depth + 1) : []),
-  ]);
-}
-
-export function PostForm({ locale, form, onChange, coverPath }: PostFormProps) {
+export function PostForm({ locale, form, onChange, coverPath, formId = 'post-form', autoSlug = true }: PostFormProps) {
   const t = useTranslations('dashboard');
   const tf = useTranslations('dashboard.form');
   const ts = useTranslations('status');
   const [mediaOpen, setMediaOpen] = useState(false);
   const [mediaTarget, setMediaTarget] = useState<'cover' | 'fa' | 'en'>('cover');
+  const [coverPreview, setCoverPreview] = useState(coverPath ?? '');
+  const editorFaRef = useRef<RichTextEditorHandle>(null);
+  const editorEnRef = useRef<RichTextEditorHandle>(null);
+
+  useEffect(() => {
+    if (coverPath) setCoverPreview(coverPath);
+  }, [coverPath]);
 
   const { data: categories = [] } = useQuery({
-    queryKey: ['categories'],
+    queryKey: ['categories', 'all'],
     queryFn: async () => {
-      const res = await api.get<Category[]>('/api/categories');
+      const res = await api.get<Category[]>('/api/categories', { all: 'true' });
       return res.data ?? [];
     },
   });
@@ -110,168 +117,166 @@ export function PostForm({ locale, form, onChange, coverPath }: PostFormProps) {
   const { data: tags = [] } = useQuery({
     queryKey: ['tags'],
     queryFn: async () => {
-      const res = await api.get<Tag[]>('/api/tags');
+      const res = await api.get<Tag[]>('/api/tags', { limit: 500 });
       return res.data ?? [];
     },
   });
 
   const set = (patch: Partial<PostFormData>) => onChange({ ...form, ...patch });
 
-  const toggleId = (key: 'categoryIds' | 'tagIds', id: string) => {
-    const current = form[key];
-    set({
-      [key]: current.includes(id) ? current.filter((x) => x !== id) : [...current, id],
-    });
-  };
-
   return (
     <>
-      <Card variant="glass" className="mb-6">
-        <CardHeader>
-          <CardTitle>{tf('basicInfo')}</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <FormField label={tf('slug')} required>
-            <Input
-              value={form.slug}
-              onChange={(e) => set({ slug: e.target.value })}
-              placeholder="my-post"
-              required
-            />
-          </FormField>
-          <div className="grid gap-4 md:grid-cols-2">
-            <FormField label={tf('titleFa')}>
-              <Input value={form.titleFa} onChange={(e) => set({ titleFa: e.target.value })} />
-            </FormField>
-            <FormField label={tf('titleEn')}>
-              <Input value={form.titleEn} onChange={(e) => set({ titleEn: e.target.value })} />
-            </FormField>
-          </div>
-          <div className="grid gap-4 md:grid-cols-2">
-            <FormField label={tf('excerptFa')}>
-              <Textarea value={form.excerptFa} onChange={(e) => set({ excerptFa: e.target.value })} rows={3} />
-            </FormField>
-            <FormField label={tf('excerptEn')}>
-              <Textarea value={form.excerptEn} onChange={(e) => set({ excerptEn: e.target.value })} rows={3} />
-            </FormField>
-          </div>
-          <div className="grid gap-4 md:grid-cols-2">
-            <FormField label={tf('status')}>
-              <Select value={form.status} onValueChange={(v) => set({ status: v as PostFormData['status'] })}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="DRAFT">{ts('DRAFT')}</SelectItem>
-                  <SelectItem value="PUBLISHED">{ts('PUBLISHED')}</SelectItem>
-                  <SelectItem value="SCHEDULED">{ts('SCHEDULED')}</SelectItem>
-                </SelectContent>
-              </Select>
-            </FormField>
-            {form.status === 'SCHEDULED' ? (
-              <FormField label={tf('publishedAt')}>
-                <Input
-                  type="datetime-local"
-                  value={form.publishedAt}
-                  onChange={(e) => set({ publishedAt: e.target.value })}
-                />
-              </FormField>
-            ) : null}
-          </div>
-          <FormField label={tf('cover')}>
-            <div className="flex items-center gap-4">
-              {coverPath ? (
-                <div className="relative h-20 w-32 overflow-hidden rounded-lg border">
-                  <Image src={getMediaUrl(coverPath)} alt="" fill className="object-cover" unoptimized />
-                </div>
-              ) : null}
-              <div className="flex gap-2">
-                <Button type="button" variant="outline" onClick={() => { setMediaTarget('cover'); setMediaOpen(true); }}>
-                  {t('actions.selectCover')}
-                </Button>
-                {form.coverMediaId ? (
-                  <Button type="button" variant="ghost" onClick={() => set({ coverMediaId: '' })}>
-                    {t('actions.removeCover')}
-                  </Button>
+      <Tabs defaultValue="basic" className="space-y-4">
+        <TabsList className="glass flex h-auto w-full flex-wrap gap-1 p-1">
+          <TabsTrigger value="basic" className="flex-1 sm:flex-none">{tf('tabs.basic')}</TabsTrigger>
+          <TabsTrigger value="content" className="flex-1 sm:flex-none">{tf('tabs.content')}</TabsTrigger>
+          <TabsTrigger value="taxonomy" className="flex-1 sm:flex-none">{tf('tabs.taxonomy')}</TabsTrigger>
+          <TabsTrigger value="seo" className="flex-1 sm:flex-none">{tf('tabs.seo')}</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="basic">
+          <Card variant="glass">
+            <CardHeader><CardTitle>{tf('basicInfo')}</CardTitle></CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid gap-4 lg:grid-cols-2">
+                <FormField label={tf('titleFa')}>
+                  <Input value={form.titleFa} onChange={(e) => set({ titleFa: e.target.value })} />
+                </FormField>
+                <FormField label={tf('titleEn')}>
+                  <Input value={form.titleEn} onChange={(e) => set({ titleEn: e.target.value })} />
+                </FormField>
+              </div>
+              <SlugField
+                slug={form.slug}
+                titleEn={form.titleEn}
+                onSlugChange={(slug) => set({ slug })}
+                autoSync={autoSlug}
+                randomPrefix="post"
+                required
+                placeholder="my-post"
+              />
+              <div className="grid gap-4 lg:grid-cols-2">
+                <FormField label={tf('excerptFa')}>
+                  <RichTextEditor variant="compact" content={form.excerptFa} onChange={(html) => set({ excerptFa: html })} />
+                </FormField>
+                <FormField label={tf('excerptEn')}>
+                  <RichTextEditor variant="compact" content={form.excerptEn} onChange={(html) => set({ excerptEn: html })} />
+                </FormField>
+              </div>
+              <div className="grid gap-4 lg:grid-cols-2">
+                <FormField label={tf('status')}>
+                  <Select value={form.status} onValueChange={(v) => set({ status: v as PostFormData['status'] })}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="DRAFT">{ts('DRAFT')}</SelectItem>
+                      <SelectItem value="PUBLISHED">{ts('PUBLISHED')}</SelectItem>
+                      <SelectItem value="SCHEDULED">{ts('SCHEDULED')}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </FormField>
+                {form.status === 'SCHEDULED' ? (
+                  <FormField label={tf('publishedAt')}>
+                    <Input type="datetime-local" value={form.publishedAt} onChange={(e) => set({ publishedAt: e.target.value })} />
+                  </FormField>
                 ) : null}
               </div>
-            </div>
-          </FormField>
-        </CardContent>
-      </Card>
+              <FormField label={tf('cover')}>
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+                  {coverPreview ? (
+                    <div className="relative h-20 w-full max-w-[8rem] overflow-hidden rounded-lg border">
+                      <Image src={getMediaUrl(coverPreview)} alt="" fill className="object-cover" unoptimized />
+                    </div>
+                  ) : null}
+                  <div className="flex flex-wrap gap-2">
+                    <Button type="button" variant="outline" onClick={() => { setMediaTarget('cover'); setMediaOpen(true); }}>
+                      {t('actions.selectCover')}
+                    </Button>
+                    {form.coverMediaId ? (
+                      <Button type="button" variant="ghost" onClick={() => { set({ coverMediaId: '' }); setCoverPreview(''); }}>
+                        {t('actions.removeCover')}
+                      </Button>
+                    ) : null}
+                  </div>
+                </div>
+              </FormField>
+            </CardContent>
+          </Card>
+        </TabsContent>
 
-      <Card variant="glass" className="mb-6">
-        <CardHeader><CardTitle>{tf('contentFa')}</CardTitle></CardHeader>
-        <CardContent>
-          <RichTextEditor
-            content={form.contentFa}
-            onChange={(html) => set({ contentFa: html })}
-            placeholder="..."
-            onImageRequest={() => { setMediaTarget('fa'); setMediaOpen(true); }}
-          />
-        </CardContent>
-      </Card>
+        <TabsContent value="content" className="space-y-4">
+          <Card variant="glass">
+            <CardHeader><CardTitle>{tf('contentFa')}</CardTitle></CardHeader>
+            <CardContent>
+              <RichTextEditor
+                ref={editorFaRef}
+                content={form.contentFa}
+                onChange={(html) => set({ contentFa: html })}
+                onImageRequest={() => { setMediaTarget('fa'); setMediaOpen(true); }}
+              />
+            </CardContent>
+          </Card>
+          <Card variant="glass">
+            <CardHeader><CardTitle>{tf('contentEn')}</CardTitle></CardHeader>
+            <CardContent>
+              <RichTextEditor
+                ref={editorEnRef}
+                content={form.contentEn}
+                onChange={(html) => set({ contentEn: html })}
+                onImageRequest={() => { setMediaTarget('en'); setMediaOpen(true); }}
+              />
+            </CardContent>
+          </Card>
+        </TabsContent>
 
-      <Card variant="glass" className="mb-6">
-        <CardHeader><CardTitle>{tf('contentEn')}</CardTitle></CardHeader>
-        <CardContent>
-          <RichTextEditor
-            content={form.contentEn}
-            onChange={(html) => set({ contentEn: html })}
-            placeholder="..."
-            onImageRequest={() => { setMediaTarget('en'); setMediaOpen(true); }}
-          />
-        </CardContent>
-      </Card>
-
-      <div className="mb-6 grid gap-6 md:grid-cols-2">
-        <Card variant="glass">
-          <CardHeader><CardTitle>{tf('categories')}</CardTitle></CardHeader>
-          <CardContent className="max-h-48 space-y-2 overflow-y-auto">
-            {flattenCategories(categories).map((cat) => (
-              <label key={cat.id} className="flex items-center gap-2 text-sm">
-                <Checkbox
-                  checked={form.categoryIds.includes(cat.id)}
-                  onCheckedChange={() => toggleId('categoryIds', cat.id)}
+        <TabsContent value="taxonomy">
+          <div className="grid gap-4 lg:grid-cols-2">
+            <Card variant="glass">
+              <CardHeader><CardTitle>{tf('categories')}</CardTitle></CardHeader>
+              <CardContent>
+                <CategoryCombobox
+                  locale={locale}
+                  categories={categories}
+                  selectedIds={form.categoryIds}
+                  onChange={(categoryIds) => set({ categoryIds })}
                 />
-                {cat.label}
-              </label>
-            ))}
-          </CardContent>
-        </Card>
-        <Card variant="glass">
-          <CardHeader><CardTitle>{tf('tags')}</CardTitle></CardHeader>
-          <CardContent className="max-h-48 space-y-2 overflow-y-auto">
-            {tags.map((tag) => (
-              <label key={tag.id} className="flex items-center gap-2 text-sm">
-                <Checkbox
-                  checked={form.tagIds.includes(tag.id)}
-                  onCheckedChange={() => toggleId('tagIds', tag.id)}
+              </CardContent>
+            </Card>
+            <Card variant="glass">
+              <CardHeader><CardTitle>{tf('tags')}</CardTitle></CardHeader>
+              <CardContent>
+                <CreatableTagPicker
+                  locale={locale}
+                  tags={tags}
+                  selectedIds={form.tagIds}
+                  onChange={(tagIds) => set({ tagIds })}
                 />
-                {getLocalizedField(tag, 'name', locale)}
-              </label>
-            ))}
-          </CardContent>
-        </Card>
-      </div>
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
 
-      <Card variant="glass" className="mb-6">
-        <CardHeader><CardTitle>{tf('seo')}</CardTitle></CardHeader>
-        <CardContent className="grid gap-4 md:grid-cols-2">
-          <FormField label={tf('metaTitleFa')}>
-            <Input value={form.metaTitleFa} onChange={(e) => set({ metaTitleFa: e.target.value })} />
-          </FormField>
-          <FormField label={tf('metaTitleEn')}>
-            <Input value={form.metaTitleEn} onChange={(e) => set({ metaTitleEn: e.target.value })} />
-          </FormField>
-          <FormField label={tf('metaDescFa')}>
-            <Textarea value={form.metaDescFa} onChange={(e) => set({ metaDescFa: e.target.value })} rows={2} />
-          </FormField>
-          <FormField label={tf('metaDescEn')}>
-            <Textarea value={form.metaDescEn} onChange={(e) => set({ metaDescEn: e.target.value })} rows={2} />
-          </FormField>
-        </CardContent>
-      </Card>
+        <TabsContent value="seo">
+          <Card variant="glass">
+            <CardHeader><CardTitle>{tf('seo')}</CardTitle></CardHeader>
+            <CardContent className="grid gap-4 lg:grid-cols-2">
+              <FormField label={tf('metaTitleFa')}>
+                <Input value={form.metaTitleFa} onChange={(e) => set({ metaTitleFa: e.target.value })} />
+              </FormField>
+              <FormField label={tf('metaTitleEn')}>
+                <Input value={form.metaTitleEn} onChange={(e) => set({ metaTitleEn: e.target.value })} />
+              </FormField>
+              <FormField label={tf('metaDescFa')}>
+                <Textarea value={form.metaDescFa} onChange={(e) => set({ metaDescFa: e.target.value })} rows={2} />
+              </FormField>
+              <FormField label={tf('metaDescEn')}>
+                <Textarea value={form.metaDescEn} onChange={(e) => set({ metaDescEn: e.target.value })} rows={2} />
+              </FormField>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
+
+      <div id={formId} aria-hidden className="hidden" />
 
       <MediaManager
         open={mediaOpen}
@@ -279,10 +284,11 @@ export function PostForm({ locale, form, onChange, coverPath }: PostFormProps) {
         onSelect={(media) => {
           if (mediaTarget === 'cover') {
             set({ coverMediaId: media.id });
+            setCoverPreview(media.path);
+          } else if (mediaTarget === 'fa') {
+            editorFaRef.current?.insertImage(getMediaUrl(media.path), media.originalName);
           } else {
-            const img = `<img src="${getMediaUrl(media.path)}" alt="${media.originalName}" />`;
-            const key = mediaTarget === 'fa' ? 'contentFa' : 'contentEn';
-            set({ [key]: form[key] + img });
+            editorEnRef.current?.insertImage(getMediaUrl(media.path), media.originalName);
           }
         }}
       />

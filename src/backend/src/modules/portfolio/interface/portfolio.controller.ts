@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { Role } from '../../../db/index.js';
-import { createPortfolioSchema, updatePortfolioSchema } from '../../../types/index.js';
+import { createPortfolioSchema, portfolioQuerySchema, updatePortfolioSchema } from '../../../types/index.js';
 import { portfolioService } from '../application/portfolio.service.js';
 import { authenticate, authorize, optionalAuth, type AuthRequest } from '../../../shared/auth/middleware.js';
 import { validate } from '../../../shared/http/validate.js';
@@ -9,11 +9,16 @@ import { paramId, isEditorRole } from '../../../shared/http/params.js';
 
 const router: Router = Router();
 
-router.get('/', optionalAuth, async (req: AuthRequest, res, next) => {
+router.get('/', validate(portfolioQuerySchema, 'query'), optionalAuth, async (req: AuthRequest, res, next) => {
   try {
     const publicOnly = !req.user || !isEditorRole(req.user.role);
-    const items = await portfolioService.list(publicOnly);
-    sendSuccess(res, items);
+    const result = await portfolioService.list(req.query as never, publicOnly);
+    sendSuccess(res, result.items, 200, {
+      page: result.page,
+      limit: result.limit,
+      total: result.total,
+      totalPages: result.totalPages,
+    });
   } catch (e) {
     next(e);
   }

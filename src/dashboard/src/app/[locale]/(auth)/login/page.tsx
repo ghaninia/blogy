@@ -67,7 +67,7 @@ export default function LoginPage() {
                 {t('loginButton')}
               </Button>
               <p className="text-center text-sm text-gray-500">
-                <Link href={`/${locale}/register`} className="text-primary-600 hover:underline">
+                <Link href={`/${locale}/register`} className="text-primary hover:underline">
                   {t('registerTitle')}
                 </Link>
               </p>

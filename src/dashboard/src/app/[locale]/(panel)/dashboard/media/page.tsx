@@ -23,6 +23,7 @@ import { api, getMediaUrl } from '@/shared/api-client';
 import { canDeletePost } from '@/shared/lib/localized';
 import { PageHeader } from '@/features/layout/components/page-header';
 import { useCrudList } from '@/shared/hooks/use-crud-list';
+import { useDebouncedValue } from '@/shared/hooks/use-debounce';
 import { useDeleteConfirm } from '@/shared/hooks/use-delete-confirm';
 import { useAuthStore } from '@/shared/store/auth';
 
@@ -51,6 +52,7 @@ export default function DashboardMediaPage() {
 
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
+  const debouncedSearch = useDebouncedValue(search);
   const [uploading, setUploading] = useState(false);
   const [editItem, setEditItem] = useState<MediaItem | null>(null);
   const [metaForm, setMetaForm] = useState({ altFa: '', altEn: '', folder: 'general' });
@@ -59,7 +61,7 @@ export default function DashboardMediaPage() {
   const { items, meta, isLoading } = useCrudList<MediaItem>({
     queryKey: ['dashboard-media'],
     endpoint: '/api/media',
-    params: { page, limit: 24, search: search || undefined },
+    params: { page, limit: 24, search: debouncedSearch || undefined },
   });
 
   const canDelete = user ? canDeletePost(user.role) : false;
@@ -123,16 +125,16 @@ export default function DashboardMediaPage() {
       <PageHeader
         title={t('media')}
         action={
-          <div className="flex gap-3">
+          <div className="flex flex-col gap-2 sm:flex-row sm:gap-3">
             <Input
               placeholder={tt('search')}
               value={search}
               onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-              className="w-48"
+              className="w-full sm:w-48"
             />
             <label className="cursor-pointer">
               <input type="file" className="hidden" accept="image/*,video/*,.pdf" onChange={handleUpload} />
-              <span className="inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">
+              <span className="inline-flex h-10 w-full items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 sm:w-auto">
                 <Upload className="me-2 h-4 w-4" />
                 {uploading ? tc('loading') : t('actions.upload')}
               </span>
@@ -155,7 +157,7 @@ export default function DashboardMediaPage() {
                     {item.mimeType.startsWith('image/') ? (
                       <div className="relative aspect-square">
                         <Image
-                          src={item.url ?? getMediaUrl(item.path)}
+                          src={getMediaUrl(item.path)}
                           alt={item.originalName}
                           fill
                           className="object-cover"
@@ -176,7 +178,7 @@ export default function DashboardMediaPage() {
                     <button
                       type="button"
                       onClick={() => handleDelete(item)}
-                      className="absolute end-2 top-2 rounded bg-destructive p-1 text-white opacity-0 transition group-hover:opacity-100"
+                      className="absolute end-2 top-2 rounded bg-destructive p-1 text-white opacity-100 transition sm:opacity-0 sm:group-hover:opacity-100"
                     >
                       <Trash2 className="h-3 w-3" />
                     </button>

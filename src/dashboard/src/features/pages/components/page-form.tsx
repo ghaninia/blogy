@@ -18,6 +18,7 @@ import {
   Textarea,
 } from '@gh/ui';
 import { getMediaUrl } from '@/shared/api-client';
+import { SlugField } from '@/shared/components/slug-field';
 import { RichTextEditor } from '@/features/posts/components/rich-text-editor';
 import { MediaManager } from '@/features/media/components/media-manager';
 
@@ -52,9 +53,10 @@ export const emptyPageForm = (): PageFormData => ({
 interface PageFormProps {
   form: PageFormData;
   onChange: (form: PageFormData) => void;
+  autoSlug?: boolean;
 }
 
-export function PageForm({ form, onChange }: PageFormProps) {
+export function PageForm({ form, onChange, autoSlug = true }: PageFormProps) {
   const tf = useTranslations('dashboard.form');
   const [mediaOpen, setMediaOpen] = useState(false);
   const [mediaTarget, setMediaTarget] = useState<'fa' | 'en'>('fa');
@@ -66,9 +68,6 @@ export function PageForm({ form, onChange }: PageFormProps) {
       <Card variant="glass" className="mb-6">
         <CardHeader><CardTitle>{tf('basicInfo')}</CardTitle></CardHeader>
         <CardContent className="space-y-4">
-          <FormField label={tf('slug')} required>
-            <Input value={form.slug} onChange={(e) => set({ slug: e.target.value })} required />
-          </FormField>
           <FormField label={tf('pageType')}>
             <Select value={form.type} onValueChange={(v) => set({ type: v as PageFormData['type'] })}>
               <SelectTrigger><SelectValue /></SelectTrigger>
@@ -80,7 +79,7 @@ export function PageForm({ form, onChange }: PageFormProps) {
               </SelectContent>
             </Select>
           </FormField>
-          <div className="grid gap-4 md:grid-cols-2">
+          <div className="grid gap-4 lg:grid-cols-2">
             <FormField label={tf('titleFa')}>
               <Input value={form.titleFa} onChange={(e) => set({ titleFa: e.target.value })} />
             </FormField>
@@ -88,6 +87,14 @@ export function PageForm({ form, onChange }: PageFormProps) {
               <Input value={form.titleEn} onChange={(e) => set({ titleEn: e.target.value })} />
             </FormField>
           </div>
+          <SlugField
+            slug={form.slug}
+            titleEn={form.titleEn}
+            onSlugChange={(slug) => set({ slug })}
+            autoSync={autoSlug}
+            randomPrefix="page"
+            required
+          />
           <FormField label={tf('isPublished')}>
             <Switch checked={form.isPublished} onCheckedChange={(v) => set({ isPublished: v })} />
           </FormField>

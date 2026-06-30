@@ -43,7 +43,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   }
 
   return (
-    <div className="mx-auto max-w-7xl px-4 pb-8">
+    <div className="mx-auto max-w-7xl px-3 pb-8 sm:px-4">
       <Header />
       <div className="flex flex-col gap-4 md:flex-row">
         <DashboardSidebar userRole={user.role} />

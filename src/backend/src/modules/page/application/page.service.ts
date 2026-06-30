@@ -1,4 +1,4 @@
-import type { CreatePageInput, UpdatePageInput } from '../../../types/index.js';
+import type { CreatePageInput, PageQueryInput, UpdatePageInput } from '../../../types/index.js';
 import { sanitizeOptionalFields } from '../../../shared/security/sanitize.js';
 import { pageRepository } from '../infrastructure/page.repository.js';
 import { pageNotFound, slugExists } from '../domain/page.errors.js';
@@ -52,8 +52,27 @@ export class PageService {
     return page;
   }
 
-  async list(publicOnly = false) {
-    return pageRepository.findMany(publicOnly);
+  async list(query: PageQueryInput, publicOnly = false) {
+    const { page, limit, search } = query;
+    const skip = (page - 1) * limit;
+
+    const where = {
+      ...(publicOnly ? { isPublished: true } : {}),
+      ...(search && {
+        OR: [
+          { titleFa: { contains: search, mode: 'insensitive' as const } },
+          { titleEn: { contains: search, mode: 'insensitive' as const } },
+          { slug: { contains: search, mode: 'insensitive' as const } },
+        ],
+      }),
+    };
+
+    const [items, total] = await Promise.all([
+      pageRepository.findMany(where, skip, limit),
+      pageRepository.count(where),
+    ]);
+
+    return { items, total, page, limit, totalPages: Math.ceil(total / limit) };
   }
 }
 

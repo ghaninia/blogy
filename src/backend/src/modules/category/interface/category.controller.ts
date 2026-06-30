@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { Role } from '../../../db/index.js';
-import { createCategorySchema, updateCategorySchema } from '../../../types/index.js';
+import { categoryQuerySchema, createCategorySchema, updateCategorySchema } from '../../../types/index.js';
 import { categoryService } from '../application/category.service.js';
 import { authenticate, authorize } from '../../../shared/auth/middleware.js';
 import { validate } from '../../../shared/http/validate.js';
@@ -9,10 +9,15 @@ import { paramId } from '../../../shared/http/params.js';
 
 const router: Router = Router();
 
-router.get('/', async (_req, res, next) => {
+router.get('/', validate(categoryQuerySchema, 'query'), async (req, res, next) => {
   try {
-    const categories = await categoryService.list();
-    sendSuccess(res, categories);
+    const result = await categoryService.list(req.query as never);
+    sendSuccess(res, result.items, 200, {
+      page: result.page,
+      limit: result.limit,
+      total: result.total,
+      totalPages: result.totalPages,
+    });
   } catch (e) {
     next(e);
   }

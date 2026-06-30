@@ -1,4 +1,4 @@
-import { prisma } from '../../../db/index.js';
+import { prisma, type Prisma } from '../../../db/index.js';
 
 export class PortfolioRepository {
   private defaultInclude() {
@@ -38,12 +38,18 @@ export class PortfolioRepository {
     return prisma.portfolio.delete({ where: { id } });
   }
 
-  findMany(publicOnly: boolean) {
+  findMany(where: Prisma.PortfolioWhereInput, skip: number, take: number) {
     return prisma.portfolio.findMany({
-      where: publicOnly ? { isPublished: true } : undefined,
+      where,
+      skip,
+      take,
       orderBy: [{ sortOrder: 'asc' }, { createdAt: 'desc' }],
       include: this.defaultInclude(),
     });
+  }
+
+  count(where: Prisma.PortfolioWhereInput) {
+    return prisma.portfolio.count({ where });
   }
 }
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { X } from 'lucide-react';
@@ -14,9 +14,10 @@ import {
   FormField,
   Input,
   Switch,
-  Textarea,
 } from '@gh/ui';
 import { getMediaUrl } from '@/shared/api-client';
+import { SlugField } from '@/shared/components/slug-field';
+import { RichTextEditor } from '@/features/posts/components/rich-text-editor';
 import { MediaManager } from '@/features/media/components/media-manager';
 
 export interface PortfolioFormData {
@@ -54,14 +55,25 @@ interface PortfolioFormProps {
   onChange: (form: PortfolioFormData) => void;
   coverPath?: string;
   galleryPaths?: Record<string, string>;
+  autoSlug?: boolean;
 }
 
-export function PortfolioForm({ form, onChange, coverPath, galleryPaths }: PortfolioFormProps) {
+export function PortfolioForm({ form, onChange, coverPath, galleryPaths, autoSlug = true }: PortfolioFormProps) {
   const tf = useTranslations('dashboard.form');
   const t = useTranslations('dashboard.actions');
   const [techInput, setTechInput] = useState('');
   const [mediaOpen, setMediaOpen] = useState(false);
   const [mediaMode, setMediaMode] = useState<'cover' | 'gallery'>('cover');
+  const [coverPreview, setCoverPreview] = useState(coverPath ?? '');
+  const [localGalleryPaths, setLocalGalleryPaths] = useState<Record<string, string>>(galleryPaths ?? {});
+
+  useEffect(() => {
+    if (coverPath) setCoverPreview(coverPath);
+  }, [coverPath]);
+
+  useEffect(() => {
+    if (galleryPaths) setLocalGalleryPaths((prev) => ({ ...prev, ...galleryPaths }));
+  }, [galleryPaths]);
 
   const set = (patch: Partial<PortfolioFormData>) => onChange({ ...form, ...patch });
 
@@ -82,10 +94,7 @@ export function PortfolioForm({ form, onChange, coverPath, galleryPaths }: Portf
       <Card variant="glass" className="mb-6">
         <CardHeader><CardTitle>{tf('basicInfo')}</CardTitle></CardHeader>
         <CardContent className="space-y-4">
-          <FormField label={tf('slug')} required>
-            <Input value={form.slug} onChange={(e) => set({ slug: e.target.value })} required />
-          </FormField>
-          <div className="grid gap-4 md:grid-cols-2">
+          <div className="grid gap-4 lg:grid-cols-2">
             <FormField label={tf('titleFa')} required>
               <Input value={form.titleFa} onChange={(e) => set({ titleFa: e.target.value })} required />
             </FormField>
@@ -93,12 +102,20 @@ export function PortfolioForm({ form, onChange, coverPath, galleryPaths }: Portf
               <Input value={form.titleEn} onChange={(e) => set({ titleEn: e.target.value })} required />
             </FormField>
           </div>
-          <div className="grid gap-4 md:grid-cols-2">
+          <SlugField
+            slug={form.slug}
+            titleEn={form.titleEn}
+            onSlugChange={(slug) => set({ slug })}
+            autoSync={autoSlug}
+            randomPrefix="portfolio"
+            required
+          />
+          <div className="grid gap-4 lg:grid-cols-2">
             <FormField label={tf('descriptionFa')}>
-              <Textarea value={form.descriptionFa} onChange={(e) => set({ descriptionFa: e.target.value })} rows={4} />
+              <RichTextEditor variant="compact" content={form.descriptionFa} onChange={(html) => set({ descriptionFa: html })} />
             </FormField>
             <FormField label={tf('descriptionEn')}>
-              <Textarea value={form.descriptionEn} onChange={(e) => set({ descriptionEn: e.target.value })} rows={4} />
+              <RichTextEditor variant="compact" content={form.descriptionEn} onChange={(html) => set({ descriptionEn: html })} />
             </FormField>
           </div>
           <div className="grid gap-4 md:grid-cols-2">
@@ -146,9 +163,9 @@ export function PortfolioForm({ form, onChange, coverPath, galleryPaths }: Portf
       <Card variant="glass" className="mb-6">
         <CardHeader><CardTitle>{tf('cover')}</CardTitle></CardHeader>
         <CardContent>
-          {coverPath ? (
+          {coverPreview ? (
             <div className="relative mb-4 h-32 w-48 overflow-hidden rounded-lg">
-              <Image src={getMediaUrl(coverPath)} alt="" fill className="object-cover" unoptimized />
+              <Image src={getMediaUrl(coverPreview)} alt="" fill className="object-cover" unoptimized />
             </div>
           ) : null}
           <Button type="button" variant="outline" onClick={() => { setMediaMode('cover'); setMediaOpen(true); }}>
@@ -163,8 +180,8 @@ export function PortfolioForm({ form, onChange, coverPath, galleryPaths }: Portf
           <div className="mb-4 flex flex-wrap gap-2">
             {form.galleryMediaIds.map((id) => (
               <div key={id} className="relative h-20 w-20 overflow-hidden rounded-lg border">
-                {galleryPaths?.[id] ? (
-                  <Image src={getMediaUrl(galleryPaths[id])} alt="" fill className="object-cover" unoptimized />
+                {localGalleryPaths[id] ? (
+                  <Image src={getMediaUrl(localGalleryPaths[id])} alt="" fill className="object-cover" unoptimized />
                 ) : null}
                 <button
                   type="button"
@@ -185,11 +202,14 @@ export function PortfolioForm({ form, onChange, coverPath, galleryPaths }: Portf
       <MediaManager
         open={mediaOpen}
         onClose={() => setMediaOpen(false)}
+        mode={mediaMode === 'gallery' ? 'multi' : 'single'}
         onSelect={(media) => {
           if (mediaMode === 'cover') {
             set({ coverMediaId: media.id });
+            setCoverPreview(media.path);
           } else if (!form.galleryMediaIds.includes(media.id)) {
             set({ galleryMediaIds: [...form.galleryMediaIds, media.id] });
+            setLocalGalleryPaths((prev) => ({ ...prev, [media.id]: media.path }));
           }
         }}
       />

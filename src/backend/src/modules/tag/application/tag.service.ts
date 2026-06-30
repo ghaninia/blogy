@@ -1,4 +1,4 @@
-import type { CreateTagInput, UpdateTagInput } from '../../../types/index.js';
+import type { CreateTagInput, TagQueryInput, UpdateTagInput } from '../../../types/index.js';
 import { tagRepository } from '../infrastructure/tag.repository.js';
 import { tagNotFound, slugExists } from '../domain/tag.errors.js';
 
@@ -32,8 +32,26 @@ export class TagService {
     return tag;
   }
 
-  async list() {
-    return tagRepository.findAll();
+  async list(query: TagQueryInput) {
+    const { page, limit, search } = query;
+    const skip = (page - 1) * limit;
+
+    const where = search
+      ? {
+          OR: [
+            { nameFa: { contains: search, mode: 'insensitive' as const } },
+            { nameEn: { contains: search, mode: 'insensitive' as const } },
+            { slug: { contains: search, mode: 'insensitive' as const } },
+          ],
+        }
+      : {};
+
+    const [items, total] = await Promise.all([
+      tagRepository.findMany(where, skip, limit),
+      tagRepository.count(where),
+    ]);
+
+    return { items, total, page, limit, totalPages: Math.ceil(total / limit) };
   }
 }
 

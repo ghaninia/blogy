@@ -88,7 +88,7 @@ export default function EditCategoryPage() {
         }
       />
       <form id="category-edit-form" onSubmit={handleSave}>
-        <CategoryForm form={form} onChange={setForm} excludeId={id} />
+        <CategoryForm form={form} onChange={setForm} excludeId={id} autoSlug={false} />
       </form>
       <DeleteDialog />
     </div>

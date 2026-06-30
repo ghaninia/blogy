@@ -14,9 +14,10 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-  Textarea,
 } from '@gh/ui';
+import { RichTextEditor } from '@/features/posts/components/rich-text-editor';
 import { api } from '@/shared/api-client';
+import { SlugField } from '@/shared/components/slug-field';
 
 export interface CategoryFormData {
   slug: string;
@@ -62,15 +63,16 @@ interface CategoryFormProps {
   form: CategoryFormData;
   onChange: (form: CategoryFormData) => void;
   excludeId?: string;
+  autoSlug?: boolean;
 }
 
-export function CategoryForm({ form, onChange, excludeId }: CategoryFormProps) {
+export function CategoryForm({ form, onChange, excludeId, autoSlug = true }: CategoryFormProps) {
   const tf = useTranslations('dashboard.form');
 
   const { data: categories = [] } = useQuery({
-    queryKey: ['categories'],
+    queryKey: ['categories', 'all'],
     queryFn: async () => {
-      const res = await api.get<Category[]>('/api/categories');
+      const res = await api.get<Category[]>('/api/categories', { all: 'true' });
       return res.data ?? [];
     },
   });
@@ -82,10 +84,7 @@ export function CategoryForm({ form, onChange, excludeId }: CategoryFormProps) {
     <Card variant="glass">
       <CardHeader><CardTitle>{tf('basicInfo')}</CardTitle></CardHeader>
       <CardContent className="space-y-4">
-        <FormField label={tf('slug')} required>
-          <Input value={form.slug} onChange={(e) => set({ slug: e.target.value })} required />
-        </FormField>
-        <div className="grid gap-4 md:grid-cols-2">
+        <div className="grid gap-4 lg:grid-cols-2">
           <FormField label={tf('nameFa')} required>
             <Input value={form.nameFa} onChange={(e) => set({ nameFa: e.target.value })} required />
           </FormField>
@@ -93,12 +92,20 @@ export function CategoryForm({ form, onChange, excludeId }: CategoryFormProps) {
             <Input value={form.nameEn} onChange={(e) => set({ nameEn: e.target.value })} required />
           </FormField>
         </div>
-        <div className="grid gap-4 md:grid-cols-2">
+        <SlugField
+          slug={form.slug}
+          titleEn={form.nameEn}
+          onSlugChange={(slug) => set({ slug })}
+          autoSync={autoSlug}
+          randomPrefix="category"
+          required
+        />
+        <div className="grid gap-4 lg:grid-cols-2">
           <FormField label={tf('descriptionFa')}>
-            <Textarea value={form.descriptionFa} onChange={(e) => set({ descriptionFa: e.target.value })} rows={3} />
+            <RichTextEditor variant="compact" content={form.descriptionFa} onChange={(html) => set({ descriptionFa: html })} />
           </FormField>
           <FormField label={tf('descriptionEn')}>
-            <Textarea value={form.descriptionEn} onChange={(e) => set({ descriptionEn: e.target.value })} rows={3} />
+            <RichTextEditor variant="compact" content={form.descriptionEn} onChange={(html) => set({ descriptionEn: html })} />
           </FormField>
         </div>
         <FormField label={tf('parentCategory')}>

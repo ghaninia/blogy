@@ -16,6 +16,7 @@ import {
   useToast,
 } from '@gh/ui';
 import { api, ApiError } from '@/shared/api-client';
+import { SlugField } from '@/shared/components/slug-field';
 import { PageHeader } from '@/features/layout/components/page-header';
 
 export default function NewTagPage() {
@@ -60,10 +61,7 @@ export default function NewTagPage() {
         <Card variant="glass">
           <CardHeader><CardTitle>{tf('basicInfo')}</CardTitle></CardHeader>
           <CardContent className="space-y-4">
-            <FormField label={tf('slug')} required>
-              <Input value={form.slug} onChange={(e) => setForm({ ...form, slug: e.target.value })} required />
-            </FormField>
-            <div className="grid gap-4 md:grid-cols-2">
+            <div className="grid gap-4 lg:grid-cols-2">
               <FormField label={tf('nameFa')} required>
                 <Input value={form.nameFa} onChange={(e) => setForm({ ...form, nameFa: e.target.value })} required />
               </FormField>
@@ -71,6 +69,13 @@ export default function NewTagPage() {
                 <Input value={form.nameEn} onChange={(e) => setForm({ ...form, nameEn: e.target.value })} required />
               </FormField>
             </div>
+            <SlugField
+              slug={form.slug}
+              titleEn={form.nameEn}
+              onSlugChange={(slug) => setForm((f) => ({ ...f, slug }))}
+              randomPrefix="tag"
+              required
+            />
           </CardContent>
         </Card>
         <Button type="submit" disabled={loading} className="mt-4">{t('actions.save')}</Button>

@@ -79,7 +79,7 @@ export default function RegisterPage() {
                 {t('registerButton')}
               </Button>
               <p className="text-center text-sm text-gray-500">
-                <Link href={`/${locale}/login`} className="text-primary-600 hover:underline">
+                <Link href={`/${locale}/login`} className="text-primary hover:underline">
                   {t('loginTitle')}
                 </Link>
               </p>

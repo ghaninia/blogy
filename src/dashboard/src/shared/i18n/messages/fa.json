@@ -140,7 +140,32 @@
       "bio": "بیوگرافی",
       "avatarUrl": "آدرس آواتار",
       "editMetadata": "ویرایش متادیتا",
-      "editSetting": "ویرایش تنظیم"
+      "editSetting": "ویرایش تنظیم",
+      "searchCategories": "جستجوی دسته‌ها...",
+      "generateSlug": "تولید اسلاگ تصادفی",
+      "tabs": {
+        "basic": "پایه",
+        "content": "محتوا",
+        "taxonomy": "دسته و برچسب",
+        "seo": "سئو"
+      }
+    },
+    "media": {
+      "title": "مدیریت رسانه",
+      "search": "جستجوی فایل...",
+      "upload": "آپلود",
+      "uploading": "در حال آپلود...",
+      "uploadSuccess": "فایل آپلود شد",
+      "uploadError": "خطا در آپلود",
+      "loadError": "خطا در بارگذاری",
+      "empty": "فایلی یافت نشد",
+      "done": "تمام"
+    },
+    "tags": {
+      "searchOrCreate": "جستجو یا نام برچسب جدید...",
+      "create": "ایجاد «{name}»",
+      "created": "برچسب ایجاد شد",
+      "createError": "خطا در ایجاد برچسب"
     },
     "actions": {
       "new": "جدید",

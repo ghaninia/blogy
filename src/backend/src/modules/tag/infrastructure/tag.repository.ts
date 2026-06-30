@@ -1,4 +1,4 @@
-import { prisma } from '../../../db/index.js';
+import { prisma, type Prisma } from '../../../db/index.js';
 
 export class TagRepository {
   findBySlug(slug: string) {
@@ -21,8 +21,17 @@ export class TagRepository {
     return prisma.tag.delete({ where: { id } });
   }
 
-  findAll() {
-    return prisma.tag.findMany({ orderBy: { nameEn: 'asc' } });
+  findMany(where: Prisma.TagWhereInput, skip: number, take: number) {
+    return prisma.tag.findMany({
+      where,
+      skip,
+      take,
+      orderBy: { createdAt: 'desc' },
+    });
+  }
+
+  count(where: Prisma.TagWhereInput) {
+    return prisma.tag.count({ where });
   }
 }
 

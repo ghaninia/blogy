@@ -112,9 +112,13 @@ class ApiClient {
 
 export const api = new ApiClient(API_URL);
 
-export function getMediaUrl(path: string): string {
-  if (path.startsWith('http')) return path;
-  return `${API_URL}/uploads/${path.replace(/\\/g, '/')}`;
+export function getMediaUrl(pathOrUrl: string): string {
+  if (!pathOrUrl) return '';
+  if (pathOrUrl.startsWith('http://') || pathOrUrl.startsWith('https://')) {
+    return pathOrUrl;
+  }
+  const normalized = pathOrUrl.replace(/\\/g, '/').replace(/^\/?uploads\//, '');
+  return `${API_URL}/uploads/${normalized}`;
 }
 
 export function getPaginationMeta(response: ApiResponse<unknown>): PaginationMeta | undefined {

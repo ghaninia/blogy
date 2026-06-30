@@ -44,7 +44,7 @@ export default function NewPostPage() {
   };
 
   return (
-    <div>
+    <div className="pb-20 md:pb-0">
       <PageHeader
         title={t('newPost')}
         action={
@@ -57,12 +57,18 @@ export default function NewPostPage() {
         }
       />
 
-      <form onSubmit={handleSubmit}>
+      <form id="post-new-form" onSubmit={handleSubmit}>
         <PostForm locale={locale} form={form} onChange={setForm} />
-        <Button type="submit" disabled={loading} className="mt-2">
+        <Button type="submit" disabled={loading} className="mt-2 hidden md:inline-flex">
           {t('actions.save')}
         </Button>
       </form>
+
+      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/95 p-4 backdrop-blur md:hidden">
+        <Button type="submit" form="post-new-form" disabled={loading} className="w-full">
+          {t('actions.save')}
+        </Button>
+      </div>
     </div>
   );
 }

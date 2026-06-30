@@ -1,9 +1,10 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import { useLocale, useTranslations } from 'next-intl';
 import { usePathname, useRouter } from 'next/navigation';
-import { Globe, LogOut, Moon, Sun, User } from 'lucide-react';
+import { Globe, LogOut, Menu, Moon, Sun, User } from 'lucide-react';
 import {
   Avatar,
   AvatarFallback,
@@ -16,6 +17,7 @@ import {
 } from '@gh/ui';
 import { useAuthStore } from '@/shared/store/auth';
 import { useTheme } from '@/shared/components/theme-provider';
+import { MobileNav } from '@/features/layout/components/mobile-nav';
 
 export function Header() {
   const t = useTranslations('nav');
@@ -31,13 +33,26 @@ export function Header() {
   const switchPath = pathname.replace(`/${locale}`, `/${switchLocale}`);
 
   const initials = user?.displayName?.slice(0, 2) ?? user?.username?.slice(0, 2) ?? '?';
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
   return (
-    <header className="glass sticky top-0 z-50 mb-4 rounded-2xl">
-      <div className="flex items-center justify-between px-4 py-3 sm:px-6">
-        <Link href={`/${locale}/dashboard`} className="text-lg font-bold text-primary">
-          GH Dashboard
-        </Link>
+    <>
+      <header className="glass sticky top-0 z-50 mb-4 rounded-2xl">
+        <div className="flex items-center justify-between px-4 py-3 sm:px-6">
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="md:hidden"
+              onClick={() => setMobileNavOpen(true)}
+              aria-label="Menu"
+            >
+              <Menu className="h-5 w-5" />
+            </Button>
+            <Link href={`/${locale}/dashboard`} className="text-lg font-bold text-primary">
+              GH Dashboard
+            </Link>
+          </div>
 
         <div className="flex items-center gap-2">
           <Button variant="ghost" size="icon" onClick={toggleTheme} title={tTheme('toggle')}>
@@ -90,5 +105,8 @@ export function Header() {
         </div>
       </div>
     </header>
+
+      <MobileNav open={mobileNavOpen} onOpenChange={setMobileNavOpen} />
+    </>
   );
 }

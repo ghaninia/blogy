@@ -3,8 +3,9 @@
 import type { ReactNode } from 'react';
 import { useTranslations } from 'next-intl';
 import { Card, CardContent, EmptyState, Skeleton } from '@gh/ui';
+import { cn } from '@/shared/lib/utils';
 
-interface DataTableProps {
+interface DataTableProps<T = unknown> {
   isLoading?: boolean;
   isEmpty?: boolean;
   emptyTitle?: string;
@@ -12,9 +13,11 @@ interface DataTableProps {
   emptyAction?: ReactNode;
   children: ReactNode;
   footer?: ReactNode;
+  items?: T[];
+  mobileCardRender?: (item: T) => ReactNode;
 }
 
-export function DataTable({
+export function DataTable<T = unknown>({
   isLoading,
   isEmpty,
   emptyTitle,
@@ -22,8 +25,11 @@ export function DataTable({
   emptyAction,
   children,
   footer,
-}: DataTableProps) {
+  items,
+  mobileCardRender,
+}: DataTableProps<T>) {
   const t = useTranslations('dashboard.table');
+  const showMobileCards = Boolean(mobileCardRender && items);
 
   return (
     <Card variant="glass">
@@ -43,7 +49,21 @@ export function DataTable({
           />
         ) : (
           <>
-            <div className="overflow-x-auto">{children}</div>
+            {showMobileCards ? (
+              <div className="divide-y divide-border md:hidden">
+                {items!.map((item) => (
+                  <div
+                    key={(item as { id?: string }).id ?? String(item)}
+                    className="p-4"
+                  >
+                    {mobileCardRender!(item)}
+                  </div>
+                ))}
+              </div>
+            ) : null}
+            <div className={cn('overflow-x-auto', showMobileCards && 'hidden md:block')}>
+              {children}
+            </div>
             {footer ? (
               <div className="flex justify-center border-t border-border p-4">{footer}</div>
             ) : null}

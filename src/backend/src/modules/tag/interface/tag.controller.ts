@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { Role } from '../../../db/index.js';
-import { createTagSchema, updateTagSchema } from '../../../types/index.js';
+import { createTagSchema, tagQuerySchema, updateTagSchema } from '../../../types/index.js';
 import { tagService } from '../application/tag.service.js';
 import { authenticate, authorize } from '../../../shared/auth/middleware.js';
 import { validate } from '../../../shared/http/validate.js';
@@ -9,10 +9,15 @@ import { paramId } from '../../../shared/http/params.js';
 
 const router: Router = Router();
 
-router.get('/', async (_req, res, next) => {
+router.get('/', validate(tagQuerySchema, 'query'), async (req, res, next) => {
   try {
-    const tags = await tagService.list();
-    sendSuccess(res, tags);
+    const result = await tagService.list(req.query as never);
+    sendSuccess(res, result.items, 200, {
+      page: result.page,
+      limit: result.limit,
+      total: result.total,
+      totalPages: result.totalPages,
+    });
   } catch (e) {
     next(e);
   }

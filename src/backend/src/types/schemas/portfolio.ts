@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { slugSchema } from './common.js';
+import { paginationSchema, slugSchema } from './common.js';
 
 export const createPortfolioSchema = z.object({
   slug: slugSchema,
@@ -18,5 +18,10 @@ export const createPortfolioSchema = z.object({
 
 export const updatePortfolioSchema = createPortfolioSchema.partial();
 
+export const portfolioQuerySchema = paginationSchema.extend({
+  search: z.string().optional(),
+});
+
 export type CreatePortfolioInput = z.infer<typeof createPortfolioSchema>;
 export type UpdatePortfolioInput = z.infer<typeof updatePortfolioSchema>;
+export type PortfolioQueryInput = z.infer<typeof portfolioQuerySchema>;

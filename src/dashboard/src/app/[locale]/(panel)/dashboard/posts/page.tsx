@@ -27,6 +27,7 @@ import { getLocalizedField, formatDate, canDeletePost } from '@/shared/lib/local
 import { PageHeader } from '@/features/layout/components/page-header';
 import { DataTable } from '@/features/layout/components/data-table';
 import { useCrudList } from '@/shared/hooks/use-crud-list';
+import { useDebouncedValue } from '@/shared/hooks/use-debounce';
 import { useDeleteConfirm } from '@/shared/hooks/use-delete-confirm';
 import { useAuthStore } from '@/shared/store/auth';
 import { useQueryClient } from '@tanstack/react-query';
@@ -61,6 +62,7 @@ export default function DashboardPostsPage() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState<string>('all');
+  const debouncedSearch = useDebouncedValue(search);
 
   const { items, meta, isLoading } = useCrudList<Post>({
     queryKey: ['dashboard-posts'],
@@ -68,7 +70,7 @@ export default function DashboardPostsPage() {
     params: {
       page,
       limit: 20,
-      search: search || undefined,
+      search: debouncedSearch || undefined,
       status: status === 'all' ? undefined : status,
     },
   });

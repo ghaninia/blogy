@@ -1,4 +1,4 @@
-import type { CreatePortfolioInput, UpdatePortfolioInput } from '../../../types/index.js';
+import type { CreatePortfolioInput, PortfolioQueryInput, UpdatePortfolioInput } from '../../../types/index.js';
 import { sanitizeOptionalFields } from '../../../shared/security/sanitize.js';
 import { portfolioRepository } from '../infrastructure/portfolio.repository.js';
 import { portfolioNotFound, slugExists } from '../domain/portfolio.errors.js';
@@ -52,8 +52,27 @@ export class PortfolioService {
     return item;
   }
 
-  async list(publicOnly = false) {
-    return portfolioRepository.findMany(publicOnly);
+  async list(query: PortfolioQueryInput, publicOnly = false) {
+    const { page, limit, search } = query;
+    const skip = (page - 1) * limit;
+
+    const where = {
+      ...(publicOnly ? { isPublished: true } : {}),
+      ...(search && {
+        OR: [
+          { titleFa: { contains: search, mode: 'insensitive' as const } },
+          { titleEn: { contains: search, mode: 'insensitive' as const } },
+          { slug: { contains: search, mode: 'insensitive' as const } },
+        ],
+      }),
+    };
+
+    const [items, total] = await Promise.all([
+      portfolioRepository.findMany(where, skip, limit),
+      portfolioRepository.count(where),
+    ]);
+
+    return { items, total, page, limit, totalPages: Math.ceil(total / limit) };
   }
 }
 
