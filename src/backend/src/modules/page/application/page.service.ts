@@ -37,9 +37,12 @@ export class PageService {
     return { deleted: true };
   }
 
-  async getById(id: string) {
+  async getById(id: string, publicOnly = false) {
     const page = await pageRepository.findById(id);
     if (!page) throw pageNotFound();
+    if (publicOnly && !page.isPublished) {
+      throw pageNotFound();
+    }
     return page;
   }
 

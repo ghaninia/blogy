@@ -32,7 +32,7 @@ export function sanitizeRichText(html: string | undefined | null): string | unde
   return sanitizeHtml(html, {
     allowedTags,
     allowedAttributes,
-    allowedSchemes: ['http', 'https', 'mailto', 'data'],
+    allowedSchemes: ['http', 'https', 'mailto'],
     allowedIframeHostnames: ['www.youtube.com', 'player.vimeo.com'],
   });
 }

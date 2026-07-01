@@ -23,10 +23,12 @@ export interface PaginationMeta {
 
 interface FetchOptions extends RequestInit {
   params?: Record<string, string | number | undefined>;
+  skipRefresh?: boolean;
 }
 
 class ApiClient {
   private baseUrl: string;
+  private refreshPromise: Promise<boolean> | null = null;
 
   constructor(baseUrl: string) {
     this.baseUrl = baseUrl;
@@ -42,23 +44,57 @@ class ApiClient {
     return url.toString();
   }
 
+  private async tryRefresh(): Promise<boolean> {
+    if (this.refreshPromise) return this.refreshPromise;
+
+    this.refreshPromise = (async () => {
+      try {
+        const response = await fetch(`${this.baseUrl}/api/auth/refresh`, {
+          method: 'POST',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+        });
+        return response.ok;
+      } catch {
+        return false;
+      } finally {
+        this.refreshPromise = null;
+      }
+    })();
+
+    return this.refreshPromise;
+  }
+
+  private async parseResponse<T>(response: Response): Promise<ApiResponse<T>> {
+    try {
+      return (await response.json()) as ApiResponse<T>;
+    } catch {
+      throw new ApiError('Invalid response from server', response.status);
+    }
+  }
+
   async request<T>(path: string, options: FetchOptions = {}): Promise<ApiResponse<T>> {
-    const { params, ...init } = options;
-    const response = await fetch(this.buildUrl(path, params), {
+    const { params, skipRefresh, ...init } = options;
+    const url = this.buildUrl(path, params);
+    const requestInit: RequestInit = {
       ...init,
       credentials: 'include',
       headers: {
         ...(init.body instanceof FormData ? {} : { 'Content-Type': 'application/json' }),
         ...init.headers,
       },
-    });
+    };
 
-    let data: ApiResponse<T>;
-    try {
-      data = (await response.json()) as ApiResponse<T>;
-    } catch {
-      throw new ApiError('Invalid response from server', response.status);
+    let response = await fetch(url, requestInit);
+
+    if (response.status === 401 && !skipRefresh && !path.startsWith('/api/auth/')) {
+      const refreshed = await this.tryRefresh();
+      if (refreshed) {
+        response = await fetch(url, requestInit);
+      }
     }
+
+    const data = await this.parseResponse<T>(response);
 
     if (!response.ok || !data.success) {
       throw new ApiError(
@@ -68,6 +104,7 @@ class ApiClient {
         data.error?.details,
       );
     }
+
     return data;
   }
 
@@ -96,13 +133,24 @@ class ApiClient {
     formData.append('file', file);
     if (folder) formData.append('folder', folder);
 
-    const response = await fetch(`${this.baseUrl}${path}`, {
+    let response = await fetch(`${this.baseUrl}${path}`, {
       method: 'POST',
       body: formData,
       credentials: 'include',
     });
 
-    const data = (await response.json()) as ApiResponse<T>;
+    if (response.status === 401) {
+      const refreshed = await this.tryRefresh();
+      if (refreshed) {
+        response = await fetch(`${this.baseUrl}${path}`, {
+          method: 'POST',
+          body: formData,
+          credentials: 'include',
+        });
+      }
+    }
+
+    const data = await this.parseResponse<T>(response);
     if (!response.ok || !data.success) {
       throw new ApiError(data.error?.message ?? 'Upload failed', response.status);
     }

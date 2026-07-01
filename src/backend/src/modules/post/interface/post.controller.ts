@@ -2,7 +2,8 @@ import { Router } from 'express';
 import { Role } from '../../../db/index.js';
 import { createPostSchema, updatePostSchema, postQuerySchema } from '../../../types/index.js';
 import { postService } from '../application/post.service.js';
-import { authenticate, authorize, optionalAuth, type AuthRequest } from '../../../shared/auth/middleware.js';
+import { postRepository } from '../infrastructure/post.repository.js';
+import { authenticate, authorize, authorizeOwnerOrRole, optionalAuth, type AuthRequest } from '../../../shared/auth/middleware.js';
 import { validate } from '../../../shared/http/validate.js';
 import { sendSuccess } from '../../../shared/http/response.js';
 import { paramId, isStaffRole } from '../../../shared/http/params.js';
@@ -36,7 +37,8 @@ router.get('/slug/:slug', optionalAuth, async (req: AuthRequest, res, next) => {
 
 router.get('/:id', optionalAuth, async (req: AuthRequest, res, next) => {
   try {
-    const post = await postService.getById(paramId(req.params.id));
+    const publicOnly = !req.user || !isStaffRole(req.user.role);
+    const post = await postService.getById(paramId(req.params.id), publicOnly);
     sendSuccess(res, post);
   } catch (e) {
     next(e);
@@ -61,7 +63,14 @@ router.post(
 router.patch(
   '/:id',
   authenticate,
-  authorize(Role.ADMIN, Role.EDITOR, Role.AUTHOR),
+  authorizeOwnerOrRole(
+    async (req) => {
+      const post = await postRepository.findById(paramId(req.params.id));
+      return post?.authorId ?? null;
+    },
+    Role.ADMIN,
+    Role.EDITOR,
+  ),
   validate(updatePostSchema),
   async (req, res, next) => {
     try {

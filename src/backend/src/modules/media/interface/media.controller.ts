@@ -8,8 +8,11 @@ import { validate } from '../../../shared/http/validate.js';
 import { env } from '../../../shared/config/env.js';
 import { sendSuccess } from '../../../shared/http/response.js';
 import { paramId } from '../../../shared/http/params.js';
+import { sanitizeUploadFolder } from '../../../shared/security/upload-path.js';
 
 const router: Router = Router();
+const staffRoles = [Role.ADMIN, Role.EDITOR, Role.AUTHOR] as const;
+
 const upload = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: env.maxFileSize },
@@ -20,37 +23,48 @@ const upload = multer({
   },
 });
 
-router.get('/', validate(mediaQuerySchema, 'query'), async (req, res, next) => {
-  try {
-    const result = await mediaService.list(req.query as never);
-    const items = result.items.map((m) => ({
-      ...m,
-      url: mediaService.getPublicUrl(m.path),
-    }));
-    sendSuccess(res, items, 200, {
-      page: result.page,
-      limit: result.limit,
-      total: result.total,
-      totalPages: result.totalPages,
-    });
-  } catch (e) {
-    next(e);
-  }
-});
+router.get(
+  '/',
+  authenticate,
+  authorize(...staffRoles),
+  validate(mediaQuerySchema, 'query'),
+  async (req, res, next) => {
+    try {
+      const result = await mediaService.list(req.query as never);
+      const items = result.items.map((m) => ({
+        ...m,
+        url: mediaService.getPublicUrl(m.path),
+      }));
+      sendSuccess(res, items, 200, {
+        page: result.page,
+        limit: result.limit,
+        total: result.total,
+        totalPages: result.totalPages,
+      });
+    } catch (e) {
+      next(e);
+    }
+  },
+);
 
-router.get('/:id', async (req, res, next) => {
-  try {
-    const media = await mediaService.getById(paramId(req.params.id));
-    sendSuccess(res, { ...media, url: mediaService.getPublicUrl(media.path) });
-  } catch (e) {
-    next(e);
-  }
-});
+router.get(
+  '/:id',
+  authenticate,
+  authorize(...staffRoles),
+  async (req, res, next) => {
+    try {
+      const media = await mediaService.getById(paramId(req.params.id));
+      sendSuccess(res, { ...media, url: mediaService.getPublicUrl(media.path) });
+    } catch (e) {
+      next(e);
+    }
+  },
+);
 
 router.post(
   '/upload',
   authenticate,
-  authorize(Role.ADMIN, Role.EDITOR, Role.AUTHOR),
+  authorize(...staffRoles),
   upload.single('file'),
   async (req: AuthRequest, res, next) => {
     try {
@@ -58,7 +72,7 @@ router.post(
         res.status(400).json({ success: false, error: { message: 'No file uploaded' } });
         return;
       }
-      const folder = (req.body.folder as string) || 'general';
+      const folder = sanitizeUploadFolder((req.body.folder as string) || 'general');
       const media = await mediaService.upload(req.file, folder, req.user!.id);
       sendSuccess(res, { ...media, url: mediaService.getPublicUrl(media.path) }, 201);
     } catch (e) {

@@ -34,9 +34,10 @@ router.get('/slug/:slug', optionalAuth, async (req: AuthRequest, res, next) => {
   }
 });
 
-router.get('/:id', async (req, res, next) => {
+router.get('/:id', optionalAuth, async (req: AuthRequest, res, next) => {
   try {
-    const page = await pageService.getById(paramId(req.params.id));
+    const publicOnly = !req.user || !isEditorRole(req.user.role);
+    const page = await pageService.getById(paramId(req.params.id), publicOnly);
     sendSuccess(res, page);
   } catch (e) {
     next(e);

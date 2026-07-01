@@ -47,7 +47,7 @@ router.post('/login', authRateLimiter, validate(loginSchema), async (req, res, n
   }
 });
 
-router.post('/refresh', async (req, res, next) => {
+router.post('/refresh', authRateLimiter, async (req, res, next) => {
   try {
     const refreshToken = (req.cookies?.refreshToken as string) ?? req.body.refreshToken;
     if (!refreshToken) {

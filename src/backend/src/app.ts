@@ -12,6 +12,8 @@ import { mediaService } from './modules/media/application/media.service.js';
 export async function createApp(): Promise<Express> {
   const app = express();
 
+  app.set('trust proxy', 1);
+
   await mediaService.ensureUploadDir();
 
   app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));

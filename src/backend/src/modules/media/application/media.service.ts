@@ -3,9 +3,9 @@ import path from 'path';
 import sharp from 'sharp';
 import { v4 as uuidv4 } from 'uuid';
 import type { MediaQueryInput, UpdateMediaInput } from '../../../types/index.js';
-import { env } from '../../../shared/config/env.js';
 import { mediaRepository } from '../infrastructure/media.repository.js';
 import { mediaNotFound } from '../domain/media.errors.js';
+import { resolveUploadPath, sanitizeUploadFolder } from '../../../shared/security/upload-path.js';
 
 const THUMBNAIL_SIZES = [
   { name: 'thumb', width: 150, height: 150 },
@@ -16,17 +16,18 @@ const THUMBNAIL_SIZES = [
 
 export class MediaService {
   async ensureUploadDir(folder = 'general') {
-    const dir = path.join(env.uploadDir, folder);
+    const safeFolder = sanitizeUploadFolder(folder);
+    const dir = resolveUploadPath(safeFolder);
     await fs.mkdir(dir, { recursive: true });
-    return dir;
+    return { dir, safeFolder };
   }
 
   async upload(file: Express.Multer.File, folder = 'general', uploadedById?: string) {
-    const dir = await this.ensureUploadDir(folder);
+    const { safeFolder } = await this.ensureUploadDir(folder);
     const ext = path.extname(file.originalname).toLowerCase();
     const filename = `${uuidv4()}${ext}`;
-    const filePath = path.join(dir, filename);
-    const relativePath = path.join(folder, filename);
+    const filePath = resolveUploadPath(safeFolder, filename);
+    const relativePath = path.join(safeFolder, filename);
 
     await fs.writeFile(filePath, file.buffer);
 
@@ -41,12 +42,12 @@ export class MediaService {
 
       for (const size of THUMBNAIL_SIZES) {
         const variantName = `${path.parse(filename).name}-${size.name}.webp`;
-        const variantPath = path.join(dir, variantName);
+        const variantPath = resolveUploadPath(safeFolder, variantName);
         await sharp(file.buffer)
           .resize(size.width, size.height, { fit: 'inside', withoutEnlargement: true })
           .webp({ quality: 80 })
           .toFile(variantPath);
-        variants[size.name] = path.join(folder, variantName);
+        variants[size.name] = path.join(safeFolder, variantName);
       }
     }
 
@@ -56,7 +57,7 @@ export class MediaService {
       mimeType: file.mimetype,
       size: file.size,
       path: relativePath,
-      folder,
+      folder: safeFolder,
       width,
       height,
       variants: Object.keys(variants).length ? variants : undefined,
@@ -67,8 +68,9 @@ export class MediaService {
   async list(query: MediaQueryInput) {
     const { page, limit, folder, mimeType, search } = query;
     const skip = (page - 1) * limit;
+    const safeFolder = folder ? sanitizeUploadFolder(folder) : undefined;
     const where = {
-      ...(folder && { folder }),
+      ...(safeFolder && { folder: safeFolder }),
       ...(mimeType && { mimeType: { startsWith: mimeType } }),
       ...(search && {
         OR: [
@@ -95,14 +97,13 @@ export class MediaService {
 
   async delete(id: string) {
     const media = await this.getById(id);
-    const baseDir = env.uploadDir;
 
     try {
-      await fs.unlink(path.join(baseDir, media.path));
+      await fs.unlink(resolveUploadPath(media.path));
       const variants = media.variants as Record<string, string> | null;
       if (variants) {
         for (const variantPath of Object.values(variants)) {
-          await fs.unlink(path.join(baseDir, variantPath)).catch(() => undefined);
+          await fs.unlink(resolveUploadPath(variantPath)).catch(() => undefined);
         }
       }
     } catch {
@@ -115,7 +116,11 @@ export class MediaService {
 
   async update(id: string, input: UpdateMediaInput) {
     await this.getById(id);
-    return mediaRepository.update(id, input);
+    const data = { ...input };
+    if (data.folder) {
+      data.folder = sanitizeUploadFolder(data.folder);
+    }
+    return mediaRepository.update(id, data);
   }
 
   getPublicUrl(mediaPath: string): string {

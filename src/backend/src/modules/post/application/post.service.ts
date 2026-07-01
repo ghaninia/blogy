@@ -64,9 +64,12 @@ export class PostService {
     return { deleted: true };
   }
 
-  async getById(id: string) {
+  async getById(id: string, publicOnly = false) {
     const post = await postRepository.findById(id);
     if (!post) throw postNotFound();
+    if (publicOnly && post.status !== PostStatus.PUBLISHED) {
+      throw postNotFound();
+    }
     return post;
   }
 

@@ -2,8 +2,9 @@
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ToastProvider, Toaster, TooltipProvider } from '@gh/ui';
-import { useState, type ReactNode } from 'react';
+import { Suspense, useState, type ReactNode } from 'react';
 import { ThemeProvider } from './theme-provider';
+import { NavigationProgress } from './navigation-progress';
 
 export function Providers({ children }: { children: ReactNode }) {
   const [queryClient] = useState(
@@ -20,6 +21,9 @@ export function Providers({ children }: { children: ReactNode }) {
       <ToastProvider>
         <TooltipProvider>
           <QueryClientProvider client={queryClient}>
+            <Suspense fallback={null}>
+              <NavigationProgress />
+            </Suspense>
             {children}
             <Toaster />
           </QueryClientProvider>

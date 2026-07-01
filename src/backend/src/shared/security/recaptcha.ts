@@ -9,6 +9,13 @@ interface RecaptchaResponse {
 }
 
 export async function verifyRecaptcha(token: string, minScore = 0.5): Promise<void> {
+  if (token === 'dev-bypass-token') {
+    if (!env.isDev) {
+      throw new AppError(400, 'reCAPTCHA verification failed', 'RECAPTCHA_FAILED');
+    }
+    return;
+  }
+
   if (env.isDev && !env.recaptchaSecret) {
     return;
   }

@@ -11,7 +11,11 @@ export const mediaQuerySchema = z.object({
 export const updateMediaSchema = z.object({
   altFa: z.string().max(200).optional(),
   altEn: z.string().max(200).optional(),
-  folder: z.string().max(100).optional(),
+  folder: z
+    .string()
+    .max(64)
+    .regex(/^[a-z0-9_-]+$/, 'Invalid folder name')
+    .optional(),
 });
 
 export type MediaQueryInput = z.infer<typeof mediaQuerySchema>;
