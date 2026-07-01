@@ -74,7 +74,7 @@ export function CategoryCombobox({ locale, categories, selectedIds, onChange }: 
       ) : null}
 
       <DropdownMenu>
-        <DropdownMenuTrigger>
+        <DropdownMenuTrigger asChild>
           <Button type="button" variant="outline" className="w-full justify-between">
             {t('categories')}
             <ChevronsUpDown className="h-4 w-4 opacity-50" />
