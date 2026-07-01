@@ -33,8 +33,7 @@ export class TagService {
   }
 
   async list(query: TagQueryInput) {
-    const { page, limit, search } = query;
-    const skip = (page - 1) * limit;
+    const { all, page, limit, search } = query;
 
     const where = search
       ? {
@@ -46,12 +45,33 @@ export class TagService {
         }
       : {};
 
+    if (all === true) {
+      const items = await tagRepository.findMany(where, 0, 1000);
+      return {
+        items,
+        total: items.length,
+        page: 1,
+        limit: items.length || 1,
+        totalPages: 1,
+      };
+    }
+
+    const resolvedPage = page ?? 1;
+    const resolvedLimit = limit ?? 20;
+    const skip = (resolvedPage - 1) * resolvedLimit;
+
     const [items, total] = await Promise.all([
-      tagRepository.findMany(where, skip, limit),
+      tagRepository.findMany(where, skip, resolvedLimit),
       tagRepository.count(where),
     ]);
 
-    return { items, total, page, limit, totalPages: Math.ceil(total / limit) };
+    return {
+      items,
+      total,
+      page: resolvedPage,
+      limit: resolvedLimit,
+      totalPages: Math.ceil(total / resolvedLimit),
+    };
   }
 }
 

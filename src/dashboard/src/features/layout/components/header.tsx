@@ -32,6 +32,7 @@ export function Header() {
 
   const switchLocale = locale === 'fa' ? 'en' : 'fa';
   const switchPath = pathname.replace(`/${locale}`, `/${switchLocale}`);
+  const isAuthPage = pathname.includes('/login') || pathname.includes('/register');
 
   const initials = user?.displayName?.slice(0, 2) ?? user?.username?.slice(0, 2) ?? '?';
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
@@ -41,16 +42,18 @@ export function Header() {
       <header className="glass sticky top-4 z-50 mb-4 rounded-2xl">
         <div className="flex items-center justify-between px-4 py-3 sm:px-6">
           <div className="flex items-center gap-2">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="md:hidden"
-              onClick={() => setMobileNavOpen(true)}
-              aria-label="Menu"
-            >
-              <Menu className="h-5 w-5" />
-            </Button>
-            <SiteBrand href={`/${locale}/dashboard`} />
+            {!isAuthPage ? (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="md:hidden"
+                onClick={() => setMobileNavOpen(true)}
+                aria-label="Menu"
+              >
+                <Menu className="h-5 w-5" />
+              </Button>
+            ) : null}
+            <SiteBrand href={isAuthPage ? `/${locale}/login` : `/${locale}/dashboard`} />
           </div>
 
         <div className="flex items-center gap-2">
@@ -94,10 +97,14 @@ export function Header() {
           ) : (
             <>
               <Link href={`/${locale}/login`}>
-                <Button variant="ghost" size="sm">{t('login')}</Button>
+                <Button variant={pathname.includes('/login') ? 'secondary' : 'ghost'} size="sm">
+                  {t('login')}
+                </Button>
               </Link>
               <Link href={`/${locale}/register`}>
-                <Button size="sm">{t('register')}</Button>
+                <Button variant={pathname.includes('/register') ? 'default' : 'outline'} size="sm">
+                  {t('register')}
+                </Button>
               </Link>
             </>
           )}
@@ -105,7 +112,7 @@ export function Header() {
       </div>
     </header>
 
-      <MobileNav open={mobileNavOpen} onOpenChange={setMobileNavOpen} />
+      <MobileNav open={mobileNavOpen && !isAuthPage} onOpenChange={setMobileNavOpen} />
     </>
   );
 }

@@ -6,7 +6,8 @@ import { useParams, useRouter } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import { ArrowLeft } from 'lucide-react';
 import { Button, Skeleton, useToast } from '@gh/ui';
-import { api, ApiError } from '@/shared/api-client';
+import { api } from '@/shared/api-client';
+import { formatApiError } from '@/shared/lib/format-api-error';
 import { canDeletePost } from '@/shared/lib/localized';
 import { PageHeader } from '@/features/layout/components/page-header';
 import { useDeleteConfirm } from '@/shared/hooks/use-delete-confirm';
@@ -57,7 +58,7 @@ export default function EditPostPage() {
     } catch (err) {
       toast({
         title: tToast('error'),
-        description: err instanceof ApiError ? err.message : undefined,
+        description: formatApiError(err),
         variant: 'destructive',
       });
     } finally {

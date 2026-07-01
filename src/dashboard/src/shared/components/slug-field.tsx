@@ -9,6 +9,7 @@ import { randomSlug, slugifyFromEn } from '@/shared/lib/slug';
 interface SlugFieldProps {
   slug: string;
   titleEn: string;
+  titleFa?: string;
   onSlugChange: (slug: string) => void;
   autoSync?: boolean;
   randomPrefix?: string;
@@ -19,6 +20,7 @@ interface SlugFieldProps {
 export function SlugField({
   slug,
   titleEn,
+  titleFa = '',
   onSlugChange,
   autoSync = true,
   randomPrefix = 'item',
@@ -27,16 +29,26 @@ export function SlugField({
 }: SlugFieldProps) {
   const tf = useTranslations('dashboard.form');
   const manualRef = useRef(false);
+  const autoSlugRef = useRef(false);
   const onSlugChangeRef = useRef(onSlugChange);
   onSlugChangeRef.current = onSlugChange;
 
   useEffect(() => {
     if (!autoSync || manualRef.current) return;
-    const next = slugifyFromEn(titleEn);
-    if (next && next !== slug) {
-      onSlugChangeRef.current(next);
+
+    const fromEn = slugifyFromEn(titleEn);
+    if (fromEn) {
+      autoSlugRef.current = false;
+      if (fromEn !== slug) onSlugChangeRef.current(fromEn);
+      return;
     }
-  }, [titleEn, autoSync, slug]);
+
+    const hasTitle = Boolean(titleEn.trim() || titleFa.trim());
+    if (!slug && hasTitle && !autoSlugRef.current) {
+      autoSlugRef.current = true;
+      onSlugChangeRef.current(randomSlug(randomPrefix));
+    }
+  }, [titleEn, titleFa, autoSync, slug, randomPrefix]);
 
   return (
     <FormField label={tf('slug')} required={required}>
@@ -59,6 +71,7 @@ export function SlugField({
           title={tf('generateSlug')}
           onClick={() => {
             manualRef.current = true;
+            autoSlugRef.current = true;
             onSlugChange(randomSlug(randomPrefix));
           }}
         >

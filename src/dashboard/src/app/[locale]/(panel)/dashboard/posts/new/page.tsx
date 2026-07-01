@@ -6,7 +6,8 @@ import { useRouter } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import { ArrowLeft } from 'lucide-react';
 import { Button, useToast } from '@gh/ui';
-import { api, ApiError } from '@/shared/api-client';
+import { api } from '@/shared/api-client';
+import { formatApiError } from '@/shared/lib/format-api-error';
 import { PageHeader } from '@/features/layout/components/page-header';
 import {
   PostForm,
@@ -35,7 +36,7 @@ export default function NewPostPage() {
     } catch (err) {
       toast({
         title: tToast('error'),
-        description: err instanceof ApiError ? err.message : undefined,
+        description: formatApiError(err),
         variant: 'destructive',
       });
     } finally {

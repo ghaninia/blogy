@@ -4,13 +4,11 @@ import { useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
-import { Header } from '@/features/layout/components/header';
+import { Button, FormField, Input } from '@gh/ui';
 import { api } from '@/shared/api-client';
 import { useAuthStore } from '@/shared/store/auth';
 import { useRecaptcha } from '@/features/auth/components/recaptcha-provider';
-import { Button } from '@gh/ui';
-import { Input } from '@gh/ui';
-import { Card, CardContent, CardHeader } from '@gh/ui';
+import { AuthCard } from '@/features/auth/components/auth-card';
 
 export default function LoginPage() {
   const t = useTranslations('auth');
@@ -45,36 +43,44 @@ export default function LoginPage() {
   };
 
   return (
-    <>
-      <Header />
-      <main className="mx-auto flex min-h-[60vh] max-w-md items-center px-4 py-12">
-        <Card className="w-full">
-          <CardHeader>
-            <h1 className="text-2xl font-bold">{t('loginTitle')}</h1>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              {error && <p className="rounded-lg bg-red-50 p-3 text-sm text-red-600">{error}</p>}
-              <div>
-                <label className="mb-1 block text-sm font-medium">{t('email')}</label>
-                <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-              </div>
-              <div>
-                <label className="mb-1 block text-sm font-medium">{t('password')}</label>
-                <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-              </div>
-              <Button type="submit" className="w-full" disabled={loading}>
-                {t('loginButton')}
-              </Button>
-              <p className="text-center text-sm text-gray-500">
-                <Link href={`/${locale}/register`} className="text-primary hover:underline">
-                  {t('registerTitle')}
-                </Link>
-              </p>
-            </form>
-          </CardContent>
-        </Card>
-      </main>
-    </>
+    <AuthCard
+      title={t('loginTitle')}
+      footer={
+        <Link href={`/${locale}/register`} className="font-medium text-primary hover:underline">
+          {t('registerTitle')}
+        </Link>
+      }
+    >
+      <form onSubmit={handleSubmit} className="space-y-4">
+        {error ? (
+          <p className="rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+            {error}
+          </p>
+        ) : null}
+        <FormField label={t('email')} htmlFor="email" required>
+          <Input
+            id="email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            autoComplete="email"
+          />
+        </FormField>
+        <FormField label={t('password')} htmlFor="password" required>
+          <Input
+            id="password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            autoComplete="current-password"
+          />
+        </FormField>
+        <Button type="submit" className="w-full" size="lg" disabled={loading}>
+          {t('loginButton')}
+        </Button>
+      </form>
+    </AuthCard>
   );
 }

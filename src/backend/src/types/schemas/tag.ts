@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { paginationSchema, slugSchema } from './common.js';
+import { slugSchema } from './common.js';
 
 export const createTagSchema = z.object({
   slug: slugSchema,
@@ -9,7 +9,10 @@ export const createTagSchema = z.object({
 
 export const updateTagSchema = createTagSchema.partial();
 
-export const tagQuerySchema = paginationSchema.extend({
+export const tagQuerySchema = z.object({
+  all: z.coerce.boolean().optional(),
+  page: z.coerce.number().int().min(1).optional(),
+  limit: z.coerce.number().int().min(1).max(100).optional(),
   search: z.string().optional(),
 });
 

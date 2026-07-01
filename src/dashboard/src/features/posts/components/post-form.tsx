@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState, type Dispatch, type SetStateA
 import { useQuery } from '@tanstack/react-query';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
+import { FileText, FolderTree, PenLine, Search } from 'lucide-react';
 import {
   Button,
   Card,
@@ -17,14 +18,13 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
   Textarea,
 } from '@gh/ui';
 import { api, getMediaUrl } from '@/shared/api-client';
 import { SlugField } from '@/shared/components/slug-field';
+import { optionalRichText, optionalString } from '@/shared/lib/rich-text';
+import { randomSlug, slugifyFromEn } from '@/shared/lib/slug';
+import { FormTabPanel, FormTabs, type FormTabItem } from '@/features/layout/components/form-tabs';
 import { RichTextEditor, type RichTextEditorHandle } from '@/features/posts/components/rich-text-editor';
 import { CreatableTagPicker } from '@/features/posts/components/creatable-tag-picker';
 import { CategoryCombobox } from '@/features/posts/components/category-combobox';
@@ -118,7 +118,7 @@ export function PostForm({ locale, form, onChange, coverPath, formId = 'post-for
   const { data: tags = [] } = useQuery({
     queryKey: ['tags', 'all'],
     queryFn: async () => {
-      const res = await api.get<Tag[]>('/api/tags', { limit: 500 });
+      const res = await api.get<Tag[]>('/api/tags', { all: 'true' });
       return res.data ?? [];
     },
   });
@@ -128,17 +128,17 @@ export function PostForm({ locale, form, onChange, coverPath, formId = 'post-for
     [onChange],
   );
 
+  const formTabs: FormTabItem[] = [
+    { value: 'basic', label: tf('tabs.basic'), icon: FileText },
+    { value: 'content', label: tf('tabs.content'), icon: PenLine },
+    { value: 'taxonomy', label: tf('tabs.taxonomy'), icon: FolderTree },
+    { value: 'seo', label: tf('tabs.seo'), icon: Search },
+  ];
+
   return (
     <>
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-        <TabsList className="glass flex h-auto w-full flex-wrap gap-1 p-1">
-          <TabsTrigger value="basic" className="flex-1 sm:flex-none">{tf('tabs.basic')}</TabsTrigger>
-          <TabsTrigger value="content" className="flex-1 sm:flex-none">{tf('tabs.content')}</TabsTrigger>
-          <TabsTrigger value="taxonomy" className="flex-1 sm:flex-none">{tf('tabs.taxonomy')}</TabsTrigger>
-          <TabsTrigger value="seo" className="flex-1 sm:flex-none">{tf('tabs.seo')}</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="basic">
+      <FormTabs value={activeTab} onValueChange={setActiveTab} items={formTabs}>
+        <FormTabPanel value="basic">
           <Card variant="glass">
             <CardHeader><CardTitle>{tf('basicInfo')}</CardTitle></CardHeader>
             <CardContent className="space-y-4">
@@ -153,6 +153,7 @@ export function PostForm({ locale, form, onChange, coverPath, formId = 'post-for
               <SlugField
                 slug={form.slug}
                 titleEn={form.titleEn}
+                titleFa={form.titleFa}
                 onSlugChange={(slug) => set({ slug })}
                 autoSync={autoSlug}
                 randomPrefix="post"
@@ -209,9 +210,9 @@ export function PostForm({ locale, form, onChange, coverPath, formId = 'post-for
               </FormField>
             </CardContent>
           </Card>
-        </TabsContent>
+        </FormTabPanel>
 
-        <TabsContent value="content" className="space-y-4">
+        <FormTabPanel value="content" className="space-y-4">
           {activeTab === 'content' ? (
             <>
               <Card variant="glass">
@@ -238,9 +239,9 @@ export function PostForm({ locale, form, onChange, coverPath, formId = 'post-for
               </Card>
             </>
           ) : null}
-        </TabsContent>
+        </FormTabPanel>
 
-        <TabsContent value="taxonomy">
+        <FormTabPanel value="taxonomy">
           <div className="grid gap-4 lg:grid-cols-2">
             <Card variant="glass">
               <CardHeader><CardTitle>{tf('categories')}</CardTitle></CardHeader>
@@ -265,9 +266,9 @@ export function PostForm({ locale, form, onChange, coverPath, formId = 'post-for
               </CardContent>
             </Card>
           </div>
-        </TabsContent>
+        </FormTabPanel>
 
-        <TabsContent value="seo">
+        <FormTabPanel value="seo">
           <Card variant="glass">
             <CardHeader><CardTitle>{tf('seo')}</CardTitle></CardHeader>
             <CardContent className="grid gap-4 lg:grid-cols-2">
@@ -285,8 +286,8 @@ export function PostForm({ locale, form, onChange, coverPath, formId = 'post-for
               </FormField>
             </CardContent>
           </Card>
-        </TabsContent>
-      </Tabs>
+        </FormTabPanel>
+      </FormTabs>
 
       <div id={formId} aria-hidden className="hidden" />
 
@@ -338,14 +339,18 @@ export function postToForm(post: Record<string, unknown>): { form: PostFormData;
 }
 
 export function formToPayload(form: PostFormData) {
+  const slug =
+    optionalString(form.slug) ??
+    (slugifyFromEn(form.titleEn) || randomSlug('post'));
+
   return {
-    slug: form.slug,
-    titleFa: form.titleFa || undefined,
-    titleEn: form.titleEn || undefined,
-    excerptFa: form.excerptFa || undefined,
-    excerptEn: form.excerptEn || undefined,
-    contentFa: form.contentFa || undefined,
-    contentEn: form.contentEn || undefined,
+    slug,
+    titleFa: optionalString(form.titleFa),
+    titleEn: optionalString(form.titleEn),
+    excerptFa: optionalRichText(form.excerptFa),
+    excerptEn: optionalRichText(form.excerptEn),
+    contentFa: optionalRichText(form.contentFa),
+    contentEn: optionalRichText(form.contentEn),
     status: form.status,
     publishedAt:
       form.status === 'SCHEDULED' && form.publishedAt
@@ -353,12 +358,12 @@ export function formToPayload(form: PostFormData) {
         : form.status === 'PUBLISHED'
           ? new Date().toISOString()
           : undefined,
-    coverMediaId: form.coverMediaId || undefined,
-    categoryIds: form.categoryIds,
-    tagIds: form.tagIds,
-    metaTitleFa: form.metaTitleFa || undefined,
-    metaTitleEn: form.metaTitleEn || undefined,
-    metaDescFa: form.metaDescFa || undefined,
-    metaDescEn: form.metaDescEn || undefined,
+    coverMediaId: optionalString(form.coverMediaId),
+    categoryIds: form.categoryIds.length ? form.categoryIds : undefined,
+    tagIds: form.tagIds.length ? form.tagIds : undefined,
+    metaTitleFa: optionalString(form.metaTitleFa),
+    metaTitleEn: optionalString(form.metaTitleEn),
+    metaDescFa: optionalString(form.metaDescFa),
+    metaDescEn: optionalString(form.metaDescEn),
   };
 }
