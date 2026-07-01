@@ -83,7 +83,7 @@ export function Header() {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="glass w-48">
-                <DropdownMenuItem onClick={() => router.push(`/${locale}/profile`)}>
+                <DropdownMenuItem onClick={() => router.push(`/${locale}/dashboard/profile`)}>
                   <User className="me-2 h-4 w-4" />
                   {t('profile')}
                 </DropdownMenuItem>

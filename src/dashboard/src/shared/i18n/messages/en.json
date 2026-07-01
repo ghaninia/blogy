@@ -65,6 +65,19 @@
     "delete": "Delete",
     "publish": "Publish",
     "draft": "Draft",
+    "sidebar": {
+      "main": "Main",
+      "content": "Content",
+      "structure": "Structure",
+      "community": "Community",
+      "system": "System"
+    },
+    "profilePage": {
+      "description": "Update your account details and public profile",
+      "account": "Account",
+      "publicProfile": "Public Profile",
+      "avatarHint": "Avatar preview updates when you enter a URL"
+    },
     "overviewStats": {
       "description": "Quick overview of your content and activity",
       "posts": "Posts",

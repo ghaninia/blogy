@@ -50,7 +50,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <div className="mx-auto flex min-h-screen max-w-7xl flex-col px-3 pb-8 pt-4 sm:px-4 sm:pt-5">
         <Skeleton className="h-14 w-full shrink-0 rounded-2xl" />
         <div className="flex flex-1 gap-4 pt-4 md:items-stretch">
-          <Skeleton className="hidden min-h-full w-64 rounded-2xl md:block" />
+          <Skeleton className="hidden min-h-full w-60 rounded-2xl md:block" />
           <Skeleton className="min-h-96 flex-1 rounded-2xl" />
         </div>
       </div>

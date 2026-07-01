@@ -65,6 +65,19 @@
     "delete": "حذف",
     "publish": "انتشار",
     "draft": "پیش‌نویس",
+    "sidebar": {
+      "main": "اصلی",
+      "content": "محتوا",
+      "structure": "ساختار",
+      "community": "تعامل",
+      "system": "سیستم"
+    },
+    "profilePage": {
+      "description": "اطلاعات حساب و پروفایل عمومی خود را ویرایش کنید",
+      "account": "حساب کاربری",
+      "publicProfile": "پروفایل عمومی",
+      "avatarHint": "با وارد کردن آدرس تصویر، پیش‌نمایش آواتار به‌روز می‌شود"
+    },
     "overviewStats": {
       "description": "نمای کلی محتوا و فعالیت‌ها",
       "posts": "پست‌ها",
