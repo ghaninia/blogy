@@ -1,4 +1,8 @@
+'use client';
+
 import type { ReactNode } from 'react';
+import { useLocale } from 'next-intl';
+import { cn } from '@/shared/lib/utils';
 
 interface PageHeaderProps {
   title: string;
@@ -7,9 +11,12 @@ interface PageHeaderProps {
 }
 
 export function PageHeader({ title, description, action }: PageHeaderProps) {
+  const locale = useLocale();
+  const faFont = locale === 'fa';
+
   return (
     <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-start sm:justify-between">
-      <div>
+      <div className={cn(faFont && 'font-fa')}>
         <h1 className="text-2xl font-bold tracking-tight">{title}</h1>
         {description ? (
           <p className="mt-1 text-sm text-muted-foreground">{description}</p>

@@ -8,34 +8,54 @@ export const plusJakartaSans = Plus_Jakarta_Sans({
   display: 'swap',
 });
 
-export const iranSans = localFont({
+export const vazirmatn = localFont({
   src: [
     {
-      path: '../../../public/fonts/iransans/IRANSansWeb_UltraLight.woff2',
+      path: '../../../public/fonts/vazirmatn/Vazirmatn-Thin.ttf',
+      weight: '100',
+      style: 'normal',
+    },
+    {
+      path: '../../../public/fonts/vazirmatn/Vazirmatn-ExtraLight.ttf',
       weight: '200',
       style: 'normal',
     },
     {
-      path: '../../../public/fonts/iransans/IRANSansWeb_Light.woff2',
+      path: '../../../public/fonts/vazirmatn/Vazirmatn-Light.ttf',
       weight: '300',
       style: 'normal',
     },
     {
-      path: '../../../public/fonts/iransans/IRANSansWeb.woff2',
+      path: '../../../public/fonts/vazirmatn/Vazirmatn-Regular.ttf',
       weight: '400',
       style: 'normal',
     },
     {
-      path: '../../../public/fonts/iransans/IRANSansWeb_Medium.woff2',
+      path: '../../../public/fonts/vazirmatn/Vazirmatn-Medium.ttf',
       weight: '500',
       style: 'normal',
     },
     {
-      path: '../../../public/fonts/iransans/IRANSansWeb_Bold.woff2',
+      path: '../../../public/fonts/vazirmatn/Vazirmatn-SemiBold.ttf',
+      weight: '600',
+      style: 'normal',
+    },
+    {
+      path: '../../../public/fonts/vazirmatn/Vazirmatn-Bold.ttf',
       weight: '700',
       style: 'normal',
     },
+    {
+      path: '../../../public/fonts/vazirmatn/Vazirmatn-ExtraBold.ttf',
+      weight: '800',
+      style: 'normal',
+    },
+    {
+      path: '../../../public/fonts/vazirmatn/Vazirmatn-Black.ttf',
+      weight: '900',
+      style: 'normal',
+    },
   ],
-  variable: '--font-iransans',
+  variable: '--font-vazirmatn',
   display: 'swap',
 });

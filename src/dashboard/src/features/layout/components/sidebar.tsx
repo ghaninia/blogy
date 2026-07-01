@@ -77,7 +77,7 @@ export function DashboardSidebar({ userRole }: { userRole: string }) {
     t(key as 'overview' | 'posts' | 'pages' | 'media' | 'categories' | 'tags' | 'portfolio' | 'comments' | 'users' | 'settings');
 
   return (
-    <aside className="glass-strong hidden w-64 shrink-0 flex-col self-stretch rounded-2xl md:flex">
+    <aside className={cn('glass-strong hidden w-64 shrink-0 flex-col self-stretch rounded-2xl md:flex', locale === 'fa' && 'font-fa')}>
       <div className="flex shrink-0 items-center gap-2 border-b border-glass-border px-4 py-5">
         <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10">
           <LayoutDashboard className="h-5 w-5 text-primary" />

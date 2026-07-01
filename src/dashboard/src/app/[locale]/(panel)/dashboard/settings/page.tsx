@@ -46,6 +46,7 @@ export default function DashboardSettingsPage() {
       await Promise.all(updates.map((update) => api.put('/api/settings', update)));
       toast({ title: tToast('saved'), variant: 'success' });
       qc.invalidateQueries({ queryKey: ['settings'] });
+      qc.invalidateQueries({ queryKey: ['site-settings'] });
     } catch (err) {
       toast({
         title: tToast('error'),

@@ -1,6 +1,6 @@
 export const typographyTokens = {
   fontSans: 'var(--font-sans), system-ui, sans-serif',
-  fontFa: 'var(--font-iransans), system-ui, sans-serif',
+  fontFa: 'var(--font-vazirmatn), system-ui, sans-serif',
   fontSize: {
     xs: ['0.75rem', { lineHeight: '1rem' }],
     sm: ['0.875rem', { lineHeight: '1.25rem' }],

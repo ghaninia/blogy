@@ -65,6 +65,7 @@ const preset: Partial<Config> = {
       fontFamily: {
         sans: typographyTokens.fontSans.split(', '),
         fa: typographyTokens.fontFa.split(', '),
+        vazirmatn: typographyTokens.fontFa.split(', '),
       },
       fontSize: {
         xs: ['0.75rem', { lineHeight: '1rem' }],

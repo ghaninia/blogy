@@ -129,3 +129,38 @@ export function formToSettingUpdates(form: SiteSettingsForm) {
     { key: 'robots', valueEn: form.robots || undefined },
   ];
 }
+
+export interface SiteConfig {
+  name: string;
+  tagline: string;
+  logoPath: string;
+  faviconPath: string;
+  metaTitle: string;
+  metaDescription: string;
+  metaKeywords: string;
+  ogImagePath: string;
+  siteUrl: string;
+  twitterHandle: string;
+  googleVerification: string;
+  robots: string;
+}
+
+export function resolveSiteConfig(settings: SettingRecord[], locale: string): SiteConfig {
+  const form = settingsToForm(settings);
+  const isFa = locale === 'fa';
+
+  return {
+    name: (isFa ? form.siteNameFa : form.siteNameEn) || form.siteNameEn || form.siteNameFa,
+    tagline: (isFa ? form.siteTaglineFa : form.siteTaglineEn) || form.siteTaglineEn || form.siteTaglineFa,
+    logoPath: form.logoPath,
+    faviconPath: form.faviconPath,
+    metaTitle: (isFa ? form.metaTitleFa : form.metaTitleEn) || form.metaTitleEn || form.metaTitleFa,
+    metaDescription: (isFa ? form.metaDescFa : form.metaDescEn) || form.metaDescEn || form.metaDescFa,
+    metaKeywords: (isFa ? form.metaKeywordsFa : form.metaKeywordsEn) || form.metaKeywordsEn || form.metaKeywordsFa,
+    ogImagePath: form.ogImagePath,
+    siteUrl: form.siteUrl,
+    twitterHandle: form.twitterHandle,
+    googleVerification: form.googleVerification,
+    robots: form.robots,
+  };
+}

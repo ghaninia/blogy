@@ -18,10 +18,10 @@ import {
 import { useAuthStore } from '@/shared/store/auth';
 import { useTheme } from '@/shared/components/theme-provider';
 import { MobileNav } from '@/features/layout/components/mobile-nav';
+import { SiteBrand } from '@/features/layout/components/site-brand';
 
 export function Header() {
   const t = useTranslations('nav');
-  const tBrand = useTranslations('home');
   const tTheme = useTranslations('theme');
   const locale = useLocale();
   const pathname = usePathname();
@@ -50,9 +50,7 @@ export function Header() {
             >
               <Menu className="h-5 w-5" />
             </Button>
-            <Link href={`/${locale}/dashboard`} className="text-lg font-bold text-primary">
-              {tBrand('title')}
-            </Link>
+            <SiteBrand href={`/${locale}/dashboard`} />
           </div>
 
         <div className="flex items-center gap-2">
