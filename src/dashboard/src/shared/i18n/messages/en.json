@@ -14,7 +14,7 @@
     "profile": "Profile"
   },
   "home": {
-    "title": "GH Blog",
+    "title": "Blogy",
     "subtitle": "Professional Bilingual Blog",
     "latestPosts": "Latest Posts",
     "viewAll": "View All"
@@ -39,7 +39,7 @@
     "registerButton": "Register"
   },
   "dashboard": {
-    "title": "Admin Dashboard",
+    "title": "Blogy",
     "overview": "Overview",
     "posts": "Posts",
     "pages": "Pages",

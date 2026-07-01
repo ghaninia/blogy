@@ -1,4 +1,4 @@
-# Docker
+# Blogy — Docker
 
 Development stack is defined at the project root in `docker-compose.yml`.
 
@@ -50,4 +50,4 @@ pnpm db:generate && pnpm db:migrate && pnpm db:seed
 pnpm dev
 ```
 
-Use `DATABASE_URL=...@localhost:5432/...` and `UPLOAD_DIR=../../uploads` in `.env` for this mode.
+Use `DATABASE_URL=...@localhost:5432/blogy` and `UPLOAD_DIR=../../uploads` in `.env` for this mode.

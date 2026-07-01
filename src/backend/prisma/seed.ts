@@ -51,12 +51,12 @@ async function main() {
   });
 
   await prisma.post.upsert({
-    where: { slug: 'welcome-to-gh-blog' },
+    where: { slug: 'welcome-to-blogy' },
     update: {},
     create: {
-      slug: 'welcome-to-gh-blog',
-      titleFa: 'به وبلاگ GH خوش آمدید',
-      titleEn: 'Welcome to GH Blog',
+      slug: 'welcome-to-blogy',
+      titleFa: 'به Blogy خوش آمدید',
+      titleEn: 'Welcome to Blogy',
       excerptFa: 'اولین پست وبلاگ حرفه‌ای دوزبانه',
       excerptEn: 'First post of our professional bilingual blog',
       contentFa: '<p>این یک پست نمونه به زبان فارسی است.</p>',
@@ -116,8 +116,8 @@ async function main() {
     update: {},
     create: {
       key: 'site_name',
-      valueFa: 'وبلاگ GH',
-      valueEn: 'GH Blog',
+      valueFa: 'Blogy',
+      valueEn: 'Blogy',
     },
   });
 

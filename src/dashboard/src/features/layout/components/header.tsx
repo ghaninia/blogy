@@ -21,6 +21,7 @@ import { MobileNav } from '@/features/layout/components/mobile-nav';
 
 export function Header() {
   const t = useTranslations('nav');
+  const tBrand = useTranslations('home');
   const tTheme = useTranslations('theme');
   const locale = useLocale();
   const pathname = usePathname();
@@ -50,7 +51,7 @@ export function Header() {
               <Menu className="h-5 w-5" />
             </Button>
             <Link href={`/${locale}/dashboard`} className="text-lg font-bold text-primary">
-              GH Dashboard
+              {tBrand('title')}
             </Link>
           </div>
 

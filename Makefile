@@ -1,4 +1,4 @@
-# GH Dashboard - Makefile (Docker dev)
+# Blogy - Makefile (Docker dev)
 
 SHELL := /bin/bash
 .DEFAULT_GOAL := help
@@ -60,7 +60,7 @@ shell-dashboard: ## Shell in dashboard container
 	$(COMPOSE) exec dashboard sh
 
 shell-db: ## psql in database container
-	$(COMPOSE) exec db psql -U $${POSTGRES_USER:-postgres} -d $${POSTGRES_DB:-gh_blog}
+	$(COMPOSE) exec db psql -U $${POSTGRES_USER:-postgres} -d $${POSTGRES_DB:-blogy}
 
 health: ## Check API health endpoint
 	@curl -sf http://localhost:$${API_PORT:-4000}/health | cat || echo "API not reachable"
