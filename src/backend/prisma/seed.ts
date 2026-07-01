@@ -9,7 +9,12 @@ async function main() {
   const adminPassword = await argon2.hash('Admin@123456');
   const admin = await prisma.user.upsert({
     where: { email: 'admin@example.com' },
-    update: {},
+    update: {
+      username: 'admin',
+      passwordHash: adminPassword,
+      displayName: 'Administrator',
+      role: Role.ADMIN,
+    },
     create: {
       email: 'admin@example.com',
       username: 'admin',
@@ -19,10 +24,33 @@ async function main() {
     },
   });
 
+  const editorPassword = await argon2.hash('Editor@123456');
+  const editor = await prisma.user.upsert({
+    where: { email: 'editor@example.com' },
+    update: {
+      username: 'editor',
+      passwordHash: editorPassword,
+      displayName: 'Content Editor',
+      role: Role.EDITOR,
+    },
+    create: {
+      email: 'editor@example.com',
+      username: 'editor',
+      passwordHash: editorPassword,
+      displayName: 'Content Editor',
+      role: Role.EDITOR,
+    },
+  });
+
   const authorPassword = await argon2.hash('Author@123456');
   const author = await prisma.user.upsert({
     where: { email: 'author@example.com' },
-    update: {},
+    update: {
+      username: 'author',
+      passwordHash: authorPassword,
+      displayName: 'Blog Author',
+      role: Role.AUTHOR,
+    },
     create: {
       email: 'author@example.com',
       username: 'author',
@@ -111,17 +139,45 @@ async function main() {
     },
   });
 
-  await prisma.setting.upsert({
-    where: { key: 'site_name' },
-    update: {},
-    create: {
+  const defaultSettings = [
+    {
       key: 'site_name',
       valueFa: 'Blogy',
       valueEn: 'Blogy',
     },
-  });
+    {
+      key: 'site_tagline',
+      valueFa: 'وبلاگ حرفه‌ای دوزبانه',
+      valueEn: 'Professional Bilingual Blog',
+    },
+    {
+      key: 'meta_title',
+      valueFa: 'Blogy | وبلاگ حرفه‌ای',
+      valueEn: 'Blogy | Professional Blog',
+    },
+    {
+      key: 'meta_description',
+      valueFa: 'وبلاگ حرفه‌ای دوزبانه با محتوای فارسی و انگلیسی',
+      valueEn: 'A professional bilingual blog with Persian and English content',
+    },
+    {
+      key: 'robots',
+      valueEn: 'index, follow',
+    },
+  ];
 
-  console.log('Seed completed. Admin:', admin.email, 'Author:', author.email);
+  for (const setting of defaultSettings) {
+    await prisma.setting.upsert({
+      where: { key: setting.key },
+      update: {},
+      create: setting,
+    });
+  }
+
+  console.log('Seed completed.');
+  console.log('  Admin:  ', admin.email, '(Admin@123456)');
+  console.log('  Editor: ', editor.email, '(Editor@123456)');
+  console.log('  Author: ', author.email, '(Author@123456)');
 }
 
 main()

@@ -201,6 +201,26 @@
       "uploaded": "Uploaded successfully",
       "error": "Something went wrong",
       "roleUpdated": "Role updated"
+    },
+    "siteSettings": {
+      "description": "Manage site identity, branding, and SEO settings",
+      "identity": "Site Identity",
+      "taglineFa": "Tagline (FA)",
+      "taglineEn": "Tagline (EN)",
+      "logo": "Logo",
+      "favicon": "Favicon",
+      "selectLogo": "Select Logo",
+      "selectFavicon": "Select Favicon",
+      "keywordsFa": "Keywords (FA)",
+      "keywordsEn": "Keywords (EN)",
+      "keywordsPlaceholder": "keyword1, keyword2, ...",
+      "ogImage": "Open Graph Image",
+      "selectOgImage": "Select Image",
+      "siteUrl": "Site URL",
+      "advanced": "Advanced Settings",
+      "twitterHandle": "Twitter / X Handle",
+      "googleVerification": "Google Verification Code",
+      "robots": "Robots Directive"
     }
   },
   "status": {

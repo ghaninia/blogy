@@ -7,7 +7,7 @@ ROOT_DIR  := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
 ENV_FILE  ?= $(ROOT_DIR)/.env
 COMPOSE   := docker compose --env-file $(ENV_FILE)
 
-.PHONY: help env init dev dev-d dev-db down restart logs ps migrate seed install shell-backend shell-dashboard shell-db clean health rebuild
+.PHONY: help env init dev dev-d dev-db down restart logs ps migrate seed db-refresh install shell-backend shell-dashboard shell-db clean health rebuild
 
 help: ## Show available commands
 	@grep -E '^[a-zA-Z0-9_-]+:.*?## ' $(MAKEFILE_LIST) | \
@@ -52,6 +52,9 @@ migrate: ## Run Prisma migrations in backend container
 
 seed: ## Seed database in backend container
 	$(COMPOSE) exec backend sh -c 'cd /app && pnpm db:seed'
+
+db-refresh: ## Reset database (drop, migrate, seed)
+	$(COMPOSE) exec backend sh -c 'cd /app && pnpm db:reset'
 
 shell-backend: ## Shell in backend container
 	$(COMPOSE) exec backend sh

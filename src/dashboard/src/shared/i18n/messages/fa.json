@@ -201,6 +201,26 @@
       "uploaded": "با موفقیت آپلود شد",
       "error": "خطایی رخ داد",
       "roleUpdated": "نقش به‌روزرسانی شد"
+    },
+    "siteSettings": {
+      "description": "اطلاعات سایت، برندینگ و تنظیمات سئو را مدیریت کنید",
+      "identity": "هویت سایت",
+      "taglineFa": "شعار (FA)",
+      "taglineEn": "شعار (EN)",
+      "logo": "لوگو",
+      "favicon": "فاوآیکون",
+      "selectLogo": "انتخاب لوگو",
+      "selectFavicon": "انتخاب فاوآیکون",
+      "keywordsFa": "کلمات کلیدی (FA)",
+      "keywordsEn": "کلمات کلیدی (EN)",
+      "keywordsPlaceholder": "کلمه۱, کلمه۲, ...",
+      "ogImage": "تصویر Open Graph",
+      "selectOgImage": "انتخاب تصویر",
+      "siteUrl": "آدرس سایت",
+      "advanced": "تنظیمات پیشرفته",
+      "twitterHandle": "حساب توییتر / X",
+      "googleVerification": "کد تأیید گوگل",
+      "robots": "دستورات Robots"
     }
   },
   "status": {

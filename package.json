@@ -12,6 +12,7 @@
     "db:generate": "pnpm --filter @gh/backend generate",
     "db:migrate": "pnpm --filter @gh/backend migrate",
     "db:migrate:deploy": "pnpm --filter @gh/backend migrate:deploy",
+    "db:reset": "pnpm --filter @gh/backend reset",
     "db:seed": "pnpm --filter @gh/backend seed",
     "db:studio": "pnpm --filter @gh/backend studio"
   },

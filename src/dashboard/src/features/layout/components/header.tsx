@@ -38,7 +38,7 @@ export function Header() {
 
   return (
     <>
-      <header className="glass sticky top-0 z-50 mb-4 rounded-2xl">
+      <header className="glass sticky top-4 z-50 mb-4 rounded-2xl">
         <div className="flex items-center justify-between px-4 py-3 sm:px-6">
           <div className="flex items-center gap-2">
             <Button

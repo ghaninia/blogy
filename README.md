@@ -55,6 +55,7 @@ pnpm dev
 | Role | Email | Password |
 |------|-------|----------|
 | Admin | admin@example.com | Admin@123456 |
+| Editor | editor@example.com | Editor@123456 |
 | Author | author@example.com | Author@123456 |
 
 ## Scripts

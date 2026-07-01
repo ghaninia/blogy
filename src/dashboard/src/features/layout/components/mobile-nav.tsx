@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 import { LayoutDashboard } from 'lucide-react';
 import { Dialog, DialogContent, DialogTitle } from '@gh/ui';
 import { cn } from '@/shared/lib/utils';
-import { sidebarItems } from './sidebar';
+import { sidebarItems, sidebarBottomItems } from './sidebar';
 import { useAuthStore } from '@/shared/store/auth';
 
 interface MobileNavProps {
@@ -37,8 +37,8 @@ export function MobileNav({ open, onOpenChange }: MobileNavProps) {
           <span className="font-semibold">{t('title')}</span>
         </div>
         <nav className="flex-1 space-y-1 overflow-y-auto p-3">
-          {sidebarItems
-            .filter((item) => !('adminOnly' in item && item.adminOnly) || userRole === 'ADMIN')
+          {[...sidebarItems, ...sidebarBottomItems]
+            .filter((item) => (item.roles as readonly string[]).includes(userRole))
             .map((item) => {
               const href = `/${locale}${item.href}`;
               const Icon = item.icon;

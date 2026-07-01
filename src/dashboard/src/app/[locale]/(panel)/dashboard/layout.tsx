@@ -8,6 +8,7 @@ import { useAuthStore } from '@/shared/store/auth';
 import { Skeleton } from '@gh/ui';
 
 const ADMIN_ONLY = ['/dashboard/users', '/dashboard/settings'];
+const EDITOR_ONLY = ['/dashboard/pages', '/dashboard/categories', '/dashboard/tags', '/dashboard/portfolio', '/dashboard/comments'];
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -35,25 +36,31 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     if (user.role !== 'ADMIN' && ADMIN_ONLY.some((p) => pathname.includes(p))) {
       redirected.current = true;
       router.replace(`/${locale}/dashboard`);
+      return;
+    }
+
+    if (user.role === 'AUTHOR' && EDITOR_ONLY.some((p) => pathname.includes(p))) {
+      redirected.current = true;
+      router.replace(`/${locale}/dashboard`);
     }
   }, [user, isLoading, router, locale, pathname]);
 
   if (isLoading || !user) {
     return (
-      <div className="mx-auto max-w-7xl space-y-4 p-4">
-        <Skeleton className="h-14 w-full rounded-2xl" />
-        <div className="flex gap-4">
-          <Skeleton className="hidden h-96 w-64 rounded-2xl md:block" />
-          <Skeleton className="h-96 flex-1 rounded-2xl" />
+      <div className="mx-auto flex min-h-screen max-w-7xl flex-col px-3 pb-8 pt-4 sm:px-4 sm:pt-5">
+        <Skeleton className="h-14 w-full shrink-0 rounded-2xl" />
+        <div className="flex flex-1 gap-4 pt-4 md:items-stretch">
+          <Skeleton className="hidden min-h-full w-64 rounded-2xl md:block" />
+          <Skeleton className="min-h-96 flex-1 rounded-2xl" />
         </div>
       </div>
     );
   }
 
   return (
-    <div className="mx-auto max-w-7xl px-3 pb-8 sm:px-4">
+    <div className="mx-auto flex min-h-screen max-w-7xl flex-col px-3 pb-8 pt-4 sm:px-4 sm:pt-5">
       <Header />
-      <div className="flex flex-col gap-4 md:flex-row">
+      <div className="flex flex-1 flex-col gap-4 pt-4 md:flex-row md:items-stretch">
         <DashboardSidebar userRole={user.role} />
         <main className="min-w-0 flex-1">{children}</main>
       </div>
