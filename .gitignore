@@ -38,6 +38,5 @@ Thumbs.db
 # Prisma
 .prisma
 
-# Docker local overrides
-.docker/.env
+# pnpm
 .pnpm-store

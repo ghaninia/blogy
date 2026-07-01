@@ -1,17 +1,43 @@
+# Dependencies & build artifacts
 node_modules
 **/node_modules
+.pnpm-store
+
+# Next.js / outputs
 .next
 **/.next
 dist
 **/dist
+out
+.turbo
+
+# Git & editor
 .git
+.gitignore
+.cursor
+.vscode
+.idea
+*.md
+!docker/README.md
+
+# Environment (mounted via compose env_file)
 .env
 .env.*
 !.env.example
+
+# Runtime uploads (use named volume in Docker)
 uploads
+
+# Logs & coverage
 **/*.log
-.DS_Store
 coverage
-.turbo
-.cursor
-.vscode
+npm-debug.log*
+pnpm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker (not needed in build context)
+docker-compose*.yml
+Makefile

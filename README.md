@@ -1,6 +1,6 @@
 # GH Blog - Bilingual Admin Dashboard
 
-Monorepo: source code under `src/`, Docker and config at project root.
+Monorepo: source code under `src/`, Docker at project root.
 
 ## Structure
 
@@ -8,21 +8,11 @@ Monorepo: source code under `src/`, Docker and config at project root.
 GH/
 ├── src/
 │   ├── backend/           @gh/backend — Express API, Prisma, Zod types
-│   │   ├── prisma/        schema, migrations, seed
-│   │   └── src/
-│   │       ├── modules/   auth, post, page, category, tag, portfolio, media, comment, setting
-│   │       ├── shared/    config, http, auth, security
-│   │       ├── db/        Prisma client
-│   │       └── types/     shared Zod schemas (exported as @gh/backend/types)
 │   ├── dashboard/         @gh/dashboard — Next.js admin panel
-│   │   └── src/
-│   │       ├── app/       routes (auth + panel groups)
-│   │       ├── features/  domain UI components
-│   │       └── shared/    api-client, store, i18n, lib
 │   ├── client/            @gh/client — reserved for future public site
-│   └── packages/
-│       └── ui/            @gh/ui — shared design system
-├── .docker/               dev Docker only
+│   └── packages/ui/       @gh/ui — shared design system
+├── docker/                Dockerfiles + entrypoint scripts
+├── docker-compose.yml     dev stack (db + backend + dashboard)
 ├── uploads/               runtime media files (gitignored)
 ├── Makefile
 ├── package.json
@@ -39,12 +29,14 @@ make dev
 - Dashboard: http://localhost:3000/fa/dashboard
 - API: http://localhost:4000/health
 
+See `docker/README.md` for more commands (`make logs`, `make dev-db`, `make clean`, …).
+
 ## Quick Start (Local)
 
 ```bash
 pnpm install
 cp .env.example .env
-docker compose -f .docker/docker-compose.dev.yml up db -d
+make dev-db
 pnpm db:generate && pnpm db:migrate && pnpm db:seed
 pnpm dev
 ```
@@ -67,3 +59,4 @@ pnpm dev
 | `pnpm db:migrate` | run migrations |
 | `pnpm db:seed` | seed database |
 | `make dev` | Docker dev stack |
+| `make dev-db` | PostgreSQL only (for local pnpm) |

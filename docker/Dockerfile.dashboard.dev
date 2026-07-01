@@ -1,8 +1,10 @@
-# Development Dashboard (Next.js) with hot reload
+# Development dashboard (Next.js) with hot reload
 
 FROM node:20-alpine
-RUN apk add --no-cache libc6-compat
+
+RUN apk add --no-cache libc6-compat curl
 RUN corepack enable && corepack prepare pnpm@9.15.0 --activate
+
 WORKDIR /app
 
 COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
@@ -12,5 +14,10 @@ COPY src/packages/ui/package.json ./src/packages/ui/
 
 RUN pnpm install --frozen-lockfile
 
+COPY docker/scripts/entrypoint-dashboard.dev.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
 EXPOSE 3000
+
+ENTRYPOINT ["/entrypoint.sh"]
 CMD ["pnpm", "--filter", "@gh/dashboard", "dev"]
