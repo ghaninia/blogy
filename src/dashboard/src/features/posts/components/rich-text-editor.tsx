@@ -134,7 +134,7 @@ export const RichTextEditor = forwardRef<RichTextEditorHandle, RichTextEditorPro
     );
 
     return (
-      <div className="overflow-hidden rounded-lg border border-border bg-card">
+      <div className="overflow-hidden rounded-lg border border-border bg-card elevated-sm">
         <div className="flex flex-wrap gap-1 border-b border-border bg-muted/50 p-2">
           <ToolbarButton onClick={() => editor.chain().focus().toggleBold().run()} active={editor.isActive('bold')}>
             <Bold className="h-4 w-4" />

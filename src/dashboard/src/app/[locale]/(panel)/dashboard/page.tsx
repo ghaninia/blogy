@@ -26,7 +26,7 @@ interface StatCardProps {
 function StatCard({ title, value, icon, href, locale }: StatCardProps) {
   return (
     <Link href={`/${locale}${href}`}>
-      <Card variant="glass" className="transition-shadow hover:shadow-glass">
+      <Card variant="glass" className="transition-all hover:brightness-105">
         <CardHeader className="flex flex-row items-center justify-between pb-2">
           <CardTitle className="text-sm font-medium text-muted-foreground">{title}</CardTitle>
           <div className="text-primary">{icon}</div>

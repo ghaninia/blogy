@@ -54,7 +54,7 @@ export function MobileNav({ open, onOpenChange }: MobileNavProps) {
                   className={cn(
                     'flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all',
                     active
-                      ? 'bg-primary/15 text-primary shadow-glass'
+                      ? 'bg-primary/15 text-primary elevated-primary font-semibold'
                       : 'text-muted-foreground hover:bg-accent/50 hover:text-foreground',
                   )}
                 >

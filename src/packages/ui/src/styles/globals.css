@@ -33,6 +33,7 @@
     --glass-border: 48 60% 50% / 0.2;
     --glass-highlight: 48 96% 70% / 0.15;
     --glass-blur: 16px;
+    --elevated-border: 45 12% 72%;
     --mesh-1: 48 96% 53% / 0.12;
     --mesh-2: 42 90% 38% / 0.08;
     --mesh-3: 45 20% 8% / 0.04;
@@ -67,6 +68,7 @@
     --glass-border: 48 60% 50% / 0.12;
     --glass-highlight: 48 96% 53% / 0.08;
     --glass-blur: 20px;
+    --elevated-border: 45 8% 10%;
     --mesh-1: 48 96% 53% / 0.1;
     --mesh-2: 42 90% 38% / 0.06;
     --mesh-3: 45 20% 8% / 0.5;
@@ -108,12 +110,59 @@
 }
 
 @layer utilities {
+  .elevated {
+    border-bottom-width: 3px;
+    border-bottom-color: hsl(var(--elevated-border));
+    box-shadow: 0 2px 0 hsl(var(--elevated-border));
+  }
+
+  .elevated-sm {
+    border-bottom-width: 2px;
+    border-bottom-color: hsl(var(--elevated-border));
+    box-shadow: 0 1px 0 hsl(var(--elevated-border));
+  }
+
+  .elevated-primary {
+    border-bottom-width: 3px;
+    border-bottom-color: hsl(var(--primary-border));
+    box-shadow: 0 2px 0 hsl(var(--primary-border));
+  }
+
+  .elevated-interactive {
+    border-bottom-width: 3px;
+    border-bottom-color: hsl(var(--elevated-border));
+    box-shadow: 0 2px 0 hsl(var(--elevated-border));
+    transition: transform 0.1s ease, box-shadow 0.1s ease, border-bottom-width 0.1s ease;
+  }
+
+  .elevated-interactive:active {
+    transform: translateY(2px);
+    border-bottom-width: 1px;
+    box-shadow: none;
+  }
+
+  .elevated-interactive-primary {
+    border-bottom-width: 3px;
+    border-bottom-color: hsl(var(--primary-border));
+    box-shadow: 0 2px 0 hsl(var(--primary-border));
+    transition: transform 0.1s ease, box-shadow 0.1s ease, border-bottom-width 0.1s ease;
+  }
+
+  .elevated-interactive-primary:active {
+    transform: translateY(2px);
+    border-bottom-width: 1px;
+    box-shadow: none;
+  }
+
   .glass {
     background: hsl(var(--glass-bg));
     border: 1px solid hsl(var(--glass-border));
+    border-bottom-width: 3px;
+    border-bottom-color: hsl(var(--elevated-border));
     backdrop-filter: blur(var(--glass-blur));
     -webkit-backdrop-filter: blur(var(--glass-blur));
     box-shadow:
+      0 2px 0 hsl(var(--elevated-border)),
       0 4px 24px -4px hsl(0 0% 0% / 0.2),
       inset 0 1px 0 0 hsl(var(--glass-highlight));
   }
@@ -121,9 +170,12 @@
   .glass-strong {
     background: hsl(var(--glass-bg));
     border: 1px solid hsl(var(--glass-border));
+    border-bottom-width: 3px;
+    border-bottom-color: hsl(var(--elevated-border));
     backdrop-filter: blur(calc(var(--glass-blur) * 1.5));
     -webkit-backdrop-filter: blur(calc(var(--glass-blur) * 1.5));
     box-shadow:
+      0 3px 0 hsl(var(--elevated-border)),
       0 8px 32px -8px hsl(0 0% 0% / 0.3),
       inset 0 1px 0 0 hsl(var(--glass-highlight));
   }

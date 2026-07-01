@@ -2,7 +2,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { forwardRef, type HTMLAttributes } from 'react';
 import { cn } from '../lib/cn';
 
-const alertVariants = cva('relative w-full rounded-lg border p-4 [&>svg~*]:ps-7 [&>svg+div]:translate-y-[-3px] [&>svg]:absolute [&>svg]:start-4 [&>svg]:top-4 [&>svg]:text-foreground', {
+const alertVariants = cva('relative w-full rounded-lg border p-4 elevated-sm [&>svg~*]:ps-7 [&>svg+div]:translate-y-[-3px] [&>svg]:absolute [&>svg]:start-4 [&>svg]:top-4 [&>svg]:text-foreground', {
   variants: {
     variant: {
       default: 'border-border bg-background text-foreground',

@@ -152,7 +152,7 @@ export default function DashboardMediaPage() {
           ) : (
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
               {items.map((item) => (
-                <div key={item.id} className="group relative overflow-hidden rounded-lg border border-border">
+                <div key={item.id} className="group relative overflow-hidden rounded-lg border border-border elevated-sm">
                   <button type="button" className="w-full" onClick={() => openEdit(item)}>
                     {item.mimeType.startsWith('image/') ? (
                       <div className="relative aspect-square">

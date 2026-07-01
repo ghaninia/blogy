@@ -1,10 +1,10 @@
 import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '../lib/cn';
 
-const cardVariants = cva('rounded-xl border text-card-foreground shadow-sm', {
+const cardVariants = cva('rounded-xl border text-card-foreground', {
   variants: {
     variant: {
-      default: 'border-border bg-card',
+      default: 'border-border bg-card elevated',
       glass: 'glass text-foreground',
     },
   },

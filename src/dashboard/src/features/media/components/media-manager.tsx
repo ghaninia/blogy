@@ -136,7 +136,7 @@ export function MediaManager({ open, onClose, onSelect, mode = 'single' }: Media
                   key={item.id}
                   type="button"
                   onClick={() => handleSelect(item)}
-                  className="group overflow-hidden rounded-lg border border-border bg-card transition hover:border-primary hover:shadow-md"
+                  className="group overflow-hidden rounded-lg border border-border bg-card elevated-sm transition hover:border-primary hover:brightness-105"
                 >
                   {item.mimeType.startsWith('image/') ? (
                     <div className="relative aspect-square">
