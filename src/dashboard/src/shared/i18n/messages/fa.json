@@ -11,7 +11,11 @@
     "register": "ثبت‌نام",
     "dashboard": "داشبورد",
     "logout": "خروج",
-    "profile": "پروفایل"
+    "profile": "پروفایل",
+    "language": "زبان",
+    "persian": "فارسی",
+    "english": "انگلیسی",
+    "viewSite": "مشاهده سایت"
   },
   "home": {
     "title": "Blogy",
