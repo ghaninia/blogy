@@ -4,8 +4,10 @@ import { SiteFooter } from '@/components/layout/site-footer';
 import { Container } from '@/components/layout/container';
 import { Breadcrumb } from '@/components/layout/breadcrumb';
 import { ReadingProgress } from '@/components/layout/reading-progress';
+import { BlogShare } from '@/components/blog/blog-share';
 import { fetchPostBySlug } from '@/lib/data';
 import { fetchSiteConfig } from '@/lib/site-config';
+import { getPostShareUrl } from '@/lib/share';
 import { cn, formatDate, getLocalizedField, titleFont } from '@/lib/utils';
 
 export default async function BlogPostPage({
@@ -25,6 +27,7 @@ export default async function BlogPostPage({
   const content = getLocalizedField(post, 'content', locale);
   const date = post.publishedAt ?? post.createdAt;
   const isFa = locale === 'fa';
+  const shareUrl = getPostShareUrl(locale, slug);
 
   return (
     <>
@@ -63,6 +66,8 @@ export default async function BlogPostPage({
                 dangerouslySetInnerHTML={{ __html: content }}
               />
             ) : null}
+
+            <BlogShare url={shareUrl} title={title} locale={locale} />
           </article>
         </Container>
       </main>

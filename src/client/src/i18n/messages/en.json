@@ -25,7 +25,11 @@
     "postsCount": "posts",
     "loading": "Loading…",
     "loadMore": "Load more",
-    "allLoaded": "All posts loaded"
+    "allLoaded": "All posts loaded",
+    "share": "Share",
+    "shareOn": "Share on {platform}",
+    "copyLink": "Copy link",
+    "linkCopied": "Link copied"
   },
   "portfolio": {
     "title": "Portfolio",

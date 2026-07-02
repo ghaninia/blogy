@@ -25,7 +25,11 @@
     "postsCount": "مطلب",
     "loading": "در حال بارگذاری…",
     "loadMore": "مطالب بیشتر",
-    "allLoaded": "همه مطالب بارگذاری شد"
+    "allLoaded": "همه مطالب بارگذاری شد",
+    "share": "اشتراک‌گذاری",
+    "shareOn": "اشتراک در {platform}",
+    "copyLink": "کپی لینک",
+    "linkCopied": "لینک کپی شد"
   },
   "portfolio": {
     "title": "نمونه‌کارها",
