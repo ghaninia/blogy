@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { motion, useSpring, useTransform } from 'framer-motion';
+import { useEffect } from 'react';
+import { useMotionValueEvent, useSpring } from 'framer-motion';
 import { useLocale } from 'next-intl';
 
 function getScrollProgress(target: Element) {
@@ -25,9 +25,26 @@ function getScrollProgress(target: Element) {
 export function ReadingProgress() {
   const locale = useLocale();
   const isRtl = locale === 'fa';
-  const [visible, setVisible] = useState(false);
   const progress = useSpring(0, { stiffness: 120, damping: 28, mass: 0.4 });
-  const width = useTransform(progress, (v) => `${v * 100}%`);
+
+  useEffect(() => {
+    const root = document.documentElement;
+    root.setAttribute('data-reading-progress', '');
+    root.dataset.readingProgressDir = isRtl ? 'rtl' : 'ltr';
+
+    return () => {
+      root.removeAttribute('data-reading-progress');
+      delete root.dataset.readingProgressDir;
+      root.style.removeProperty('--reading-progress-scale');
+      root.style.removeProperty('--reading-progress-opacity');
+    };
+  }, [isRtl]);
+
+  useMotionValueEvent(progress, 'change', (value) => {
+    const root = document.documentElement;
+    root.style.setProperty('--reading-progress-scale', String(value));
+    root.style.setProperty('--reading-progress-opacity', value > 0.001 ? '1' : '0');
+  });
 
   useEffect(() => {
     const target =
@@ -38,9 +55,7 @@ export function ReadingProgress() {
     if (!target) return;
 
     const update = () => {
-      const value = getScrollProgress(target);
-      progress.set(value);
-      setVisible(value > 0.001);
+      progress.set(getScrollProgress(target));
     };
 
     update();
@@ -53,20 +68,5 @@ export function ReadingProgress() {
     };
   }, [progress]);
 
-  return (
-    <div
-      className="pointer-events-none fixed inset-x-0 top-0 z-[60] h-[2px] bg-border/50"
-      aria-hidden
-    >
-      <motion.div
-        className="h-full bg-foreground will-change-[width]"
-        style={{
-          width,
-          opacity: visible ? 1 : 0,
-          marginInlineStart: isRtl ? 'auto' : undefined,
-        }}
-        transition={{ opacity: { duration: 0.15 } }}
-      />
-    </div>
-  );
+  return null;
 }
