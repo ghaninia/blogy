@@ -33,11 +33,20 @@
   },
   "common": {
     "toggleTheme": "Toggle theme",
+    "lightMode": "Light mode",
+    "darkMode": "Dark mode",
     "language": "Language",
+    "persian": "Persian",
+    "english": "English",
     "notFound": "Page not found",
     "backHome": "Back home"
   },
+  "pages": {
+    "about": "About",
+    "contact": "Contact"
+  },
   "footer": {
-    "rights": "All rights reserved."
+    "rights": "All rights reserved.",
+    "copyright": "© {year} {name}."
   }
 }

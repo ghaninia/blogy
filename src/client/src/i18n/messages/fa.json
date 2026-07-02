@@ -33,7 +33,11 @@
   },
   "common": {
     "toggleTheme": "تغییر تم",
+    "lightMode": "حالت روشن",
+    "darkMode": "حالت تاریک",
     "language": "زبان",
+    "persian": "فارسی",
+    "english": "انگلیسی",
     "notFound": "صفحه یافت نشد",
     "backHome": "بازگشت به خانه"
   },
@@ -42,6 +46,7 @@
     "contact": "تماس"
   },
   "footer": {
-    "rights": "تمامی حقوق محفوظ است."
+    "rights": "تمامی حقوق محفوظ است.",
+    "copyright": "© {year} {name}."
   }
 }

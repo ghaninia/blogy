@@ -4,6 +4,7 @@ import { Moon, Sun } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
+import { SegmentedControl } from '@/components/layout/segmented-control';
 import { cn } from '@/lib/utils';
 
 export function ThemeToggle({ className }: { className?: string }) {
@@ -14,22 +15,29 @@ export function ThemeToggle({ className }: { className?: string }) {
   useEffect(() => setMounted(true), []);
 
   if (!mounted) {
-    return <span className={cn('inline-block h-9 w-9', className)} aria-hidden />;
+    return <span className={cn('inline-block h-9 w-[4.5rem]', className)} aria-hidden />;
   }
 
-  const isDark = (resolvedTheme ?? theme) === 'dark';
+  const current = (resolvedTheme ?? theme) === 'dark' ? 'dark' : 'light';
 
   return (
-    <button
-      type="button"
-      onClick={() => setTheme(isDark ? 'light' : 'dark')}
-      className={cn(
-        'inline-flex h-9 w-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground',
-        className,
-      )}
-      aria-label={t('toggleTheme')}
-    >
-      {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-    </button>
+    <SegmentedControl
+      className={className}
+      layoutId="theme-toggle-indicator"
+      value={current}
+      onChange={(value) => setTheme(value)}
+      options={[
+        {
+          value: 'light',
+          label: <Sun className="h-3.5 w-3.5" strokeWidth={2} />,
+          ariaLabel: t('lightMode'),
+        },
+        {
+          value: 'dark',
+          label: <Moon className="h-3.5 w-3.5" strokeWidth={2} />,
+          ariaLabel: t('darkMode'),
+        },
+      ]}
+    />
   );
 }

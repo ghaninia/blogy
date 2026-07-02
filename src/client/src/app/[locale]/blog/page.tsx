@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
-import { SiteHeader } from '@/components/layout/site-header';
 import { SiteFooter } from '@/components/layout/site-footer';
 import { Container } from '@/components/layout/container';
 import { fetchPosts } from '@/lib/data';
@@ -15,7 +14,6 @@ export default async function BlogPage({ params }: { params: Promise<{ locale: s
 
   return (
     <>
-      <SiteHeader name={config.name} />
       <main className="py-10">
         <Container>
           <h1 className={cn('mb-8 text-xl font-medium', locale === 'fa' && 'font-fa')}>{t('title')}</h1>

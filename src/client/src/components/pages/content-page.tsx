@@ -2,7 +2,6 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
-import { SiteHeader } from '@/components/layout/site-header';
 import { SiteFooter } from '@/components/layout/site-footer';
 import { Container } from '@/components/layout/container';
 import { ReadingProgress } from '@/components/layout/reading-progress';
@@ -36,7 +35,6 @@ export async function renderContentPage({
   return (
     <>
       <ReadingProgress />
-      <SiteHeader name={config.name} />
       <main className="py-10">
         <Container>
           <Link

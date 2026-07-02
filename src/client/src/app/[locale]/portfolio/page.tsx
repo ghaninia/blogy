@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { getTranslations } from 'next-intl/server';
-import { SiteHeader } from '@/components/layout/site-header';
 import { SiteFooter } from '@/components/layout/site-footer';
 import { Container } from '@/components/layout/container';
 import { fetchPortfolio } from '@/lib/data';
@@ -17,7 +16,6 @@ export default async function PortfolioPage({ params }: { params: Promise<{ loca
 
   return (
     <>
-      <SiteHeader name={config.name} />
       <main className="py-10">
         <Container>
           <h1 className={cn('mb-8 text-xl font-medium', locale === 'fa' && 'font-fa')}>{t('title')}</h1>

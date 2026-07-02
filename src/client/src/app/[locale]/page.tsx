@@ -1,5 +1,4 @@
 import { getTranslations } from 'next-intl/server';
-import { SiteHeader } from '@/components/layout/site-header';
 import { SiteFooter } from '@/components/layout/site-footer';
 import { Container } from '@/components/layout/container';
 import { IntroSection } from '@/components/home/intro-section';
@@ -27,10 +26,9 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
 
   return (
     <>
-      <SiteHeader name={config.name} />
       <main>
         <Container className="pb-4 pt-10">
-          <IntroSection tagline={config.tagline} locale={locale} />
+          <IntroSection name={config.name} tagline={config.tagline} locale={locale} />
 
           <ProjectsSection
             items={portfolio ?? []}

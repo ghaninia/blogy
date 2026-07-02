@@ -3,20 +3,38 @@
 import { TextEffect } from '@/components/motion/text-effect';
 import { cn } from '@/lib/utils';
 
-export function IntroSection({ tagline, locale }: { tagline: string; locale: string }) {
-  if (!tagline) return null;
-
+export function IntroSection({
+  name,
+  tagline,
+  locale,
+}: {
+  name: string;
+  tagline: string;
+  locale: string;
+}) {
   return (
     <section className="py-8">
       <TextEffect
-        as="p"
+        as="h1"
         className={cn(
-          'text-base leading-relaxed text-muted-foreground sm:text-lg',
+          'text-base font-medium tracking-tight text-foreground sm:text-lg',
           locale === 'fa' && 'font-fa',
         )}
       >
-        {tagline}
+        {name}
       </TextEffect>
+      {tagline ? (
+        <TextEffect
+          as="p"
+          delay={0.08}
+          className={cn(
+            'mt-4 text-base leading-relaxed text-muted-foreground sm:text-lg',
+            locale === 'fa' && 'font-fa',
+          )}
+        >
+          {tagline}
+        </TextEffect>
+      ) : null}
     </section>
   );
 }

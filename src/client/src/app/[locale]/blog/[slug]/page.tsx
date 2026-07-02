@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
-import { SiteHeader } from '@/components/layout/site-header';
 import { SiteFooter } from '@/components/layout/site-footer';
 import { Container } from '@/components/layout/container';
 import { ReadingProgress } from '@/components/layout/reading-progress';
@@ -28,7 +27,6 @@ export default async function BlogPostPage({
   return (
     <>
       <ReadingProgress />
-      <SiteHeader name={config.name} />
       <main className="py-10">
         <Container>
           <Link

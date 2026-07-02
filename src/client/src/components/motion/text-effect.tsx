@@ -19,6 +19,7 @@ interface TextEffectProps {
   className?: string;
   as?: 'p' | 'h1' | 'h2' | 'span';
   per?: 'word' | 'char';
+  delay?: number;
 }
 
 export function TextEffect({
@@ -26,6 +27,7 @@ export function TextEffect({
   className,
   as: Tag = 'p',
   per = 'word',
+  delay = 0,
 }: TextEffectProps) {
   const parts = per === 'word' ? children.split(' ') : children.split('');
 
@@ -37,7 +39,19 @@ export function TextEffect({
           custom={i}
           initial="hidden"
           animate="visible"
-          variants={variants}
+          variants={{
+            hidden: variants.hidden,
+            visible: (index: number) => ({
+              opacity: 1,
+              filter: 'blur(0px)',
+              y: 0,
+              transition: {
+                delay: delay + index * 0.04,
+                duration: 0.35,
+                ease: [0.25, 0.4, 0.25, 1],
+              },
+            }),
+          }}
           className="inline-block"
           style={{ marginInlineEnd: per === 'word' ? '0.28em' : undefined }}
         >
