@@ -22,7 +22,10 @@
     "backToBlog": "Back to blog",
     "empty": "No posts yet.",
     "publishedOn": "Published on",
-    "postsCount": "posts"
+    "postsCount": "posts",
+    "loading": "Loading…",
+    "loadMore": "Load more",
+    "allLoaded": "All posts loaded"
   },
   "portfolio": {
     "title": "Portfolio",

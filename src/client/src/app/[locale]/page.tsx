@@ -15,7 +15,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   const config = await fetchSiteConfig(locale);
 
   const [{ data: posts }, { data: portfolio }, { data: experiences }] = await Promise.all([
-    fetchPosts(4),
+    fetchPosts(4, 1),
     fetchPortfolio(4),
     fetchExperiences(),
   ]);

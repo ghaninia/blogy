@@ -1,6 +1,15 @@
 import { apiGet } from './api';
 import type { PageDetail, PortfolioSummary, PostDetail, PostSummary } from './types';
 
+export interface PostsListMeta {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+}
+
+export const BLOG_PAGE_SIZE = 10;
+
 export interface ExperienceItem {
   id: string;
   titleFa: string;
@@ -12,8 +21,20 @@ export interface ExperienceItem {
   sortOrder: number;
 }
 
-export async function fetchPosts(limit = 6) {
-  return apiGet<PostSummary[]>('/api/posts', { limit, page: 1 });
+export async function fetchPosts(limit = BLOG_PAGE_SIZE, page = 1) {
+  const result = await apiGet<PostSummary[]>('/api/posts', { limit, page });
+  const meta = result.meta as Partial<PostsListMeta> | undefined;
+  return {
+    data: result.data,
+    meta: meta
+      ? {
+          page: meta.page ?? page,
+          limit: meta.limit ?? limit,
+          total: meta.total ?? result.data?.length ?? 0,
+          totalPages: meta.totalPages ?? 1,
+        }
+      : null,
+  };
 }
 
 export async function fetchPostBySlug(slug: string) {

@@ -22,7 +22,10 @@
     "backToBlog": "بازگشت به وبلاگ",
     "empty": "هنوز مطلبی منتشر نشده.",
     "publishedOn": "منتشر شده در",
-    "postsCount": "مطلب"
+    "postsCount": "مطلب",
+    "loading": "در حال بارگذاری…",
+    "loadMore": "مطالب بیشتر",
+    "allLoaded": "همه مطالب بارگذاری شد"
   },
   "portfolio": {
     "title": "نمونه‌کارها",
