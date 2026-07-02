@@ -60,7 +60,9 @@ export function ExperienceSection({
 
   return (
     <FadeIn className="py-10">
-      <h2 className={titleFont(locale, 'mb-5 text-sm font-medium text-foreground')}>{title}</h2>
+      <h2 className={titleFont(locale, 'mb-4 text-sm font-medium leading-tight text-foreground')}>
+        {title}
+      </h2>
       <div className="space-y-3">
         {items.map((item) => {
           const jobTitle = getLocalizedField(item, 'title', locale);
@@ -76,8 +78,8 @@ export function ExperienceSection({
               onLeave={() => setActiveId(null)}
             >
               <div>
-                  <p className={titleFont(locale, 'font-medium')}>{jobTitle}</p>
-                <p className={cn('text-sm text-muted-foreground', locale === 'fa' && 'font-fa')}>
+                  <p className={titleFont(locale, 'font-medium leading-snug')}>{jobTitle}</p>
+                <p className={cn('text-sm leading-normal text-muted-foreground', locale === 'fa' && 'font-fa')}>
                   {company}
                 </p>
               </div>

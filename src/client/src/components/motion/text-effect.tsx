@@ -53,10 +53,9 @@ export function TextEffect({
             }),
           }}
           className="inline-block"
-          style={{ marginInlineEnd: per === 'word' ? '0.28em' : undefined }}
         >
           {part}
-          {per === 'word' && i < parts.length - 1 ? '\u00A0' : null}
+          {per === 'word' && i < parts.length - 1 ? ' ' : null}
         </motion.span>
       ))}
     </Tag>

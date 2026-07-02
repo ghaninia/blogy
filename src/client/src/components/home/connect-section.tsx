@@ -27,9 +27,9 @@ export function ConnectSection({
 
   return (
     <FadeIn className="py-10">
-      <h2 className={titleFont(locale, 'mb-4 text-sm font-medium text-foreground')}>{title}</h2>
+      <h2 className={titleFont(locale, 'mb-3 text-sm font-medium leading-tight text-foreground')}>{title}</h2>
       {email ? (
-        <p className="mb-4 text-sm text-muted-foreground">
+        <p className="mb-4 text-sm leading-normal text-muted-foreground">
           {emailPrompt}{' '}
           <a href={`mailto:${email}`} className="text-foreground underline-offset-4 hover:underline">
             {email}

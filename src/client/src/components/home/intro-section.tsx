@@ -21,7 +21,7 @@ export function IntroSection({
           as="h1"
           className={titleFont(
             locale,
-            'text-xl font-medium tracking-tight text-foreground sm:text-2xl',
+            'text-lg font-medium leading-tight tracking-tight text-foreground sm:text-xl',
           )}
         >
           {name}
@@ -30,7 +30,7 @@ export function IntroSection({
           <TextEffect
             as="p"
             delay={0.06}
-            className="text-base font-normal tracking-tight text-muted-foreground sm:text-lg"
+            className="text-sm font-normal leading-snug tracking-normal text-muted-foreground sm:text-base"
           >
             {subtitle}
           </TextEffect>
@@ -40,7 +40,7 @@ export function IntroSection({
         <TextEffect
           as="p"
           delay={0.12}
-          className="mt-5 max-w-prose text-sm leading-relaxed text-muted-foreground sm:mt-6 sm:text-[0.9375rem]"
+          className="mt-4 max-w-prose text-[0.8125rem] leading-normal text-muted-foreground sm:mt-5 sm:text-sm"
         >
           {description}
         </TextEffect>

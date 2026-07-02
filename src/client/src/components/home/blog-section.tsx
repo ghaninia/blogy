@@ -27,7 +27,7 @@ export function BlogSection({
   return (
     <FadeIn className="py-10">
       <div className="mb-5 flex items-end justify-between gap-4">
-        <h2 className={titleFont(locale, 'text-sm font-medium text-foreground')}>{title}</h2>
+        <h2 className={titleFont(locale, 'text-sm font-medium leading-tight text-foreground')}>{title}</h2>
         <Link
           href={`/${locale}/blog`}
           className="text-xs text-muted-foreground transition-colors hover:text-foreground"
@@ -76,7 +76,7 @@ export function BlogSection({
                   {excerpt ? (
                     <p
                       className={cn(
-                        'mt-0.5 line-clamp-1 text-sm leading-snug text-muted-foreground',
+                        'mt-0.5 line-clamp-1 text-sm leading-normal text-muted-foreground',
                         locale === 'fa' && 'font-fa',
                       )}
                     >

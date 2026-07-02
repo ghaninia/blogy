@@ -21,7 +21,7 @@ export function ProjectsSection({
   return (
     <FadeIn className="py-10">
       <div className="mb-5 flex items-end justify-between gap-4">
-        <h2 className={titleFont(locale, 'text-sm font-medium text-foreground')}>{title}</h2>
+        <h2 className={titleFont(locale, 'text-sm font-medium leading-tight text-foreground')}>{title}</h2>
         <Link
           href={`/${locale}/portfolio`}
           className="text-xs text-muted-foreground transition-colors hover:text-foreground"
@@ -55,11 +55,11 @@ export function ProjectsSection({
                 <div className="aspect-[16/10] bg-muted" />
               )}
               <div className="p-4">
-                <p className={titleFont(locale, 'font-medium')}>{name}</p>
+                <p className={titleFont(locale, 'font-medium leading-snug')}>{name}</p>
                 {desc ? (
                   <p
                     className={cn(
-                      'mt-1 line-clamp-2 text-sm text-muted-foreground',
+                      'mt-1 line-clamp-2 text-sm leading-normal text-muted-foreground',
                       locale === 'fa' && 'font-fa',
                     )}
                   >
