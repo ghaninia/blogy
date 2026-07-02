@@ -47,29 +47,37 @@
   }
 
   .rich-content {
-    @apply space-y-4 text-sm leading-[1.65] text-muted-foreground;
+    @apply text-sm leading-[1.7] text-muted-foreground;
+  }
+
+  .rich-content > * + * {
+    @apply mt-4;
+  }
+
+  .rich-content > h2 + *,
+  .rich-content > h3 + * {
+    @apply mt-3;
   }
 
   .rich-content p {
     @apply text-pretty;
   }
 
-  .rich-content h2,
-  .rich-content h3 {
-    @apply pt-2 font-medium text-foreground;
-  }
-
   .rich-content h2 {
-    @apply text-base;
+    @apply scroll-mt-20 pt-2 text-base font-medium leading-snug tracking-tight text-foreground sm:text-lg;
   }
 
   .rich-content h3 {
-    @apply text-sm;
+    @apply scroll-mt-20 pt-1 text-sm font-medium leading-snug text-foreground sm:text-base;
+  }
+
+  .rich-content h4 {
+    @apply text-sm font-medium leading-snug text-foreground;
   }
 
   .rich-content ul,
   .rich-content ol {
-    @apply space-y-1.5 ps-5;
+    @apply space-y-2 ps-5;
   }
 
   .rich-content ul {
@@ -81,36 +89,99 @@
   }
 
   .rich-content li {
-    @apply leading-normal;
+    @apply leading-[1.65] text-muted-foreground;
+  }
+
+  .rich-content li::marker {
+    @apply text-muted-foreground/70;
+  }
+
+  .rich-content li > ul,
+  .rich-content li > ol {
+    @apply mt-2;
   }
 
   .rich-content blockquote {
-    @apply border-s-2 border-border ps-4 italic text-muted-foreground;
+    @apply rounded-r-lg border-s-2 border-foreground/15 bg-muted/35 py-3 ps-4 pe-3 italic leading-[1.65] text-muted-foreground;
   }
 
-  .rich-content pre {
-    @apply overflow-x-auto rounded-lg bg-muted/60 p-4 text-xs leading-normal text-foreground;
+  .rich-content blockquote p {
+    @apply m-0;
   }
 
-  .rich-content code {
-    @apply rounded bg-muted/60 px-1 py-0.5 text-[0.8125rem] text-foreground;
+  .rich-content hr {
+    @apply my-8 border-border;
   }
 
-  .rich-content pre code {
-    @apply bg-transparent p-0;
+  .rich-content a {
+    @apply font-medium text-foreground underline decoration-foreground/25 underline-offset-4 transition-colors hover:decoration-foreground/60;
   }
 
   .rich-content strong {
     @apply font-medium text-foreground;
   }
 
+  .rich-content em {
+    @apply italic;
+  }
+
+  .rich-content img {
+    @apply my-6 w-full rounded-xl border border-border bg-muted/20;
+  }
+
+  .rich-content table {
+    @apply my-6 w-full overflow-hidden rounded-lg border border-border text-left text-xs;
+  }
+
+  .rich-content thead {
+    @apply bg-muted/50;
+  }
+
+  .rich-content th {
+    @apply border-b border-border px-3 py-2 font-medium text-foreground;
+  }
+
+  .rich-content td {
+    @apply border-b border-border px-3 py-2 text-muted-foreground;
+  }
+
+  .rich-content tr:last-child td {
+    @apply border-b-0;
+  }
+
+  /* Inline code */
+  .rich-content :not(pre) > code {
+    @apply rounded-md border border-border/80 bg-muted/70 px-1.5 py-0.5 font-mono text-[0.8125rem] font-normal leading-snug text-foreground;
+  }
+
+  /* Code blocks */
+  .rich-content pre {
+    @apply my-5 overflow-x-auto rounded-xl border border-border bg-muted/45 p-4 font-mono text-[0.8125rem] leading-[1.65] text-foreground shadow-sm;
+    direction: ltr;
+    text-align: left;
+    tab-size: 2;
+  }
+
+  .rich-content pre code {
+    @apply block whitespace-pre bg-transparent p-0 font-mono text-[0.8125rem] font-normal leading-[1.65] text-inherit;
+  }
+
+  .rich-content.font-fa {
+    word-spacing: 0.06em;
+  }
+
   .rich-content.font-fa h2,
-  .rich-content.font-fa h3 {
+  .rich-content.font-fa h3,
+  .rich-content.font-fa h4 {
     font-family: var(--font-vazirmatn), Tahoma, sans-serif;
   }
 
-  .rich-content a {
-    @apply text-foreground underline-offset-4 hover:underline;
+  .rich-content.font-fa :not(pre) > code,
+  .rich-content.font-fa pre,
+  .rich-content.font-fa pre code {
+    font-family: var(--font-mono), ui-monospace, monospace;
+    word-spacing: normal;
+    letter-spacing: normal;
   }
 }
 
