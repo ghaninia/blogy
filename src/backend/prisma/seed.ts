@@ -219,6 +219,16 @@ async function main() {
       key: 'linkedin_url',
       valueEn: 'https://linkedin.com',
     },
+    {
+      key: 'footer_copyright',
+      valueFa: '© {year} {name}.',
+      valueEn: '© {year} {name}.',
+    },
+    {
+      key: 'footer_rights',
+      valueFa: 'تمامی حقوق محفوظ است.',
+      valueEn: 'All rights reserved.',
+    },
   ];
 
   for (const setting of defaultSettings) {

@@ -251,7 +251,14 @@
       "advanced": "Advanced Settings",
       "twitterHandle": "Twitter / X Handle",
       "googleVerification": "Google Verification Code",
-      "robots": "Robots Directive"
+      "robots": "Robots Directive",
+      "footer": "Footer",
+      "copyrightFa": "Copyright (FA)",
+      "copyrightEn": "Copyright (EN)",
+      "copyrightRightsFa": "Rights notice (FA)",
+      "copyrightRightsEn": "Rights notice (EN)",
+      "copyrightPlaceholder": "© '{year}' '{name}'.",
+      "copyrightHint": "Use '{year}' and '{name}' as placeholders. These lines appear in the site footer."
     }
   },
   "status": {

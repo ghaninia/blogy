@@ -25,6 +25,8 @@ export interface SiteConfig {
   githubUrl: string;
   linkedinUrl: string;
   instagramUrl: string;
+  footerCopyright: string;
+  footerRights: string;
 }
 
 function pick(settings: SettingRecord[], key: string) {
@@ -36,12 +38,20 @@ function localizedValue(record: SettingRecord | undefined, isFa: boolean): strin
   return (isFa ? record.valueFa : record.valueEn) || record.valueEn || record.valueFa || '';
 }
 
+export function resolveFooterTemplate(text: string, year: number, name: string): string {
+  return text.replace(/\{year\}/g, String(year)).replace(/\{name\}/g, name);
+}
+
 export function resolveSiteConfig(settings: SettingRecord[], locale: string): SiteConfig {
   const isFa = locale === 'fa';
   const descriptionRecord = pick(settings, 'site_description') ?? pick(settings, 'site_tagline');
+  const name =
+    localizedValue(pick(settings, 'site_name'), isFa) ||
+    pick(settings, 'site_name')?.valueEn ||
+    'Blogy';
 
   return {
-    name: localizedValue(pick(settings, 'site_name'), isFa) || 'Blogy',
+    name,
     subtitle: localizedValue(pick(settings, 'site_subtitle'), isFa),
     description: localizedValue(descriptionRecord, isFa),
     tagline: localizedValue(descriptionRecord, isFa),
@@ -57,6 +67,12 @@ export function resolveSiteConfig(settings: SettingRecord[], locale: string): Si
     githubUrl: pick(settings, 'github_url')?.valueEn ?? '',
     linkedinUrl: pick(settings, 'linkedin_url')?.valueEn ?? '',
     instagramUrl: pick(settings, 'instagram_url')?.valueEn ?? '',
+    footerCopyright:
+      localizedValue(pick(settings, 'footer_copyright'), isFa) ||
+      (isFa ? '© {year} {name}.' : '© {year} {name}.'),
+    footerRights:
+      localizedValue(pick(settings, 'footer_rights'), isFa) ||
+      (isFa ? 'تمامی حقوق محفوظ است.' : 'All rights reserved.'),
   };
 }
 

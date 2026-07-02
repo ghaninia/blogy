@@ -26,6 +26,10 @@ export interface SiteSettingsForm {
   twitterHandle: string;
   googleVerification: string;
   robots: string;
+  copyrightFa: string;
+  copyrightEn: string;
+  copyrightRightsFa: string;
+  copyrightRightsEn: string;
 }
 
 export const SITE_SETTING_KEYS = [
@@ -43,6 +47,8 @@ export const SITE_SETTING_KEYS = [
   'twitter_handle',
   'google_verification',
   'robots',
+  'footer_copyright',
+  'footer_rights',
 ] as const;
 
 export function emptySiteSettings(): SiteSettingsForm {
@@ -66,6 +72,10 @@ export function emptySiteSettings(): SiteSettingsForm {
     twitterHandle: '',
     googleVerification: '',
     robots: 'index, follow',
+    copyrightFa: '',
+    copyrightEn: '',
+    copyrightRightsFa: '',
+    copyrightRightsEn: '',
   };
 }
 
@@ -89,6 +99,8 @@ export function settingsToForm(settings: SettingRecord[]): SiteSettingsForm {
   const twitterHandle = getSettingValue(settings, 'twitter_handle');
   const googleVerification = getSettingValue(settings, 'google_verification');
   const robots = getSettingValue(settings, 'robots');
+  const footerCopyright = getSettingValue(settings, 'footer_copyright');
+  const footerRights = getSettingValue(settings, 'footer_rights');
 
   if (siteName) {
     form.siteNameFa = siteName.valueFa ?? '';
@@ -124,6 +136,14 @@ export function settingsToForm(settings: SettingRecord[]): SiteSettingsForm {
   if (twitterHandle) form.twitterHandle = twitterHandle.valueEn ?? '';
   if (googleVerification) form.googleVerification = googleVerification.valueEn ?? '';
   if (robots) form.robots = robots.valueEn ?? form.robots;
+  if (footerCopyright) {
+    form.copyrightFa = footerCopyright.valueFa ?? '';
+    form.copyrightEn = footerCopyright.valueEn ?? '';
+  }
+  if (footerRights) {
+    form.copyrightRightsFa = footerRights.valueFa ?? '';
+    form.copyrightRightsEn = footerRights.valueEn ?? '';
+  }
 
   return form;
 }
@@ -152,6 +172,16 @@ export function formToSettingUpdates(form: SiteSettingsForm) {
     { key: 'twitter_handle', valueEn: form.twitterHandle || undefined },
     { key: 'google_verification', valueEn: form.googleVerification || undefined },
     { key: 'robots', valueEn: form.robots || undefined },
+    {
+      key: 'footer_copyright',
+      valueFa: form.copyrightFa || undefined,
+      valueEn: form.copyrightEn || undefined,
+    },
+    {
+      key: 'footer_rights',
+      valueFa: form.copyrightRightsFa || undefined,
+      valueEn: form.copyrightRightsEn || undefined,
+    },
   ];
 }
 
@@ -170,6 +200,8 @@ export interface SiteConfig {
   twitterHandle: string;
   googleVerification: string;
   robots: string;
+  footerCopyright: string;
+  footerRights: string;
 }
 
 export function resolveSiteConfig(settings: SettingRecord[], locale: string): SiteConfig {
@@ -197,5 +229,15 @@ export function resolveSiteConfig(settings: SettingRecord[], locale: string): Si
     twitterHandle: form.twitterHandle,
     googleVerification: form.googleVerification,
     robots: form.robots,
+    footerCopyright:
+      (isFa ? form.copyrightFa : form.copyrightEn) ||
+      form.copyrightEn ||
+      form.copyrightFa ||
+      '© {year} {name}.',
+    footerRights:
+      (isFa ? form.copyrightRightsFa : form.copyrightRightsEn) ||
+      form.copyrightRightsEn ||
+      form.copyrightRightsFa ||
+      (isFa ? 'تمامی حقوق محفوظ است.' : 'All rights reserved.'),
   };
 }

@@ -47,7 +47,12 @@ export default async function PortfolioPage({ params }: { params: Promise<{ loca
           )}
         </Container>
       </main>
-      <SiteFooter name={config.name} year={new Date().getFullYear()} />
+      <SiteFooter
+        name={config.name}
+        year={new Date().getFullYear()}
+        footerCopyright={config.footerCopyright}
+        footerRights={config.footerRights}
+      />
     </>
   );
 }

@@ -70,7 +70,12 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
           />
         </Container>
       </main>
-      <SiteFooter name={config.name} year={new Date().getFullYear()} />
+      <SiteFooter
+        name={config.name}
+        year={new Date().getFullYear()}
+        footerCopyright={config.footerCopyright}
+        footerRights={config.footerRights}
+      />
     </>
   );
 }

@@ -251,7 +251,14 @@
       "advanced": "تنظیمات پیشرفته",
       "twitterHandle": "حساب توییتر / X",
       "googleVerification": "کد تأیید گوگل",
-      "robots": "دستورات Robots"
+      "robots": "دستورات Robots",
+      "footer": "فوتر",
+      "copyrightFa": "کپی‌رایت (FA)",
+      "copyrightEn": "کپی‌رایت (EN)",
+      "copyrightRightsFa": "متن حقوق (FA)",
+      "copyrightRightsEn": "متن حقوق (EN)",
+      "copyrightPlaceholder": "© '{year}' '{name}'.",
+      "copyrightHint": "از '{year}' و '{name}' به‌عنوان placeholder استفاده کنید. این متن‌ها در فوتر سایت نمایش داده می‌شوند."
     }
   },
   "status": {

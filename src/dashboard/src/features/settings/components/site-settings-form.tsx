@@ -207,6 +207,43 @@ export function SiteSettingsFormView({ form, onChange, isLoading }: SiteSettings
 
         <Card variant="glass">
           <CardHeader>
+            <CardTitle>{ts('footer')}</CardTitle>
+          </CardHeader>
+          <CardContent className="grid gap-4 md:grid-cols-2">
+            <FormField label={ts('copyrightFa')} className="md:col-span-2">
+              <Input
+                value={form.copyrightFa}
+                onChange={(e) => set({ copyrightFa: e.target.value })}
+                placeholder={ts('copyrightPlaceholder')}
+                dir="rtl"
+              />
+            </FormField>
+            <FormField label={ts('copyrightEn')} className="md:col-span-2">
+              <Input
+                value={form.copyrightEn}
+                onChange={(e) => set({ copyrightEn: e.target.value })}
+                placeholder={ts('copyrightPlaceholder')}
+              />
+            </FormField>
+            <FormField label={ts('copyrightRightsFa')} className="md:col-span-2">
+              <Input
+                value={form.copyrightRightsFa}
+                onChange={(e) => set({ copyrightRightsFa: e.target.value })}
+                dir="rtl"
+              />
+            </FormField>
+            <FormField label={ts('copyrightRightsEn')} className="md:col-span-2">
+              <Input
+                value={form.copyrightRightsEn}
+                onChange={(e) => set({ copyrightRightsEn: e.target.value })}
+              />
+            </FormField>
+            <p className="md:col-span-2 text-xs leading-relaxed text-muted-foreground">{ts('copyrightHint')}</p>
+          </CardContent>
+        </Card>
+
+        <Card variant="glass">
+          <CardHeader>
             <CardTitle>{ts('advanced')}</CardTitle>
           </CardHeader>
           <CardContent className="grid gap-4 md:grid-cols-2">
