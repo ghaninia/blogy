@@ -4,11 +4,12 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useLocale, useTranslations } from 'next-intl';
 import { Plus, Pencil } from 'lucide-react';
-import { Button, Input, Pagination, Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@gh/ui';
+import { Button, Input, Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@gh/ui';
 import { getLocalizedField } from '@/shared/lib/localized';
 import { PageHeader } from '@/features/layout/components/page-header';
 import { DataTable } from '@/features/layout/components/data-table';
 import { useCrudList } from '@/shared/hooks/use-crud-list';
+import { DASHBOARD_LIST_PAGE_SIZE } from '@/shared/constants/list-pagination';
 import { useDebouncedValue } from '@/shared/hooks/use-debounce';
 
 interface Category {
@@ -33,7 +34,7 @@ export default function DashboardCategoriesPage() {
     endpoint: '/api/categories',
     params: {
       page,
-      limit: 20,
+      limit: DASHBOARD_LIST_PAGE_SIZE,
       search: debouncedSearch || undefined,
     },
   });
@@ -82,11 +83,7 @@ export default function DashboardCategoriesPage() {
             {renderActions(cat)}
           </div>
         )}
-        footer={
-          meta && meta.totalPages > 1 ? (
-            <Pagination page={page} totalPages={meta.totalPages} onPageChange={setPage} />
-          ) : undefined
-        }
+        pagination={{ page, meta, onPageChange: setPage }}
       >
         <Table>
           <TableHeader>

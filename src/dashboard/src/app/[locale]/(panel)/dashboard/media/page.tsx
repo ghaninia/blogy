@@ -15,14 +15,15 @@ import {
   DialogTitle,
   FormField,
   Input,
-  Pagination,
   useToast,
 } from '@gh/ui';
 import { useQueryClient } from '@tanstack/react-query';
 import { api, getMediaUrl } from '@/shared/api-client';
 import { canDeletePost } from '@/shared/lib/localized';
 import { PageHeader } from '@/features/layout/components/page-header';
+import { TablePagination } from '@/features/layout/components/table-pagination';
 import { useCrudList } from '@/shared/hooks/use-crud-list';
+import { DASHBOARD_LIST_PAGE_SIZE } from '@/shared/constants/list-pagination';
 import { useDebouncedValue } from '@/shared/hooks/use-debounce';
 import { useDeleteConfirm } from '@/shared/hooks/use-delete-confirm';
 import { useAuthStore } from '@/shared/store/auth';
@@ -61,7 +62,7 @@ export default function DashboardMediaPage() {
   const { items, meta, isLoading } = useCrudList<MediaItem>({
     queryKey: ['dashboard-media'],
     endpoint: '/api/media',
-    params: { page, limit: 24, search: debouncedSearch || undefined },
+    params: { page, limit: DASHBOARD_LIST_PAGE_SIZE, search: debouncedSearch || undefined },
   });
 
   const canDelete = user ? canDeletePost(user.role) : false;
@@ -188,11 +189,9 @@ export default function DashboardMediaPage() {
             </div>
           )}
 
-          {meta && meta.totalPages > 1 ? (
-            <div className="mt-6 flex justify-center">
-              <Pagination page={page} totalPages={meta.totalPages} onPageChange={setPage} />
-            </div>
-          ) : null}
+          <div className="mt-6 border-t border-border pt-4">
+            <TablePagination page={page} meta={meta} onPageChange={setPage} />
+          </div>
         </CardContent>
       </Card>
 

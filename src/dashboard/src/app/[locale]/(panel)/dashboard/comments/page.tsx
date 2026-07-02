@@ -7,7 +7,6 @@ import { Trash2 } from 'lucide-react';
 import {
   Badge,
   Button,
-  Pagination,
   Table,
   TableBody,
   TableCell,
@@ -26,6 +25,7 @@ import { getLocalizedField, formatDate } from '@/shared/lib/localized';
 import { PageHeader } from '@/features/layout/components/page-header';
 import { DataTable } from '@/features/layout/components/data-table';
 import { useCrudList } from '@/shared/hooks/use-crud-list';
+import { DASHBOARD_LIST_PAGE_SIZE } from '@/shared/constants/list-pagination';
 import { useDeleteConfirm } from '@/shared/hooks/use-delete-confirm';
 
 interface Comment {
@@ -63,7 +63,7 @@ export default function DashboardCommentsPage() {
   const { items, meta, isLoading } = useCrudList<Comment>({
     queryKey: ['dashboard-comments', status],
     endpoint: '/api/comments',
-    params: { status, page, limit: 20 },
+    params: { status, page, limit: DASHBOARD_LIST_PAGE_SIZE },
   });
 
   const moderate = async (id: string, newStatus: 'APPROVED' | 'REJECTED' | 'SPAM') => {
@@ -107,11 +107,7 @@ export default function DashboardCommentsPage() {
             <DataTable
               isLoading={isLoading}
               isEmpty={!isLoading && items.length === 0}
-              footer={
-                meta && meta.totalPages > 1 ? (
-                  <Pagination page={page} totalPages={meta.totalPages} onPageChange={setPage} />
-                ) : undefined
-              }
+              pagination={{ page, meta, onPageChange: setPage }}
             >
               <Table>
                 <TableHeader>

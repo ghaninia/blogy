@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import {
   Badge,
-  Pagination,
   Select,
   SelectContent,
   SelectItem,
@@ -23,6 +22,7 @@ import { api } from '@/shared/api-client';
 import { PageHeader } from '@/features/layout/components/page-header';
 import { DataTable } from '@/features/layout/components/data-table';
 import { useCrudList } from '@/shared/hooks/use-crud-list';
+import { DASHBOARD_LIST_PAGE_SIZE } from '@/shared/constants/list-pagination';
 
 interface UserItem {
   id: string;
@@ -47,7 +47,7 @@ export default function DashboardUsersPage() {
   const { items, meta, isLoading } = useCrudList<UserItem>({
     queryKey: ['dashboard-users'],
     endpoint: '/api/auth/users',
-    params: { page, limit: 20 },
+    params: { page, limit: DASHBOARD_LIST_PAGE_SIZE },
   });
 
   const updateRole = async (userId: string, role: string) => {
@@ -67,11 +67,7 @@ export default function DashboardUsersPage() {
       <DataTable
         isLoading={isLoading}
         isEmpty={!isLoading && items.length === 0}
-        footer={
-          meta && meta.totalPages > 1 ? (
-            <Pagination page={page} totalPages={meta.totalPages} onPageChange={setPage} />
-          ) : undefined
-        }
+        pagination={{ page, meta, onPageChange: setPage }}
       >
         <Table>
           <TableHeader>

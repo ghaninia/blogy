@@ -97,6 +97,7 @@
       "empty": "موردی یافت نشد",
       "search": "جستجو...",
       "actions": "عملیات",
+      "showing": "نمایش {from} تا {to} از {total} مورد",
       "slug": "اسلاگ",
       "title": "عنوان",
       "status": "وضعیت",

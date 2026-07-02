@@ -8,7 +8,6 @@ import {
   Badge,
   Button,
   Input,
-  Pagination,
   Table,
   TableBody,
   TableCell,
@@ -23,6 +22,7 @@ import { getLocalizedField, isAdmin } from '@/shared/lib/localized';
 import { PageHeader } from '@/features/layout/components/page-header';
 import { DataTable } from '@/features/layout/components/data-table';
 import { useCrudList } from '@/shared/hooks/use-crud-list';
+import { DASHBOARD_LIST_PAGE_SIZE } from '@/shared/constants/list-pagination';
 import { useDebouncedValue } from '@/shared/hooks/use-debounce';
 import { useDeleteConfirm } from '@/shared/hooks/use-delete-confirm';
 import { useAuthStore } from '@/shared/store/auth';
@@ -55,7 +55,7 @@ export default function DashboardPagesPage() {
     endpoint: '/api/pages',
     params: {
       page,
-      limit: 20,
+      limit: DASHBOARD_LIST_PAGE_SIZE,
       search: debouncedSearch || undefined,
     },
   });
@@ -132,11 +132,7 @@ export default function DashboardPagesPage() {
             {renderActions(pageItem)}
           </div>
         )}
-        footer={
-          meta && meta.totalPages > 1 ? (
-            <Pagination page={page} totalPages={meta.totalPages} onPageChange={setPage} />
-          ) : undefined
-        }
+        pagination={{ page, meta, onPageChange: setPage }}
       >
         <Table>
           <TableHeader>

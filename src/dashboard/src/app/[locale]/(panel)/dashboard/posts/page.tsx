@@ -8,7 +8,6 @@ import {
   Badge,
   Button,
   Input,
-  Pagination,
   Select,
   SelectContent,
   SelectItem,
@@ -27,6 +26,7 @@ import { getLocalizedField, formatDate, canDeletePost } from '@/shared/lib/local
 import { PageHeader } from '@/features/layout/components/page-header';
 import { DataTable } from '@/features/layout/components/data-table';
 import { useCrudList } from '@/shared/hooks/use-crud-list';
+import { DASHBOARD_LIST_PAGE_SIZE } from '@/shared/constants/list-pagination';
 import { useDebouncedValue } from '@/shared/hooks/use-debounce';
 import { useDeleteConfirm } from '@/shared/hooks/use-delete-confirm';
 import { useAuthStore } from '@/shared/store/auth';
@@ -69,7 +69,7 @@ export default function DashboardPostsPage() {
     endpoint: '/api/posts',
     params: {
       page,
-      limit: 20,
+      limit: DASHBOARD_LIST_PAGE_SIZE,
       search: debouncedSearch || undefined,
       status: status === 'all' ? undefined : status,
     },
@@ -120,11 +120,7 @@ export default function DashboardPostsPage() {
       <DataTable
         isLoading={isLoading}
         isEmpty={!isLoading && items.length === 0}
-        footer={
-          meta && meta.totalPages > 1 ? (
-            <Pagination page={page} totalPages={meta.totalPages} onPageChange={setPage} />
-          ) : undefined
-        }
+        pagination={{ page, meta, onPageChange: setPage }}
       >
         <Table>
           <TableHeader>

@@ -18,6 +18,7 @@ import {
   useToast,
 } from '@gh/ui';
 import { api, getMediaUrl, getPaginationMeta } from '@/shared/api-client';
+import { DASHBOARD_LIST_PAGE_SIZE } from '@/shared/constants/list-pagination';
 import { useDebouncedValue } from '@/shared/hooks/use-debounce';
 
 export interface MediaItem {
@@ -52,7 +53,7 @@ export function MediaManager({ open, onClose, onSelect, mode = 'single' }: Media
       const res = await api.get<MediaItem[]>('/api/media', {
         search: debouncedSearch || undefined,
         page,
-        limit: 24,
+        limit: DASHBOARD_LIST_PAGE_SIZE,
       });
       return {
         items: res.data ?? [],

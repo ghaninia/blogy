@@ -9,6 +9,9 @@ export interface PaginationProps extends React.HTMLAttributes<HTMLElement> {
   totalPages: number;
   onPageChange: (page: number) => void;
   siblingCount?: number;
+  previousLabel?: string;
+  nextLabel?: string;
+  dir?: 'ltr' | 'rtl';
 }
 
 function range(start: number, end: number) {
@@ -37,21 +40,33 @@ function getPageNumbers(page: number, totalPages: number, siblingCount: number):
   return [1, 'ellipsis', ...range(leftSibling, rightSibling), 'ellipsis', totalPages];
 }
 
-export function Pagination({ className, page, totalPages, onPageChange, siblingCount = 1, ...props }: PaginationProps) {
+export function Pagination({
+  className,
+  page,
+  totalPages,
+  onPageChange,
+  siblingCount = 1,
+  previousLabel = 'Previous page',
+  nextLabel = 'Next page',
+  dir = 'ltr',
+  ...props
+}: PaginationProps) {
   if (totalPages <= 1) return null;
 
   const pages = getPageNumbers(page, totalPages, siblingCount);
+  const PrevIcon = dir === 'rtl' ? ChevronRight : ChevronLeft;
+  const NextIcon = dir === 'rtl' ? ChevronLeft : ChevronRight;
 
   return (
-    <nav aria-label="Pagination" className={cn('flex items-center gap-1', className)} {...props}>
+    <nav aria-label="Pagination" className={cn('flex items-center gap-1', className)} dir={dir} {...props}>
       <Button
         variant="outline"
         size="icon"
-        aria-label="Previous page"
+        aria-label={previousLabel}
         disabled={page <= 1}
         onClick={() => onPageChange(page - 1)}
       >
-        <ChevronLeft className="size-4" />
+        <PrevIcon className="size-4" />
       </Button>
 
       {pages.map((item, index) =>
@@ -76,11 +91,11 @@ export function Pagination({ className, page, totalPages, onPageChange, siblingC
       <Button
         variant="outline"
         size="icon"
-        aria-label="Next page"
+        aria-label={nextLabel}
         disabled={page >= totalPages}
         onClick={() => onPageChange(page + 1)}
       >
-        <ChevronRight className="size-4" />
+        <NextIcon className="size-4" />
       </Button>
     </nav>
   );

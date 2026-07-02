@@ -4,6 +4,10 @@ import type { ReactNode } from 'react';
 import { useTranslations } from 'next-intl';
 import { Card, CardContent, EmptyState, Skeleton } from '@gh/ui';
 import { cn } from '@/shared/lib/utils';
+import {
+  TablePagination,
+  type TablePaginationProps,
+} from '@/features/layout/components/table-pagination';
 
 interface DataTableProps<T = unknown> {
   isLoading?: boolean;
@@ -13,6 +17,7 @@ interface DataTableProps<T = unknown> {
   emptyAction?: ReactNode;
   children: ReactNode;
   footer?: ReactNode;
+  pagination?: TablePaginationProps;
   items?: T[];
   mobileCardRender?: (item: T) => ReactNode;
 }
@@ -25,6 +30,7 @@ export function DataTable<T = unknown>({
   emptyAction,
   children,
   footer,
+  pagination,
   items,
   mobileCardRender,
 }: DataTableProps<T>) {
@@ -64,7 +70,11 @@ export function DataTable<T = unknown>({
             <div className={cn('overflow-x-auto', showMobileCards && 'hidden md:block')}>
               {children}
             </div>
-            {footer ? (
+            {pagination ? (
+              <div className="border-t border-border p-4">
+                <TablePagination {...pagination} />
+              </div>
+            ) : footer ? (
               <div className="flex justify-center border-t border-border p-4">{footer}</div>
             ) : null}
           </>
