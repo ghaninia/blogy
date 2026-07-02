@@ -1,7 +1,7 @@
 'use client';
 
-import { TextEffect } from '@/components/motion/text-effect';
-import { titleFont } from '@/lib/utils';
+import { FadeIn, TextEffect } from '@/components/motion/text-effect';
+import { cn, titleFont } from '@/lib/utils';
 
 export function IntroSection({
   name,
@@ -37,13 +37,16 @@ export function IntroSection({
         ) : null}
       </div>
       {description ? (
-        <TextEffect
-          as="p"
-          delay={0.12}
-          className="mt-4 max-w-prose text-[0.8125rem] leading-normal text-muted-foreground sm:mt-5 sm:text-sm"
-        >
-          {description}
-        </TextEffect>
+        <FadeIn delay={0.12}>
+          <p
+            className={cn(
+              'mt-4 max-w-prose text-pretty text-sm leading-[1.6] text-muted-foreground sm:mt-5',
+              locale === 'fa' ? 'word-spacing-[0.08em]' : 'word-spacing-[0.04em]',
+            )}
+          >
+            {description}
+          </p>
+        </FadeIn>
       ) : null}
     </section>
   );
