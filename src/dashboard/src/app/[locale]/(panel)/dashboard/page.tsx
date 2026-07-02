@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useLocale, useTranslations } from 'next-intl';
 import {
   FileText,
+  History,
   Image,
   MessageSquare,
   Users,
@@ -45,22 +46,28 @@ export default function DashboardOverviewPage() {
   const locale = useLocale();
   const { user } = useAuthStore();
 
+  const isEditor = user && ['ADMIN', 'EDITOR'].includes(user.role);
+
   const { data: stats, isLoading } = useQuery({
-    queryKey: ['dashboard-overview'],
+    queryKey: ['dashboard-overview', user?.role],
     queryFn: async () => {
-      const [posts, comments, media, users] = await Promise.all([
+      const [posts, comments, media, experiences, users] = await Promise.all([
         api.get<unknown[]>('/api/posts', { limit: 1 }),
         api.get<unknown[]>('/api/comments', { status: 'PENDING', limit: 1 }),
         api.get<unknown[]>('/api/media', { limit: 1 }),
+        isEditor
+          ? api.get<unknown[]>('/api/experiences', { limit: 1 })
+          : Promise.resolve({ success: true, data: [], meta: { total: 0 } }),
         user && isAdmin(user.role)
           ? api.get<unknown[]>('/api/auth/users', { limit: 1 })
-          : Promise.resolve({ data: [], meta: { total: 0 } }),
+          : Promise.resolve({ success: true, data: [], meta: { total: 0 } }),
       ]);
 
       return {
         posts: getPaginationMeta(posts)?.total ?? posts.data?.length ?? 0,
         comments: getPaginationMeta(comments)?.total ?? 0,
         media: getPaginationMeta(media)?.total ?? media.data?.length ?? 0,
+        experiences: getPaginationMeta(experiences)?.total ?? experiences.data?.length ?? 0,
         users: getPaginationMeta(users as never)?.total ?? 0,
       };
     },
@@ -100,6 +107,15 @@ export default function DashboardOverviewPage() {
             href="/dashboard/media"
             locale={locale}
           />
+          {isEditor ? (
+            <StatCard
+              title={ts('experiences')}
+              value={stats?.experiences ?? 0}
+              icon={<History className="h-5 w-5" />}
+              href="/dashboard/experiences"
+              locale={locale}
+            />
+          ) : null}
           {user && isAdmin(user.role) ? (
             <StatCard
               title={ts('users')}

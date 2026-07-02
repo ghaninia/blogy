@@ -23,16 +23,17 @@ export async function createApp(): Promise<Express> {
       credentials: true,
     }),
   );
+
+  app.get('/health', (_req, res) => {
+    res.json({ success: true, data: { status: 'ok', timestamp: new Date().toISOString() } });
+  });
+
   app.use(globalRateLimiter);
   app.use(express.json({ limit: '2mb' }));
   app.use(express.urlencoded({ extended: true }));
   app.use(cookieParser());
 
   app.use('/uploads', express.static(path.resolve(env.uploadDir)));
-
-  app.get('/health', (_req, res) => {
-    res.json({ success: true, data: { status: 'ok', timestamp: new Date().toISOString() } });
-  });
 
   for (const module of modules) {
     app.use(module.path, module.router);

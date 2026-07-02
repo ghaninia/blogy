@@ -29,7 +29,7 @@ export const emptyExperienceForm = (): ExperienceFormData => ({
   companyEn: '',
   startDate: '',
   endDate: '',
-  isPublished: false,
+  isPublished: true,
   sortOrder: 0,
 });
 
@@ -109,7 +109,10 @@ export function ExperienceForm({ form, onChange }: ExperienceFormProps) {
             />
           </FormField>
           <FormField label={tf('isPublished')}>
-            <Switch checked={form.isPublished} onCheckedChange={(v) => set({ isPublished: v })} />
+            <div className="space-y-2">
+              <Switch checked={form.isPublished} onCheckedChange={(v) => set({ isPublished: v })} />
+              <p className="text-xs leading-relaxed text-muted-foreground">{tf('experienceHomepageHint')}</p>
+            </div>
           </FormField>
         </div>
       </CardContent>

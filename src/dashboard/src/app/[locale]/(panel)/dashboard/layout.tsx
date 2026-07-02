@@ -8,7 +8,14 @@ import { useAuthStore } from '@/shared/store/auth';
 import { Skeleton } from '@gh/ui';
 
 const ADMIN_ONLY = ['/dashboard/users', '/dashboard/settings'];
-const EDITOR_ONLY = ['/dashboard/pages', '/dashboard/categories', '/dashboard/tags', '/dashboard/portfolio', '/dashboard/comments'];
+const EDITOR_ONLY = [
+  '/dashboard/pages',
+  '/dashboard/categories',
+  '/dashboard/tags',
+  '/dashboard/portfolio',
+  '/dashboard/experiences',
+  '/dashboard/comments',
+];
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();

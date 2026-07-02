@@ -56,6 +56,6 @@ export const env = {
   uploadDir: resolveUploadDir(),
   maxFileSize: parseInt(process.env.MAX_FILE_SIZE ?? '10485760', 10),
   rateLimitWindowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS ?? '900000', 10),
-  rateLimitMax: parseInt(process.env.RATE_LIMIT_MAX ?? '100', 10),
-  authRateLimitMax: parseInt(process.env.AUTH_RATE_LIMIT_MAX ?? '10', 10),
+  rateLimitMax: parseInt(process.env.RATE_LIMIT_MAX ?? (isDev ? '10000' : '500'), 10),
+  authRateLimitMax: parseInt(process.env.AUTH_RATE_LIMIT_MAX ?? (isDev ? '1000' : '10'), 10),
 };

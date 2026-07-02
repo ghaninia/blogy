@@ -86,7 +86,8 @@
       "posts": "پست‌ها",
       "pendingComments": "نظرات در انتظار",
       "media": "فایل‌های رسانه",
-      "users": "کاربران"
+      "users": "کاربران",
+      "experiences": "سوابق کاری"
     },
     "table": {
       "empty": "موردی یافت نشد",
@@ -152,6 +153,7 @@
       "companyEn": "شرکت (EN)",
       "startDate": "تاریخ شروع",
       "endDateOptional": "تاریخ پایان (اختیاری)",
+      "experienceHomepageHint": "موارد منتشرشده در بخش سوابق کاری صفحه اصلی نمایش داده می‌شوند.",
       "technologyPlaceholder": "تایپ کنید و Enter بزنید",
       "altFa": "متن جایگزین (FA)",
       "altEn": "متن جایگزین (EN)",
