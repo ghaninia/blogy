@@ -1,0 +1,49 @@
+# Production dashboard (Next.js standalone)
+
+FROM node:20-alpine AS base
+RUN apk add --no-cache libc6-compat
+RUN corepack enable && corepack prepare pnpm@9.15.0 --activate
+
+FROM base AS deps
+WORKDIR /app
+COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
+COPY src/dashboard/package.json ./src/dashboard/
+COPY src/backend/package.json ./src/backend/
+COPY src/packages/ui/package.json ./src/packages/ui/
+RUN pnpm install --frozen-lockfile
+
+FROM base AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
+COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
+COPY src/backend ./src/backend
+COPY src/dashboard ./src/dashboard
+COPY src/packages/ui ./src/packages/ui
+
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV DATABASE_URL="postgresql://postgres:postgres@db:5432/blogy?schema=public"
+ARG NEXT_PUBLIC_API_URL=http://localhost:4000
+ARG API_URL=http://backend:4000
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+ENV API_URL=$API_URL
+RUN pnpm --filter @gh/backend generate
+RUN pnpm --filter @gh/dashboard build
+
+FROM node:20-alpine AS runner
+WORKDIR /app
+
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
+
+RUN addgroup --system --gid 1001 nodejs \
+  && adduser --system --uid 1001 nextjs
+
+COPY --from=builder /app/src/dashboard/public ./src/dashboard/public
+COPY --from=builder --chown=nextjs:nodejs /app/src/dashboard/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/src/dashboard/.next/static ./src/dashboard/.next/static
+
+USER nextjs
+EXPOSE 3000
+CMD ["node", "src/dashboard/server.js"]

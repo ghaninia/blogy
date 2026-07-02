@@ -1,0 +1,49 @@
+# Production public site (Next.js standalone)
+
+FROM node:20-alpine AS base
+RUN apk add --no-cache libc6-compat
+RUN corepack enable && corepack prepare pnpm@9.15.0 --activate
+
+FROM base AS deps
+WORKDIR /app
+COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
+COPY src/client/package.json ./src/client/
+COPY src/backend/package.json ./src/backend/
+RUN pnpm install --frozen-lockfile
+
+FROM base AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
+COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
+COPY src/backend ./src/backend
+COPY src/client ./src/client
+
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV DATABASE_URL="postgresql://postgres:postgres@db:5432/blogy?schema=public"
+ARG NEXT_PUBLIC_API_URL=http://localhost:4000
+ARG NEXT_PUBLIC_SITE_URL=http://localhost:3001
+ARG API_URL=http://backend:4000
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+ENV NEXT_PUBLIC_SITE_URL=$NEXT_PUBLIC_SITE_URL
+ENV API_URL=$API_URL
+RUN pnpm --filter @gh/backend generate
+RUN pnpm --filter @gh/client build
+
+FROM node:20-alpine AS runner
+WORKDIR /app
+
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV PORT=3001
+ENV HOSTNAME="0.0.0.0"
+
+RUN addgroup --system --gid 1001 nodejs \
+  && adduser --system --uid 1001 nextjs
+
+COPY --from=builder /app/src/client/public ./src/client/public
+COPY --from=builder --chown=nextjs:nodejs /app/src/client/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/src/client/.next/static ./src/client/.next/static
+
+USER nextjs
+EXPOSE 3001
+CMD ["node", "src/client/server.js"]

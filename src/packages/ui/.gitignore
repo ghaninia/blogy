@@ -1,3 +1,6 @@
+# Dependencies (if installed locally)
+node_modules/
+
 # Build output (if compiled separately)
 dist/
 

@@ -1,0 +1,42 @@
+# Production API (Express + Prisma)
+
+FROM node:20-alpine AS base
+RUN apk add --no-cache libc6-compat openssl
+RUN corepack enable && corepack prepare pnpm@9.15.0 --activate
+
+FROM base AS deps
+WORKDIR /app
+COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
+COPY src/backend/package.json ./src/backend/
+COPY src/packages/ui/package.json ./src/packages/ui/
+RUN pnpm install --frozen-lockfile
+
+FROM base AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
+COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
+COPY src/backend ./src/backend
+COPY src/packages/ui ./src/packages/ui
+
+ENV DATABASE_URL="postgresql://postgres:postgres@db:5432/blogy?schema=public"
+RUN pnpm --filter @gh/backend generate && pnpm --filter @gh/backend build
+
+FROM base AS runner
+RUN apk add --no-cache netcat-openbsd curl
+WORKDIR /app
+
+ENV NODE_ENV=production
+
+COPY package.json pnpm-workspace.yaml ./
+COPY src/backend/package.json ./src/backend/
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/src/backend/dist ./src/backend/dist
+COPY --from=builder /app/src/backend/prisma ./src/backend/prisma
+COPY --from=builder /app/src/backend/node_modules ./src/backend/node_modules
+
+COPY docker/scripts/entrypoint-backend.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+EXPOSE 4000
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["node", "src/backend/dist/index.js"]

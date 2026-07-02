@@ -1,0 +1,131 @@
+# Blogy — production stack (pull images from GHCR)
+# Usage:
+#   docker compose -f docker-compose.prod.yml --env-file .env pull
+#   docker compose -f docker-compose.prod.yml --env-file .env up -d
+
+name: blogy-prod
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: blogy-prod-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-blogy}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        [
+          'CMD-SHELL',
+          'pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-blogy}',
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    networks:
+      - blogy
+
+  backend:
+    image: ${GHCR_IMAGE_BACKEND:-ghcr.io/ghaninia/blogy-backend:latest}
+    container_name: blogy-prod-backend
+    restart: unless-stopped
+    env_file:
+      - path: .env
+        required: true
+    ports:
+      - '${API_PORT:-4000}:4000'
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@db:5432/${POSTGRES_DB:-blogy}?schema=public
+      API_PORT: 4000
+      NODE_ENV: production
+      CORS_ORIGIN: ${CORS_ORIGIN}
+      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
+      JWT_ACCESS_EXPIRES: ${JWT_ACCESS_EXPIRES:-15m}
+      JWT_REFRESH_EXPIRES: ${JWT_REFRESH_EXPIRES:-7d}
+      RECAPTCHA_SECRET_KEY: ${RECAPTCHA_SECRET_KEY:-}
+      UPLOAD_DIR: /app/uploads
+      MAX_FILE_SIZE: ${MAX_FILE_SIZE:-10485760}
+      RATE_LIMIT_WINDOW_MS: ${RATE_LIMIT_WINDOW_MS:-900000}
+      RATE_LIMIT_MAX: ${RATE_LIMIT_MAX:-500}
+      AUTH_RATE_LIMIT_MAX: ${AUTH_RATE_LIMIT_MAX:-10}
+      RUN_SEED: ${RUN_SEED:-false}
+      DB_HOST: db
+      DB_PORT: 5432
+    volumes:
+      - uploads_data:/app/uploads
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD-SHELL', 'curl -sf http://127.0.0.1:4000/health > /dev/null || exit 1']
+      interval: 10s
+      timeout: 5s
+      retries: 8
+      start_period: 45s
+    networks:
+      - blogy
+
+  dashboard:
+    image: ${GHCR_IMAGE_DASHBOARD:-ghcr.io/ghaninia/blogy-dashboard:latest}
+    container_name: blogy-prod-dashboard
+    restart: unless-stopped
+    env_file:
+      - path: .env
+        required: true
+    ports:
+      - '${WEB_PORT:-3000}:3000'
+    environment:
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
+      API_URL: http://backend:4000
+      NEXT_PUBLIC_RECAPTCHA_SITE_KEY: ${NEXT_PUBLIC_RECAPTCHA_SITE_KEY:-}
+      NODE_ENV: production
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD-SHELL', 'curl -sf http://127.0.0.1:3000 > /dev/null || exit 1']
+      interval: 15s
+      timeout: 5s
+      retries: 12
+      start_period: 90s
+    networks:
+      - blogy
+
+  client:
+    image: ${GHCR_IMAGE_CLIENT:-ghcr.io/ghaninia/blogy-client:latest}
+    container_name: blogy-prod-client
+    restart: unless-stopped
+    env_file:
+      - path: .env
+        required: true
+    ports:
+      - '${CLIENT_PORT:-3001}:3001'
+    environment:
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
+      API_URL: http://backend:4000
+      NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL}
+      NODE_ENV: production
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD-SHELL', 'curl -sf http://127.0.0.1:3001 > /dev/null || exit 1']
+      interval: 15s
+      timeout: 5s
+      retries: 12
+      start_period: 90s
+    networks:
+      - blogy
+
+networks:
+  blogy:
+    name: blogy-prod-network
+
+volumes:
+  postgres_data:
+  uploads_data:
