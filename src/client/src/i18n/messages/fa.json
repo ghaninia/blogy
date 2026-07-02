@@ -21,7 +21,8 @@
     "readMore": "ادامه مطلب",
     "backToBlog": "بازگشت به وبلاگ",
     "empty": "هنوز مطلبی منتشر نشده.",
-    "publishedOn": "منتشر شده در"
+    "publishedOn": "منتشر شده در",
+    "postsCount": "مطلب"
   },
   "portfolio": {
     "title": "نمونه‌کارها",

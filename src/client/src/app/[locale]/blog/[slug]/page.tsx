@@ -1,8 +1,8 @@
-import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 import { SiteFooter } from '@/components/layout/site-footer';
 import { Container } from '@/components/layout/container';
+import { Breadcrumb } from '@/components/layout/breadcrumb';
 import { ReadingProgress } from '@/components/layout/reading-progress';
 import { fetchPostBySlug } from '@/lib/data';
 import { fetchSiteConfig } from '@/lib/site-config';
@@ -15,6 +15,7 @@ export default async function BlogPostPage({
 }) {
   const { locale, slug } = await params;
   const t = await getTranslations('blog');
+  const tNav = await getTranslations('nav');
   const config = await fetchSiteConfig(locale);
   const { data: post } = await fetchPostBySlug(slug);
 
@@ -23,28 +24,42 @@ export default async function BlogPostPage({
   const title = getLocalizedField(post, 'title', locale);
   const content = getLocalizedField(post, 'content', locale);
   const date = post.publishedAt ?? post.createdAt;
+  const isFa = locale === 'fa';
 
   return (
     <>
       <ReadingProgress />
       <main className="py-10">
         <Container>
-          <Link
-            href={`/${locale}/blog`}
-            className="mb-8 inline-block text-sm text-muted-foreground hover:text-foreground"
-          >
-            ← {t('backToBlog')}
-          </Link>
-          <article data-reading-article>
-            <h1 className={titleFont(locale, 'text-2xl font-medium tracking-tight')}>
-              {title}
-            </h1>
-            <p className="mt-2 text-sm text-muted-foreground">
-              {t('publishedOn')} {formatDate(date, locale)}
-            </p>
+          <Breadcrumb
+            items={[
+              { label: tNav('home'), href: `/${locale}` },
+              { label: t('title'), href: `/${locale}/blog` },
+              { label: title },
+            ]}
+          />
+
+          <article data-reading-article className="border-t border-border pt-8">
+            <header className="mb-8">
+              <h1
+                className={titleFont(
+                  locale,
+                  'text-pretty text-xl font-medium leading-tight tracking-tight sm:text-2xl',
+                )}
+              >
+                {title}
+              </h1>
+              <p className="mt-3 text-xs tabular-nums text-muted-foreground">
+                {t('publishedOn')} {formatDate(date, locale)}
+              </p>
+            </header>
+
             {content ? (
               <div
-                className={cn('rich-content mt-8', locale === 'fa' && 'font-fa')}
+                className={cn(
+                  'rich-content border-t border-border pt-8',
+                  isFa && 'font-fa word-spacing-[0.06em]',
+                )}
                 dangerouslySetInnerHTML={{ __html: content }}
               />
             ) : null}

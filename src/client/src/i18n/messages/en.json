@@ -21,7 +21,8 @@
     "readMore": "Read more",
     "backToBlog": "Back to blog",
     "empty": "No posts yet.",
-    "publishedOn": "Published on"
+    "publishedOn": "Published on",
+    "postsCount": "posts"
   },
   "portfolio": {
     "title": "Portfolio",

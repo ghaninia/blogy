@@ -47,11 +47,60 @@
   }
 
   .rich-content {
-    @apply space-y-3 text-sm leading-normal text-muted-foreground;
+    @apply space-y-4 text-sm leading-[1.65] text-muted-foreground;
+  }
+
+  .rich-content p {
+    @apply text-pretty;
   }
 
   .rich-content h2,
   .rich-content h3 {
+    @apply pt-2 font-medium text-foreground;
+  }
+
+  .rich-content h2 {
+    @apply text-base;
+  }
+
+  .rich-content h3 {
+    @apply text-sm;
+  }
+
+  .rich-content ul,
+  .rich-content ol {
+    @apply space-y-1.5 ps-5;
+  }
+
+  .rich-content ul {
+    @apply list-disc;
+  }
+
+  .rich-content ol {
+    @apply list-decimal;
+  }
+
+  .rich-content li {
+    @apply leading-normal;
+  }
+
+  .rich-content blockquote {
+    @apply border-s-2 border-border ps-4 italic text-muted-foreground;
+  }
+
+  .rich-content pre {
+    @apply overflow-x-auto rounded-lg bg-muted/60 p-4 text-xs leading-normal text-foreground;
+  }
+
+  .rich-content code {
+    @apply rounded bg-muted/60 px-1 py-0.5 text-[0.8125rem] text-foreground;
+  }
+
+  .rich-content pre code {
+    @apply bg-transparent p-0;
+  }
+
+  .rich-content strong {
     @apply font-medium text-foreground;
   }
 

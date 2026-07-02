@@ -2,12 +2,10 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import { motion } from 'framer-motion';
 import { FadeIn } from '@/components/motion/text-effect';
 import type { PostSummary } from '@/lib/types';
 import { cn, getLocalizedField, titleFont } from '@/lib/utils';
-
-const spring = { type: 'spring' as const, bounce: 0.12, duration: 0.45 };
+import { BlogHoverItem } from '@/components/blog/blog-hover-item';
 
 export function BlogSection({
   posts,
@@ -20,7 +18,7 @@ export function BlogSection({
   title: string;
   viewAllLabel: string;
 }) {
-  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const [activeId, setActiveId] = useState<string | null>(null);
 
   if (posts.length === 0) return null;
 
@@ -35,59 +33,36 @@ export function BlogSection({
           {viewAllLabel}
         </Link>
       </div>
-      <div className="flex flex-col gap-0.5" onMouseLeave={() => setHoveredIndex(null)}>
-        {posts.map((post, index) => {
+      <div className="flex flex-col gap-0.5" onMouseLeave={() => setActiveId(null)}>
+        {posts.map((post) => {
           const postTitle = getLocalizedField(post, 'title', locale);
           const excerpt = getLocalizedField(post, 'excerpt', locale)
             .replace(/<[^>]+>/g, ' ')
             .trim();
 
-          const isHovered = hoveredIndex === index;
-          const isBelow = hoveredIndex !== null && index > hoveredIndex;
-          const depth = isBelow ? index - hoveredIndex! : 0;
-
           return (
-            <div key={post.id} className="relative px-2 py-2">
-              <motion.span
-                aria-hidden
-                className="pointer-events-none absolute inset-0 rounded-lg bg-muted/70"
-                initial={false}
-                animate={{ opacity: isHovered ? 1 : 0 }}
-                transition={spring}
-              />
-              <motion.div
-                className="relative will-change-transform"
-                animate={{
-                  rotate: isBelow ? 0.8 + depth * 0.25 : 0,
-                  opacity: isBelow ? 0.78 - depth * 0.05 : 1,
-                }}
-                transition={spring}
-                style={{ transformOrigin: 'top center' }}
-              >
-                <Link
-                  href={`/${locale}/blog/${post.slug}`}
-                  onMouseEnter={() => setHoveredIndex(index)}
+            <BlogHoverItem
+              key={post.id}
+              layoutId="home-blog-highlight"
+              className="py-2"
+              active={activeId === post.id}
+              onEnter={() => setActiveId(post.id)}
+              href={`/${locale}/blog/${post.slug}`}
+            >
+              <p className={titleFont(locale, 'font-medium leading-snug')}>{postTitle}</p>
+              {excerpt ? (
+                <p
                   className={cn(
-                    'block transition-colors',
-                    isHovered ? 'text-foreground' : 'text-foreground/90',
+                    'mt-0.5 line-clamp-1 text-sm leading-normal text-muted-foreground',
+                    locale === 'fa' && 'font-fa',
                   )}
                 >
-                  <p className={titleFont(locale, 'font-medium leading-snug')}>{postTitle}</p>
-                  {excerpt ? (
-                    <p
-                      className={cn(
-                        'mt-0.5 line-clamp-1 text-sm leading-normal text-muted-foreground',
-                        locale === 'fa' && 'font-fa',
-                      )}
-                    >
-                      {excerpt}
-                    </p>
-                  ) : (
-                    <span className="mt-0.5 block h-5" aria-hidden />
-                  )}
-                </Link>
-              </motion.div>
-            </div>
+                  {excerpt}
+                </p>
+              ) : (
+                <span className="mt-0.5 block h-5" aria-hidden />
+              )}
+            </BlogHoverItem>
           );
         })}
       </div>
