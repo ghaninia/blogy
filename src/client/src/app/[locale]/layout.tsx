@@ -5,6 +5,7 @@ import type { Metadata } from 'next';
 import { geistMono, geistSans, vazirmatn } from '@/lib/fonts';
 import { locales, type Locale } from '@/i18n/request';
 import { ThemeProvider } from '@/components/theme-provider';
+import { AppProviders } from '@/components/providers';
 import { fetchSiteConfig } from '@/lib/site-config';
 import { getMediaUrl } from '@/lib/api';
 import { cn } from '@/lib/utils';
@@ -65,7 +66,9 @@ export default async function LocaleLayout({
     >
       <body className="min-h-screen bg-background text-foreground antialiased">
         <NextIntlClientProvider messages={messages}>
-          <ThemeProvider>{children}</ThemeProvider>
+          <AppProviders>
+            <ThemeProvider>{children}</ThemeProvider>
+          </AppProviders>
         </NextIntlClientProvider>
       </body>
     </html>

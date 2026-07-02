@@ -14,6 +14,7 @@ export const createPostSchema = z.object({
   coverMediaId: z.string().uuid().optional(),
   categoryIds: z.array(z.string().uuid()).optional(),
   tagIds: z.array(z.string().uuid()).optional(),
+  commentsEnabled: z.boolean().optional(),
   metaTitleFa: z.string().max(200).optional(),
   metaTitleEn: z.string().max(200).optional(),
   metaDescFa: z.string().max(300).optional(),

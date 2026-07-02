@@ -11,3 +11,7 @@ export function postNotFound(): AppError {
 export function invalidParent(): AppError {
   return new AppError(400, 'Invalid parent comment', 'INVALID_PARENT');
 }
+
+export function commentsDisabled(): AppError {
+  return new AppError(403, 'Comments are disabled for this post', 'COMMENTS_DISABLED');
+}

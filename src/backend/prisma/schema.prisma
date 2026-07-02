@@ -82,6 +82,7 @@ model Post {
   metaTitleEn  String?
   metaDescFa   String?
   metaDescEn   String?
+  commentsEnabled Boolean      @default(true)
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
   author       User           @relation(fields: [authorId], references: [id])

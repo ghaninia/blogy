@@ -34,6 +34,7 @@ export interface PostDetail extends PostSummary {
   author?: { displayName?: string | null; username: string; avatarUrl?: string | null } | null;
   categories?: { category: { id: string; slug: string; nameFa: string; nameEn: string } }[];
   tags?: { tag: { id: string; slug: string; nameFa: string; nameEn: string } }[];
+  commentsEnabled?: boolean;
 }
 
 export interface PortfolioSummary {

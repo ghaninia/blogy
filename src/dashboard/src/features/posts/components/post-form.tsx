@@ -18,6 +18,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
+  Switch,
   Textarea,
 } from '@gh/ui';
 import { api, getMediaUrl } from '@/shared/api-client';
@@ -47,6 +48,7 @@ export interface PostFormData {
   metaTitleEn: string;
   metaDescFa: string;
   metaDescEn: string;
+  commentsEnabled: boolean;
 }
 
 interface Category {
@@ -90,6 +92,7 @@ export const emptyPostForm = (): PostFormData => ({
   metaTitleEn: '',
   metaDescFa: '',
   metaDescEn: '',
+  commentsEnabled: true,
 });
 
 export function PostForm({ locale, form, onChange, coverPath, formId = 'post-form', autoSlug = true }: PostFormProps) {
@@ -189,6 +192,15 @@ export function PostForm({ locale, form, onChange, coverPath, formId = 'post-for
                   </FormField>
                 ) : null}
               </div>
+              <FormField label={tf('commentsEnabled')}>
+                <div className="space-y-2">
+                  <Switch
+                    checked={form.commentsEnabled}
+                    onCheckedChange={(value) => set({ commentsEnabled: value })}
+                  />
+                  <p className="text-xs leading-relaxed text-muted-foreground">{tf('commentsEnabledHint')}</p>
+                </div>
+              </FormField>
               <FormField label={tf('cover')}>
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
                   {coverPreview ? (
@@ -333,6 +345,7 @@ export function postToForm(post: Record<string, unknown>): { form: PostFormData;
       metaTitleEn: (post.metaTitleEn as string) ?? '',
       metaDescFa: (post.metaDescFa as string) ?? '',
       metaDescEn: (post.metaDescEn as string) ?? '',
+      commentsEnabled: (post.commentsEnabled as boolean | undefined) ?? true,
     },
     coverPath: coverMedia?.path,
   };
@@ -365,5 +378,6 @@ export function formToPayload(form: PostFormData) {
     metaTitleEn: optionalString(form.metaTitleEn),
     metaDescFa: optionalString(form.metaDescFa),
     metaDescEn: optionalString(form.metaDescEn),
+    commentsEnabled: form.commentsEnabled,
   };
 }

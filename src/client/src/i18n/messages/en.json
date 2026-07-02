@@ -62,5 +62,37 @@
   "footer": {
     "rights": "All rights reserved.",
     "copyright": "© {year} {name}."
+  },
+  "comments": {
+    "title": "Comments",
+    "empty": "No comments yet. Be the first to share your thoughts.",
+    "loading": "Loading comments…",
+    "placeholder": "Write your comment…",
+    "submit": "Post comment",
+    "submitting": "Posting…",
+    "cancel": "Cancel",
+    "reply": "Reply",
+    "pending": "Your comment was submitted and is awaiting moderation.",
+    "error": "Could not post your comment. Please try again.",
+    "loginToComment": "Sign in to leave a comment.",
+    "login": "Sign in",
+    "register": "Create account"
+  },
+  "auth": {
+    "email": "Email",
+    "password": "Password",
+    "username": "Username",
+    "displayName": "Display name",
+    "loginTitle": "Sign in",
+    "loginSubtitle": "Sign in to comment on posts and interact with the site.",
+    "registerTitle": "Create account",
+    "registerSubtitle": "Register to leave comments on blog posts.",
+    "loginButton": "Sign in",
+    "registerButton": "Create account",
+    "loading": "Please wait…",
+    "loginFailed": "Sign in failed. Check your email and password.",
+    "registerFailed": "Registration failed. Please try again.",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?"
   }
 }

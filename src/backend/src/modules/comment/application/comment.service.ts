@@ -1,16 +1,17 @@
-import { CommentStatus } from '../../../db/index.js';
+import { CommentStatus, PostStatus } from '../../../db/index.js';
 import type { CreateCommentInput, ModerateCommentInput } from '../../../types/index.js';
 import { verifyRecaptcha } from '../../../shared/security/recaptcha.js';
 import sanitizeHtml from 'sanitize-html';
 import { commentRepository } from '../infrastructure/comment.repository.js';
-import { commentNotFound, postNotFound, invalidParent } from '../domain/comment.errors.js';
+import { commentNotFound, postNotFound, invalidParent, commentsDisabled } from '../domain/comment.errors.js';
 
 export class CommentService {
   async create(postId: string, userId: string, input: CreateCommentInput) {
     await verifyRecaptcha(input.recaptchaToken);
 
     const post = await commentRepository.findPostById(postId);
-    if (!post) throw postNotFound();
+    if (!post || post.status !== PostStatus.PUBLISHED) throw postNotFound();
+    if (!post.commentsEnabled) throw commentsDisabled();
 
     if (input.parentId) {
       const parent = await commentRepository.findById(input.parentId);
@@ -51,6 +52,12 @@ export class CommentService {
   }
 
   async listForPost(postId: string, publicOnly = true) {
+    const post = await commentRepository.findPostById(postId);
+    if (!post) throw postNotFound();
+    if (publicOnly && (!post.commentsEnabled || post.status !== PostStatus.PUBLISHED)) {
+      return [];
+    }
+
     return commentRepository.findForPost(postId, publicOnly);
   }
 

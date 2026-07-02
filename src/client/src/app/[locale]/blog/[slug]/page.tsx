@@ -6,6 +6,7 @@ import { Container } from '@/components/layout/container';
 import { Breadcrumb } from '@/components/layout/breadcrumb';
 import { ReadingProgress } from '@/components/layout/reading-progress';
 import { BlogShare } from '@/components/blog/blog-share';
+import { CommentSection } from '@/components/blog/comment-section';
 import { PostCover } from '@/components/blog/post-cover';
 import { PostJsonLd } from '@/components/blog/post-json-ld';
 import { fetchPostBySlug } from '@/lib/data';
@@ -44,6 +45,7 @@ export default async function BlogPostPage({
   const date = post.publishedAt ?? post.createdAt;
   const isFa = locale === 'fa';
   const shareUrl = getPostShareUrl(locale, slug);
+  const commentsEnabled = post.commentsEnabled ?? true;
 
   return (
     <>
@@ -84,6 +86,15 @@ export default async function BlogPostPage({
             ) : null}
 
             <BlogShare url={shareUrl} title={title} locale={locale} />
+
+            {commentsEnabled ? (
+              <CommentSection
+                postId={post.id}
+                commentsEnabled={commentsEnabled}
+                locale={locale}
+                returnUrl={`/${locale}/blog/${slug}`}
+              />
+            ) : null}
           </article>
         </Container>
       </main>

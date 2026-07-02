@@ -142,6 +142,8 @@
       "metaDescEn": "Meta Description (EN)",
       "status": "Status",
       "publishedAt": "Publish Date",
+      "commentsEnabled": "Allow comments",
+      "commentsEnabledHint": "When enabled, signed-in visitors can leave comments on this post on the public site.",
       "categories": "Categories",
       "tags": "Tags",
       "cover": "Cover Image",

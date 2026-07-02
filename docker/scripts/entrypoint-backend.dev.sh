@@ -3,8 +3,8 @@ set -e
 
 cd /app
 
-if [ ! -d node_modules/.pnpm ] || [ ! -f node_modules/.modules.yaml ]; then
-  echo "[backend] Installing dependencies (first run or empty volume)..."
+if [ ! -f node_modules/.modules.yaml ] || [ pnpm-lock.yaml -nt node_modules/.modules.yaml ]; then
+  echo "[backend] Installing dependencies (first run or lockfile changed)..."
   pnpm install --frozen-lockfile
 fi
 
