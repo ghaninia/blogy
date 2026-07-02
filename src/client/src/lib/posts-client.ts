@@ -1,4 +1,4 @@
-import type { PostSummary } from './types';
+import type { PostListFilters, PostSummary } from './types';
 
 export interface PostsListMeta {
   page: number;
@@ -9,13 +9,17 @@ export interface PostsListMeta {
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4000';
 
+
 export async function fetchPostsPage(
   page: number,
   limit: number,
+  filters: PostListFilters = {},
 ): Promise<{ data: PostSummary[]; meta: PostsListMeta | null }> {
   const url = new URL(`${API_URL}/api/posts`);
   url.searchParams.set('page', String(page));
   url.searchParams.set('limit', String(limit));
+  if (filters.categoryId) url.searchParams.set('categoryId', filters.categoryId);
+  if (filters.tagId) url.searchParams.set('tagId', filters.tagId);
 
   const res = await fetch(url.toString());
   if (!res.ok) return { data: [], meta: null };

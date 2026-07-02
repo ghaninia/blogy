@@ -7,10 +7,11 @@ import { Breadcrumb } from '@/components/layout/breadcrumb';
 import { ReadingProgress } from '@/components/layout/reading-progress';
 import { BlogShare } from '@/components/blog/blog-share';
 import { PostCover } from '@/components/blog/post-cover';
+import { PostJsonLd } from '@/components/blog/post-json-ld';
 import { fetchPostBySlug } from '@/lib/data';
+import { buildPostMetadata } from '@/lib/post-seo';
 import { fetchSiteConfig } from '@/lib/site-config';
 import { getPostShareUrl } from '@/lib/share';
-import { getMediaUrl } from '@/lib/api';
 import { cn, formatDate, getLocalizedField, titleFont } from '@/lib/utils';
 
 export async function generateMetadata({
@@ -22,23 +23,7 @@ export async function generateMetadata({
   const { data: post } = await fetchPostBySlug(slug);
   if (!post) return {};
 
-  const title = getLocalizedField(post, 'title', locale);
-  const description =
-    getLocalizedField(post, 'metaDesc', locale) ||
-    getLocalizedField(post, 'excerpt', locale).replace(/<[^>]+>/g, ' ').trim();
-  const cover = post.coverMedia?.path ? getMediaUrl(post.coverMedia.path) : undefined;
-
-  return {
-    title,
-    description: description || undefined,
-    openGraph: {
-      title,
-      description: description || undefined,
-      locale: locale === 'fa' ? 'fa_IR' : 'en_US',
-      type: 'article',
-      images: cover ? [{ url: cover, alt: title }] : undefined,
-    },
-  };
+  return buildPostMetadata(post, locale, slug);
 }
 
 export default async function BlogPostPage({
@@ -62,6 +47,7 @@ export default async function BlogPostPage({
 
   return (
     <>
+      <PostJsonLd post={post} locale={locale} slug={slug} />
       <ReadingProgress />
       <main className="py-10">
         <Container>

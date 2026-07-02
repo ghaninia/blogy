@@ -1,5 +1,5 @@
 import { apiGet } from './api';
-import type { PageDetail, PortfolioSummary, PostDetail, PostSummary } from './types';
+import type { PageDetail, PortfolioSummary, PostDetail, PostListFilters, PostSummary } from './types';
 
 export interface PostsListMeta {
   page: number;
@@ -21,8 +21,18 @@ export interface ExperienceItem {
   sortOrder: number;
 }
 
-export async function fetchPosts(limit = BLOG_PAGE_SIZE, page = 1) {
-  const result = await apiGet<PostSummary[]>('/api/posts', { limit, page });
+
+export async function fetchPosts(
+  limit = BLOG_PAGE_SIZE,
+  page = 1,
+  filters: PostListFilters = {},
+) {
+  const result = await apiGet<PostSummary[]>('/api/posts', {
+    limit,
+    page,
+    categoryId: filters.categoryId,
+    tagId: filters.tagId,
+  });
   const meta = result.meta as Partial<PostsListMeta> | undefined;
   return {
     data: result.data,
@@ -39,6 +49,16 @@ export async function fetchPosts(limit = BLOG_PAGE_SIZE, page = 1) {
 
 export async function fetchPostBySlug(slug: string) {
   return apiGet<PostDetail>(`/api/posts/slug/${slug}`);
+}
+
+export async function fetchCategory(id: string) {
+  return apiGet<{ id: string; slug: string; nameFa: string; nameEn: string }>(
+    `/api/categories/${id}`,
+  );
+}
+
+export async function fetchTag(id: string) {
+  return apiGet<{ id: string; slug: string; nameFa: string; nameEn: string }>(`/api/tags/${id}`);
 }
 
 export async function fetchPortfolio(limit = 4) {

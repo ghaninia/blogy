@@ -3,7 +3,7 @@
 import { useCallback, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslations } from 'next-intl';
-import type { PostSummary } from '@/lib/types';
+import type { PostListFilters, PostSummary } from '@/lib/types';
 import type { PostsListMeta } from '@/lib/data';
 import { fetchPostsPage } from '@/lib/posts-client';
 import { cn, formatDate, getLocalizedField, titleFont } from '@/lib/utils';
@@ -17,11 +17,13 @@ export function BlogPostList({
   initialMeta,
   locale,
   pageSize,
+  filters = {},
 }: {
   initialPosts: PostSummary[];
   initialMeta: PostsListMeta | null;
   locale: string;
   pageSize: number;
+  filters?: PostListFilters;
 }) {
   const t = useTranslations('blog');
   const [posts, setPosts] = useState(initialPosts);
@@ -39,7 +41,7 @@ export function BlogPostList({
     setLoading(true);
     try {
       const nextPage = page + 1;
-      const { data, meta } = await fetchPostsPage(nextPage, pageSize);
+      const { data, meta } = await fetchPostsPage(nextPage, pageSize, filters);
       if (data.length > 0) {
         setPosts((prev) => [...prev, ...data]);
         setPage(nextPage);
@@ -48,7 +50,7 @@ export function BlogPostList({
     } finally {
       setLoading(false);
     }
-  }, [hasMore, loading, page, pageSize]);
+  }, [filters, hasMore, loading, page, pageSize]);
 
   if (posts.length === 0) {
     return <p className={cn('text-sm text-muted-foreground', isFa && 'font-fa')}>{t('empty')}</p>;

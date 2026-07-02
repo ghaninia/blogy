@@ -7,6 +7,11 @@ export interface MediaRef {
   height?: number | null;
 }
 
+export interface PostListFilters {
+  categoryId?: string;
+  tagId?: string;
+}
+
 export interface PostSummary {
   id: string;
   slug: string;
@@ -27,8 +32,8 @@ export interface PostDetail extends PostSummary {
   metaDescFa?: string | null;
   metaDescEn?: string | null;
   author?: { displayName?: string | null; username: string; avatarUrl?: string | null } | null;
-  categories?: { category: { slug: string; nameFa: string; nameEn: string } }[];
-  tags?: { tag: { slug: string; nameFa: string; nameEn: string } }[];
+  categories?: { category: { id: string; slug: string; nameFa: string; nameEn: string } }[];
+  tags?: { tag: { id: string; slug: string; nameFa: string; nameEn: string } }[];
 }
 
 export interface PortfolioSummary {

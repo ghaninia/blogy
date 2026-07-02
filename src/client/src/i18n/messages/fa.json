@@ -29,7 +29,13 @@
     "share": "اشتراک‌گذاری",
     "shareOn": "اشتراک در {platform}",
     "copyLink": "کپی لینک",
-    "linkCopied": "لینک کپی شد"
+    "linkCopied": "لینک کپی شد",
+    "categories": "دسته‌بندی‌ها",
+    "tags": "برچسب‌ها",
+    "author": "نویسنده",
+    "filteredByCategory": "دسته‌بندی: {name}",
+    "filteredByTag": "برچسب: {name}",
+    "clearFilter": "حذف فیلتر"
   },
   "portfolio": {
     "title": "نمونه‌کارها",

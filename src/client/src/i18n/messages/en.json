@@ -29,7 +29,13 @@
     "share": "Share",
     "shareOn": "Share on {platform}",
     "copyLink": "Copy link",
-    "linkCopied": "Link copied"
+    "linkCopied": "Link copied",
+    "categories": "Categories",
+    "tags": "Tags",
+    "author": "Author",
+    "filteredByCategory": "Category: {name}",
+    "filteredByTag": "Tag: {name}",
+    "clearFilter": "Clear filter"
   },
   "portfolio": {
     "title": "Portfolio",
