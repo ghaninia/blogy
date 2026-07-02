@@ -4,7 +4,7 @@ import { SiteFooter } from '@/components/layout/site-footer';
 import { Container } from '@/components/layout/container';
 import { fetchPosts } from '@/lib/data';
 import { fetchSiteConfig } from '@/lib/site-config';
-import { cn, formatDate, getLocalizedField } from '@/lib/utils';
+import { cn, formatDate, getLocalizedField, titleFont } from '@/lib/utils';
 
 export default async function BlogPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -16,7 +16,7 @@ export default async function BlogPage({ params }: { params: Promise<{ locale: s
     <>
       <main className="py-10">
         <Container>
-          <h1 className={cn('mb-8 text-xl font-medium', locale === 'fa' && 'font-fa')}>{t('title')}</h1>
+          <h1 className={titleFont(locale, 'mb-8 text-xl font-medium')}>{t('title')}</h1>
           {!posts?.length ? (
             <p className="text-muted-foreground">{t('empty')}</p>
           ) : (
@@ -27,7 +27,7 @@ export default async function BlogPage({ params }: { params: Promise<{ locale: s
                 return (
                   <article key={post.id} className="group">
                     <Link href={`/${locale}/blog/${post.slug}`} className="block">
-                      <h2 className={cn('font-medium transition-colors group-hover:text-muted-foreground', locale === 'fa' && 'font-fa')}>
+                      <h2 className={titleFont(locale, 'font-medium transition-colors group-hover:text-muted-foreground')}>
                         {title}
                       </h2>
                       <p className="mt-1 text-xs text-muted-foreground">{formatDate(date, locale)}</p>

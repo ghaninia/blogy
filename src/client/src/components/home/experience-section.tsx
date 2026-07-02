@@ -4,7 +4,7 @@ import { useState, type ReactNode } from 'react';
 import { motion } from 'framer-motion';
 import { FadeIn } from '@/components/motion/text-effect';
 import type { ExperienceItem } from '@/lib/data';
-import { cn, formatYear, getLocalizedField } from '@/lib/utils';
+import { cn, formatYear, getLocalizedField, titleFont } from '@/lib/utils';
 
 function ExperienceCard({
   active,
@@ -60,7 +60,7 @@ export function ExperienceSection({
 
   return (
     <FadeIn className="py-10">
-      <h2 className="mb-5 text-sm font-medium text-foreground">{title}</h2>
+      <h2 className={titleFont(locale, 'mb-5 text-sm font-medium text-foreground')}>{title}</h2>
       <div className="space-y-3">
         {items.map((item) => {
           const jobTitle = getLocalizedField(item, 'title', locale);
@@ -76,7 +76,7 @@ export function ExperienceSection({
               onLeave={() => setActiveId(null)}
             >
               <div>
-                <p className={cn('font-medium', locale === 'fa' && 'font-fa')}>{jobTitle}</p>
+                  <p className={titleFont(locale, 'font-medium')}>{jobTitle}</p>
                 <p className={cn('text-sm text-muted-foreground', locale === 'fa' && 'font-fa')}>
                   {company}
                 </p>

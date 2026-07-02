@@ -1,5 +1,6 @@
 import { PrismaClient, Role, PostStatus, PageType } from '@prisma/client';
 import * as argon2 from 'argon2';
+import { seedPosts, seedTags } from './seed-posts.js';
 
 const prisma = new PrismaClient();
 
@@ -78,24 +79,51 @@ async function main() {
     create: { slug: 'nextjs', nameFa: 'Next.js', nameEn: 'Next.js' },
   });
 
-  await prisma.post.upsert({
-    where: { slug: 'welcome-to-blogy' },
-    update: {},
-    create: {
-      slug: 'welcome-to-blogy',
-      titleFa: 'به Blogy خوش آمدید',
-      titleEn: 'Welcome to Blogy',
-      excerptFa: 'اولین پست وبلاگ حرفه‌ای دوزبانه',
-      excerptEn: 'First post of our professional bilingual blog',
-      contentFa: '<p>این یک پست نمونه به زبان فارسی است.</p>',
-      contentEn: '<p>This is a sample post in English.</p>',
-      status: PostStatus.PUBLISHED,
-      publishedAt: new Date(),
-      authorId: author.id,
-      categories: { create: [{ categoryId: techCategory.id }] },
-      tags: { create: [{ tagId: nextjsTag.id }] },
-    },
-  });
+  const tagBySlug = new Map<string, string>([['nextjs', nextjsTag.id]]);
+
+  for (const tag of seedTags) {
+    const record = await prisma.tag.upsert({
+      where: { slug: tag.slug },
+      update: { nameFa: tag.nameFa, nameEn: tag.nameEn },
+      create: tag,
+    });
+    tagBySlug.set(tag.slug, record.id);
+  }
+
+  for (const post of seedPosts) {
+    const tagId = post.tagSlug ? tagBySlug.get(post.tagSlug) : undefined;
+
+    await prisma.post.upsert({
+      where: { slug: post.slug },
+      update: {
+        titleFa: post.titleFa,
+        titleEn: post.titleEn,
+        excerptFa: post.excerptFa,
+        excerptEn: post.excerptEn,
+        contentFa: post.contentFa,
+        contentEn: post.contentEn,
+        status: PostStatus.PUBLISHED,
+        publishedAt: post.publishedAt,
+        authorId: author.id,
+      },
+      create: {
+        slug: post.slug,
+        titleFa: post.titleFa,
+        titleEn: post.titleEn,
+        excerptFa: post.excerptFa,
+        excerptEn: post.excerptEn,
+        contentFa: post.contentFa,
+        contentEn: post.contentEn,
+        status: PostStatus.PUBLISHED,
+        publishedAt: post.publishedAt,
+        authorId: author.id,
+        categories: { create: [{ categoryId: techCategory.id }] },
+        ...(tagId ? { tags: { create: [{ tagId }] } } : {}),
+      },
+    });
+  }
+
+  console.log(`  Posts:  ${seedPosts.length} programming articles seeded`);
 
   await prisma.page.upsert({
     where: { slug: 'about' },
@@ -142,8 +170,19 @@ async function main() {
   const defaultSettings = [
     {
       key: 'site_name',
-      valueFa: 'Blogy',
-      valueEn: 'Blogy',
+      valueFa: 'امین غنی‌نیا',
+      valueEn: 'Amin Ghaninia',
+    },
+    {
+      key: 'site_subtitle',
+      valueFa: 'مهندس نرم‌افزار',
+      valueEn: 'Software Engineer',
+    },
+    {
+      key: 'site_description',
+      valueFa: 'تمرکز بر ساخت تجربه‌های وب شهودی و پرفورمنس. پل زدن بین طراحی و توسعه.',
+      valueEn:
+        'Focused on creating intuitive and performant web experiences. Bridging the gap between design and development.',
     },
     {
       key: 'site_tagline',
@@ -152,8 +191,8 @@ async function main() {
     },
     {
       key: 'meta_title',
-      valueFa: 'Blogy | وبلاگ حرفه‌ای',
-      valueEn: 'Blogy | Professional Blog',
+      valueFa: 'Amin Ghaninia | مهندس نرم‌افزار',
+      valueEn: 'Amin Ghaninia | Software Engineer',
     },
     {
       key: 'meta_description',
@@ -185,7 +224,7 @@ async function main() {
   for (const setting of defaultSettings) {
     await prisma.setting.upsert({
       where: { key: setting.key },
-      update: {},
+      update: setting,
       create: setting,
     });
   }

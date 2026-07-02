@@ -10,6 +10,8 @@ export interface SettingRecord {
 
 export interface SiteConfig {
   name: string;
+  subtitle: string;
+  description: string;
   tagline: string;
   logoPath: string;
   faviconPath: string;
@@ -36,9 +38,13 @@ function localizedValue(record: SettingRecord | undefined, isFa: boolean): strin
 
 export function resolveSiteConfig(settings: SettingRecord[], locale: string): SiteConfig {
   const isFa = locale === 'fa';
+  const descriptionRecord = pick(settings, 'site_description') ?? pick(settings, 'site_tagline');
+
   return {
     name: localizedValue(pick(settings, 'site_name'), isFa) || 'Blogy',
-    tagline: localizedValue(pick(settings, 'site_tagline'), isFa),
+    subtitle: localizedValue(pick(settings, 'site_subtitle'), isFa),
+    description: localizedValue(descriptionRecord, isFa),
+    tagline: localizedValue(descriptionRecord, isFa),
     logoPath: pick(settings, 'site_logo')?.valueEn ?? '',
     faviconPath: pick(settings, 'site_favicon')?.valueEn ?? '',
     metaTitle: localizedValue(pick(settings, 'meta_title'), isFa),

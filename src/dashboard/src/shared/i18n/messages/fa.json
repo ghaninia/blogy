@@ -228,6 +228,12 @@
     "siteSettings": {
       "description": "اطلاعات سایت، برندینگ و تنظیمات سئو را مدیریت کنید",
       "identity": "هویت سایت",
+      "siteTitleFa": "عنوان (FA)",
+      "siteTitleEn": "عنوان (EN)",
+      "subtitleFa": "زیرعنوان (FA)",
+      "subtitleEn": "زیرعنوان (EN)",
+      "descriptionFa": "توضیحات (FA)",
+      "descriptionEn": "توضیحات (EN)",
       "taglineFa": "شعار (FA)",
       "taglineEn": "شعار (EN)",
       "logo": "لوگو",

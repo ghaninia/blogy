@@ -6,7 +6,7 @@ import { Container } from '@/components/layout/container';
 import { ReadingProgress } from '@/components/layout/reading-progress';
 import { fetchPostBySlug } from '@/lib/data';
 import { fetchSiteConfig } from '@/lib/site-config';
-import { cn, formatDate, getLocalizedField } from '@/lib/utils';
+import { cn, formatDate, getLocalizedField, titleFont } from '@/lib/utils';
 
 export default async function BlogPostPage({
   params,
@@ -36,7 +36,7 @@ export default async function BlogPostPage({
             ← {t('backToBlog')}
           </Link>
           <article data-reading-article>
-            <h1 className={cn('text-2xl font-medium tracking-tight', locale === 'fa' && 'font-fa')}>
+            <h1 className={titleFont(locale, 'text-2xl font-medium tracking-tight')}>
               {title}
             </h1>
             <p className="mt-2 text-sm text-muted-foreground">

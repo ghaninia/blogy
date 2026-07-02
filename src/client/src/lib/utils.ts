@@ -5,6 +5,10 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+export function titleFont(locale: string, className?: string) {
+  return cn(locale === 'fa' ? 'font-fa' : 'font-sans', className);
+}
+
 export function getLocalizedField(item: object, field: string, locale: string): string {
   const record = item as Record<string, unknown>;
   const faVal = record[`${field}Fa`] as string | undefined;

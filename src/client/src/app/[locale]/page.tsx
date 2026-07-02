@@ -28,7 +28,12 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
     <>
       <main>
         <Container className="pb-4 pt-10">
-          <IntroSection name={config.name} tagline={config.tagline} locale={locale} />
+          <IntroSection
+            name={config.name}
+            subtitle={config.subtitle}
+            description={config.description}
+            locale={locale}
+          />
 
           <ProjectsSection
             items={portfolio ?? []}

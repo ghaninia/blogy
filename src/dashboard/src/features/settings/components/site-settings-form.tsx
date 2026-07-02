@@ -105,17 +105,32 @@ export function SiteSettingsFormView({ form, onChange, isLoading }: SiteSettings
             <CardTitle>{ts('identity')}</CardTitle>
           </CardHeader>
           <CardContent className="grid gap-4 md:grid-cols-2">
-            <FormField label={tf('titleFa')}>
+            <FormField label={ts('siteTitleFa')}>
               <Input value={form.siteNameFa} onChange={(e) => set({ siteNameFa: e.target.value })} />
             </FormField>
-            <FormField label={tf('titleEn')}>
+            <FormField label={ts('siteTitleEn')}>
               <Input value={form.siteNameEn} onChange={(e) => set({ siteNameEn: e.target.value })} />
             </FormField>
-            <FormField label={ts('taglineFa')}>
-              <Input value={form.siteTaglineFa} onChange={(e) => set({ siteTaglineFa: e.target.value })} />
+            <FormField label={ts('subtitleFa')}>
+              <Input value={form.siteSubtitleFa} onChange={(e) => set({ siteSubtitleFa: e.target.value })} />
             </FormField>
-            <FormField label={ts('taglineEn')}>
-              <Input value={form.siteTaglineEn} onChange={(e) => set({ siteTaglineEn: e.target.value })} />
+            <FormField label={ts('subtitleEn')}>
+              <Input value={form.siteSubtitleEn} onChange={(e) => set({ siteSubtitleEn: e.target.value })} />
+            </FormField>
+            <FormField label={ts('descriptionFa')} className="md:col-span-2">
+              <Textarea
+                value={form.siteDescriptionFa}
+                onChange={(e) => set({ siteDescriptionFa: e.target.value })}
+                rows={4}
+                dir="rtl"
+              />
+            </FormField>
+            <FormField label={ts('descriptionEn')} className="md:col-span-2">
+              <Textarea
+                value={form.siteDescriptionEn}
+                onChange={(e) => set({ siteDescriptionEn: e.target.value })}
+                rows={4}
+              />
             </FormField>
             <ImagePicker
               label={ts('logo')}

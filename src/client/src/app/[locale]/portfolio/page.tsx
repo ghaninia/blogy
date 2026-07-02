@@ -6,7 +6,7 @@ import { Container } from '@/components/layout/container';
 import { fetchPortfolio } from '@/lib/data';
 import { fetchSiteConfig } from '@/lib/site-config';
 import { getMediaUrl } from '@/lib/api';
-import { cn, getLocalizedField } from '@/lib/utils';
+import { cn, getLocalizedField, titleFont } from '@/lib/utils';
 
 export default async function PortfolioPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -18,7 +18,7 @@ export default async function PortfolioPage({ params }: { params: Promise<{ loca
     <>
       <main className="py-10">
         <Container>
-          <h1 className={cn('mb-8 text-xl font-medium', locale === 'fa' && 'font-fa')}>{t('title')}</h1>
+          <h1 className={titleFont(locale, 'mb-8 text-xl font-medium')}>{t('title')}</h1>
           {!items?.length ? (
             <p className="text-muted-foreground">{t('empty')}</p>
           ) : (
@@ -38,7 +38,7 @@ export default async function PortfolioPage({ params }: { params: Promise<{ loca
                       </div>
                     ) : null}
                     <div className="p-4">
-                      <p className={cn('font-medium', locale === 'fa' && 'font-fa')}>{title}</p>
+                      <p className={titleFont(locale, 'font-medium')}>{title}</p>
                     </div>
                   </Link>
                 );

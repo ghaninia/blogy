@@ -9,8 +9,10 @@ export interface SettingRecord {
 export interface SiteSettingsForm {
   siteNameFa: string;
   siteNameEn: string;
-  siteTaglineFa: string;
-  siteTaglineEn: string;
+  siteSubtitleFa: string;
+  siteSubtitleEn: string;
+  siteDescriptionFa: string;
+  siteDescriptionEn: string;
   logoPath: string;
   faviconPath: string;
   metaTitleFa: string;
@@ -28,6 +30,8 @@ export interface SiteSettingsForm {
 
 export const SITE_SETTING_KEYS = [
   'site_name',
+  'site_subtitle',
+  'site_description',
   'site_tagline',
   'site_logo',
   'site_favicon',
@@ -45,8 +49,10 @@ export function emptySiteSettings(): SiteSettingsForm {
   return {
     siteNameFa: '',
     siteNameEn: '',
-    siteTaglineFa: '',
-    siteTaglineEn: '',
+    siteSubtitleFa: '',
+    siteSubtitleEn: '',
+    siteDescriptionFa: '',
+    siteDescriptionEn: '',
     logoPath: '',
     faviconPath: '',
     metaTitleFa: '',
@@ -70,6 +76,8 @@ function getSettingValue(settings: SettingRecord[], key: string): SettingRecord 
 export function settingsToForm(settings: SettingRecord[]): SiteSettingsForm {
   const form = emptySiteSettings();
   const siteName = getSettingValue(settings, 'site_name');
+  const siteSubtitle = getSettingValue(settings, 'site_subtitle');
+  const siteDescription = getSettingValue(settings, 'site_description');
   const siteTagline = getSettingValue(settings, 'site_tagline');
   const siteLogo = getSettingValue(settings, 'site_logo');
   const siteFavicon = getSettingValue(settings, 'site_favicon');
@@ -86,9 +94,16 @@ export function settingsToForm(settings: SettingRecord[]): SiteSettingsForm {
     form.siteNameFa = siteName.valueFa ?? '';
     form.siteNameEn = siteName.valueEn ?? '';
   }
-  if (siteTagline) {
-    form.siteTaglineFa = siteTagline.valueFa ?? '';
-    form.siteTaglineEn = siteTagline.valueEn ?? '';
+  if (siteSubtitle) {
+    form.siteSubtitleFa = siteSubtitle.valueFa ?? '';
+    form.siteSubtitleEn = siteSubtitle.valueEn ?? '';
+  }
+  if (siteDescription) {
+    form.siteDescriptionFa = siteDescription.valueFa ?? '';
+    form.siteDescriptionEn = siteDescription.valueEn ?? '';
+  } else if (siteTagline) {
+    form.siteDescriptionFa = siteTagline.valueFa ?? '';
+    form.siteDescriptionEn = siteTagline.valueEn ?? '';
   }
   if (siteLogo) form.logoPath = siteLogo.valueEn ?? '';
   if (siteFavicon) form.faviconPath = siteFavicon.valueEn ?? '';
@@ -116,7 +131,17 @@ export function settingsToForm(settings: SettingRecord[]): SiteSettingsForm {
 export function formToSettingUpdates(form: SiteSettingsForm) {
   return [
     { key: 'site_name', valueFa: form.siteNameFa || undefined, valueEn: form.siteNameEn || undefined },
-    { key: 'site_tagline', valueFa: form.siteTaglineFa || undefined, valueEn: form.siteTaglineEn || undefined },
+    { key: 'site_subtitle', valueFa: form.siteSubtitleFa || undefined, valueEn: form.siteSubtitleEn || undefined },
+    {
+      key: 'site_description',
+      valueFa: form.siteDescriptionFa || undefined,
+      valueEn: form.siteDescriptionEn || undefined,
+    },
+    {
+      key: 'site_tagline',
+      valueFa: form.siteDescriptionFa || undefined,
+      valueEn: form.siteDescriptionEn || undefined,
+    },
     { key: 'site_logo', valueEn: form.logoPath || undefined },
     { key: 'site_favicon', valueEn: form.faviconPath || undefined },
     { key: 'meta_title', valueFa: form.metaTitleFa || undefined, valueEn: form.metaTitleEn || undefined },
@@ -132,6 +157,8 @@ export function formToSettingUpdates(form: SiteSettingsForm) {
 
 export interface SiteConfig {
   name: string;
+  subtitle: string;
+  description: string;
   tagline: string;
   logoPath: string;
   faviconPath: string;
@@ -151,7 +178,15 @@ export function resolveSiteConfig(settings: SettingRecord[], locale: string): Si
 
   return {
     name: (isFa ? form.siteNameFa : form.siteNameEn) || form.siteNameEn || form.siteNameFa,
-    tagline: (isFa ? form.siteTaglineFa : form.siteTaglineEn) || form.siteTaglineEn || form.siteTaglineFa,
+    subtitle: (isFa ? form.siteSubtitleFa : form.siteSubtitleEn) || form.siteSubtitleEn || form.siteSubtitleFa,
+    description:
+      (isFa ? form.siteDescriptionFa : form.siteDescriptionEn) ||
+      form.siteDescriptionEn ||
+      form.siteDescriptionFa,
+    tagline:
+      (isFa ? form.siteDescriptionFa : form.siteDescriptionEn) ||
+      form.siteDescriptionEn ||
+      form.siteDescriptionFa,
     logoPath: form.logoPath,
     faviconPath: form.faviconPath,
     metaTitle: (isFa ? form.metaTitleFa : form.metaTitleEn) || form.metaTitleEn || form.metaTitleFa,

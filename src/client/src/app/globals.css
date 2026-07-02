@@ -48,7 +48,17 @@
     @apply font-medium text-foreground;
   }
 
+  .rich-content.font-fa h2,
+  .rich-content.font-fa h3 {
+    font-family: var(--font-vazirmatn), Tahoma, sans-serif;
+  }
+
   .rich-content a {
     @apply text-foreground underline-offset-4 hover:underline;
   }
+}
+
+/* Outside @layer — beats Tailwind preflight on html */
+html[lang='fa'] {
+  font-family: var(--font-vazirmatn), Tahoma, sans-serif;
 }

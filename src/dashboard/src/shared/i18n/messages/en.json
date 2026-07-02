@@ -228,6 +228,12 @@
     "siteSettings": {
       "description": "Manage site identity, branding, and SEO settings",
       "identity": "Site Identity",
+      "siteTitleFa": "Title (FA)",
+      "siteTitleEn": "Title (EN)",
+      "subtitleFa": "Subtitle (FA)",
+      "subtitleEn": "Subtitle (EN)",
+      "descriptionFa": "Description (FA)",
+      "descriptionEn": "Description (EN)",
       "taglineFa": "Tagline (FA)",
       "taglineEn": "Tagline (EN)",
       "logo": "Logo",

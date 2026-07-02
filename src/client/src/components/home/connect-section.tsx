@@ -1,6 +1,7 @@
 import { FadeIn } from '@/components/motion/text-effect';
 import { Magnetic } from '@/components/motion/magnetic';
 import { ExternalLinkIcon } from '@/components/icons/external-link-icon';
+import { titleFont } from '@/lib/utils';
 
 const SOCIAL = [
   { key: 'github', label: 'GitHub', hrefKey: 'github' as const },
@@ -14,6 +15,7 @@ export function ConnectSection({
   emailPrompt,
   email,
   links,
+  locale,
 }: {
   title: string;
   emailPrompt: string;
@@ -25,7 +27,7 @@ export function ConnectSection({
 
   return (
     <FadeIn className="py-10">
-      <h2 className="mb-4 text-sm font-medium text-foreground">{title}</h2>
+      <h2 className={titleFont(locale, 'mb-4 text-sm font-medium text-foreground')}>{title}</h2>
       {email ? (
         <p className="mb-4 text-sm text-muted-foreground">
           {emailPrompt}{' '}

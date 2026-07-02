@@ -8,7 +8,7 @@ import { ReadingProgress } from '@/components/layout/reading-progress';
 import { fetchPortfolioBySlug } from '@/lib/data';
 import { fetchSiteConfig } from '@/lib/site-config';
 import { getMediaUrl } from '@/lib/api';
-import { cn, getLocalizedField } from '@/lib/utils';
+import { cn, getLocalizedField, titleFont } from '@/lib/utils';
 
 export default async function PortfolioDetailPage({
   params,
@@ -43,7 +43,7 @@ export default async function PortfolioDetailPage({
               <Image src={cover} alt={title} fill className="object-cover" unoptimized />
             </div>
           ) : null}
-          <h1 className={cn('text-2xl font-medium', locale === 'fa' && 'font-fa')}>{title}</h1>
+          <h1 className={titleFont(locale, 'text-2xl font-medium')}>{title}</h1>
           {description ? (
             <div
               className={cn('rich-content mt-6', locale === 'fa' && 'font-fa')}

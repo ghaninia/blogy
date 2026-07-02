@@ -7,7 +7,7 @@ import { Container } from '@/components/layout/container';
 import { ReadingProgress } from '@/components/layout/reading-progress';
 import { fetchPageBySlug } from '@/lib/data';
 import { fetchSiteConfig } from '@/lib/site-config';
-import { cn, getLocalizedField } from '@/lib/utils';
+import { cn, getLocalizedField, titleFont } from '@/lib/utils';
 
 interface ContentPageProps {
   params: Promise<{ locale: string }>;
@@ -44,7 +44,7 @@ export async function renderContentPage({
             ← {t(backLabelKey)}
           </Link>
           <article data-reading-article>
-            <h1 className={cn('text-2xl font-medium tracking-tight', locale === 'fa' && 'font-fa')}>
+            <h1 className={titleFont(locale, 'text-2xl font-medium tracking-tight')}>
               {title}
             </h1>
             {content ? (

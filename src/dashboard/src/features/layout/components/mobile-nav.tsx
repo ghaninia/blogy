@@ -35,9 +35,9 @@ export function MobileNav({ open, onOpenChange }: MobileNavProps) {
 
         <div className="shrink-0 border-b border-glass-border/80 px-4 py-4">
           <SiteBrand href={`/${locale}/dashboard`} />
-          {config.tagline ? (
+          {config.subtitle || config.description ? (
             <p className="mt-1.5 line-clamp-2 text-xs leading-relaxed text-muted-foreground">
-              {config.tagline}
+              {[config.subtitle, config.description].filter(Boolean).join(' · ')}
             </p>
           ) : null}
         </div>

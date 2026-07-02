@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { FadeIn } from '@/components/motion/text-effect';
 import { getMediaUrl } from '@/lib/api';
 import type { PortfolioSummary } from '@/lib/types';
-import { cn, getLocalizedField } from '@/lib/utils';
+import { cn, getLocalizedField, titleFont } from '@/lib/utils';
 
 export function ProjectsSection({
   items,
@@ -21,7 +21,7 @@ export function ProjectsSection({
   return (
     <FadeIn className="py-10">
       <div className="mb-5 flex items-end justify-between gap-4">
-        <h2 className="text-sm font-medium text-foreground">{title}</h2>
+        <h2 className={titleFont(locale, 'text-sm font-medium text-foreground')}>{title}</h2>
         <Link
           href={`/${locale}/portfolio`}
           className="text-xs text-muted-foreground transition-colors hover:text-foreground"
@@ -55,7 +55,7 @@ export function ProjectsSection({
                 <div className="aspect-[16/10] bg-muted" />
               )}
               <div className="p-4">
-                <p className={cn('font-medium', locale === 'fa' && 'font-fa')}>{name}</p>
+                <p className={titleFont(locale, 'font-medium')}>{name}</p>
                 {desc ? (
                   <p
                     className={cn(

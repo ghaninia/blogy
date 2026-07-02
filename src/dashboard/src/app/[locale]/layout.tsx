@@ -52,7 +52,6 @@ export default async function LocaleLayout({
 
   const messages = await getMessages();
   const dir = locale === 'fa' ? 'rtl' : 'ltr';
-  const fontClass = locale === 'fa' ? 'font-fa' : 'font-sans';
 
   return (
     <html lang={locale} dir={dir} suppressHydrationWarning>
@@ -64,7 +63,7 @@ export default async function LocaleLayout({
         />
       </head>
       <body
-        className={`${plusJakartaSans.variable} ${vazirmatn.variable} ${fontClass} min-h-screen bg-background text-foreground antialiased`}
+        className={`${plusJakartaSans.variable} ${vazirmatn.variable} ${locale === 'fa' ? vazirmatn.className : plusJakartaSans.className} min-h-screen bg-background text-foreground antialiased`}
       >
         <NextIntlClientProvider messages={messages}>
           <RecaptchaProvider>
