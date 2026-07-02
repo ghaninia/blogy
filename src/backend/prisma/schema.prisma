@@ -241,3 +241,20 @@ model Setting {
 
   @@map("settings")
 }
+
+model Experience {
+  id          String    @id @default(uuid())
+  titleFa     String
+  titleEn     String
+  companyFa   String
+  companyEn   String
+  startDate   DateTime
+  endDate     DateTime?
+  isPublished Boolean   @default(false)
+  sortOrder   Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([isPublished, sortOrder])
+  @@map("experiences")
+}

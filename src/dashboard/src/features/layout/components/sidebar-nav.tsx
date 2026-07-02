@@ -11,6 +11,7 @@ import {
   FolderTree,
   Tag,
   Briefcase,
+  History,
   MessageSquare,
   Users,
   Settings,
@@ -27,6 +28,7 @@ export type SidebarItemKey =
   | 'categories'
   | 'tags'
   | 'portfolio'
+  | 'experiences'
   | 'comments'
   | 'users'
   | 'settings';
@@ -64,6 +66,7 @@ export const sidebarGroups: SidebarNavGroup[] = [
       { key: 'pages', href: '/dashboard/pages', icon: File, roles: ROLES.editor },
       { key: 'media', href: '/dashboard/media', icon: Image, roles: ROLES.all },
       { key: 'portfolio', href: '/dashboard/portfolio', icon: Briefcase, roles: ROLES.editor },
+      { key: 'experiences', href: '/dashboard/experiences', icon: History, roles: ROLES.editor },
     ],
   },
   {

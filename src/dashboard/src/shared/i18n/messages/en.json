@@ -47,6 +47,7 @@
     "categories": "Categories",
     "tags": "Tags",
     "portfolio": "Portfolio",
+    "experiences": "Work Experience",
     "comments": "Comments",
     "users": "Users",
     "settings": "Settings",
@@ -61,6 +62,8 @@
     "editTag": "Edit Tag",
     "newPortfolio": "New Project",
     "editPortfolio": "Edit Project",
+    "newExperience": "New Experience",
+    "editExperience": "Edit Experience",
     "save": "Save",
     "delete": "Delete",
     "publish": "Publish",
@@ -108,7 +111,9 @@
       "sortOrder": "Sort Order",
       "published": "Published",
       "name": "Name",
-      "parent": "Parent"
+      "parent": "Parent",
+      "company": "Company",
+      "period": "Period"
     },
     "form": {
       "basicInfo": "Basic Information",
@@ -143,6 +148,10 @@
       "gallery": "Gallery",
       "sortOrder": "Sort Order",
       "technologies": "Technologies",
+      "companyFa": "Company (FA)",
+      "companyEn": "Company (EN)",
+      "startDate": "Start date",
+      "endDateOptional": "End date (optional)",
       "technologyPlaceholder": "Type and press Enter",
       "altFa": "Alt Text (FA)",
       "altEn": "Alt Text (EN)",
@@ -205,6 +214,7 @@
       "deleteCategory": "Delete this category permanently?",
       "deleteTag": "Delete this tag permanently?",
       "deletePortfolio": "Delete this project permanently?",
+      "deleteExperience": "Delete this experience permanently?",
       "deleteMedia": "Delete this file permanently?",
       "deleteComment": "Delete this comment permanently?"
     },

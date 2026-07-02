@@ -1,0 +1,43 @@
+{
+  "nav": {
+    "home": "Home",
+    "blog": "Blog",
+    "portfolio": "Portfolio",
+    "about": "About",
+    "contact": "Contact"
+  },
+  "home": {
+    "selectedProjects": "Selected Projects",
+    "workExperience": "Work Experience",
+    "blog": "Blog",
+    "connect": "Connect",
+    "present": "Present",
+    "viewAllPosts": "View all posts",
+    "viewAllProjects": "View all projects",
+    "emailPrompt": "Feel free to contact me at"
+  },
+  "blog": {
+    "title": "Blog",
+    "readMore": "Read more",
+    "backToBlog": "Back to blog",
+    "empty": "No posts yet.",
+    "publishedOn": "Published on"
+  },
+  "portfolio": {
+    "title": "Portfolio",
+    "empty": "No projects yet.",
+    "visitProject": "Visit project",
+    "viewSource": "View source",
+    "technologies": "Technologies",
+    "backToPortfolio": "Back to portfolio"
+  },
+  "common": {
+    "toggleTheme": "Toggle theme",
+    "language": "Language",
+    "notFound": "Page not found",
+    "backHome": "Back home"
+  },
+  "footer": {
+    "rights": "All rights reserved."
+  }
+}

@@ -47,6 +47,7 @@
     "categories": "دسته‌بندی‌ها",
     "tags": "برچسب‌ها",
     "portfolio": "نمونه‌کارها",
+    "experiences": "سوابق کاری",
     "comments": "نظرات",
     "users": "کاربران",
     "settings": "تنظیمات",
@@ -61,6 +62,8 @@
     "editTag": "ویرایش برچسب",
     "newPortfolio": "پروژه جدید",
     "editPortfolio": "ویرایش پروژه",
+    "newExperience": "سابقه جدید",
+    "editExperience": "ویرایش سابقه",
     "save": "ذخیره",
     "delete": "حذف",
     "publish": "انتشار",
@@ -108,7 +111,9 @@
       "sortOrder": "ترتیب",
       "published": "منتشر شده",
       "name": "نام",
-      "parent": "والد"
+      "parent": "والد",
+      "company": "شرکت",
+      "period": "بازه زمانی"
     },
     "form": {
       "basicInfo": "اطلاعات پایه",
@@ -143,6 +148,10 @@
       "gallery": "گالری",
       "sortOrder": "ترتیب",
       "technologies": "تکنولوژی‌ها",
+      "companyFa": "شرکت (FA)",
+      "companyEn": "شرکت (EN)",
+      "startDate": "تاریخ شروع",
+      "endDateOptional": "تاریخ پایان (اختیاری)",
       "technologyPlaceholder": "تایپ کنید و Enter بزنید",
       "altFa": "متن جایگزین (FA)",
       "altEn": "متن جایگزین (EN)",
@@ -205,6 +214,7 @@
       "deleteCategory": "این دسته برای همیشه حذف شود؟",
       "deleteTag": "این برچسب برای همیشه حذف شود؟",
       "deletePortfolio": "این پروژه برای همیشه حذف شود؟",
+      "deleteExperience": "این سابقه برای همیشه حذف شود؟",
       "deleteMedia": "این فایل برای همیشه حذف شود؟",
       "deleteComment": "این نظر برای همیشه حذف شود؟"
     },

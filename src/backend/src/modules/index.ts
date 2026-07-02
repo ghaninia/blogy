@@ -7,6 +7,7 @@ import { portfolioModule } from './portfolio/portfolio.module.js';
 import { mediaModule } from './media/media.module.js';
 import { commentModule } from './comment/comment.module.js';
 import { settingModule } from './setting/setting.module.js';
+import { experienceModule } from './experience/experience.module.js';
 
 export const modules = [
   authModule,
@@ -15,6 +16,7 @@ export const modules = [
   categoryModule,
   tagModule,
   portfolioModule,
+  experienceModule,
   mediaModule,
   commentModule,
   settingModule,

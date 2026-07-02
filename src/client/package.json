@@ -1,10 +1,34 @@
 {
   "name": "@gh/client",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "private": true,
-  "description": "Reserved for future public-facing client app (blog, portfolio, pages)",
+  "description": "Public-facing personal site (home, blog, portfolio, pages) — Nim-inspired",
   "scripts": {
-    "dev": "echo 'Client app not implemented yet. See README.md'",
-    "build": "echo 'Client app not implemented yet'"
+    "dev": "next dev -p 3001",
+    "build": "next build",
+    "start": "next start -p 3001",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@gh/backend": "workspace:*",
+    "clsx": "^2.1.1",
+    "framer-motion": "^11.15.0",
+    "lucide-react": "^0.469.0",
+    "next": "^15.1.2",
+    "next-intl": "^3.26.3",
+    "next-themes": "^0.4.4",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "tailwind-merge": "^2.6.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "@types/react": "^19.0.2",
+    "@types/react-dom": "^19.0.2",
+    "autoprefixer": "^10.4.20",
+    "eslint-config-next": "^15.1.2",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.17",
+    "typescript": "^5.7.2"
   }
 }

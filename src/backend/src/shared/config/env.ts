@@ -44,7 +44,10 @@ export const env = {
   isDev,
   isProd,
   port: parseInt(process.env.API_PORT ?? '4000', 10),
-  corsOrigin: requireEnv('CORS_ORIGIN', 'http://localhost:3000'),
+  corsOrigin: requireEnv('CORS_ORIGIN', 'http://localhost:3000,http://localhost:3001')
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean),
   jwtAccessSecret,
   jwtRefreshSecret,
   jwtAccessExpires: requireEnv('JWT_ACCESS_EXPIRES', '15m'),

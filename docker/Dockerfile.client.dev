@@ -1,0 +1,22 @@
+# Development public site (Next.js) with hot reload
+
+FROM node:20-alpine
+
+RUN apk add --no-cache libc6-compat curl
+RUN corepack enable && corepack prepare pnpm@9.15.0 --activate
+
+WORKDIR /app
+
+COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
+COPY src/client/package.json ./src/client/
+COPY src/backend/package.json ./src/backend/
+
+RUN pnpm install --frozen-lockfile
+
+COPY docker/scripts/entrypoint-client.dev.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+EXPOSE 3001
+
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["pnpm", "--filter", "@gh/client", "dev"]

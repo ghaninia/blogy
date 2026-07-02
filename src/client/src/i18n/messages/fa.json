@@ -1,0 +1,47 @@
+{
+  "nav": {
+    "home": "خانه",
+    "blog": "وبلاگ",
+    "portfolio": "نمونه‌کارها",
+    "about": "درباره",
+    "contact": "تماس"
+  },
+  "home": {
+    "selectedProjects": "پروژه‌های منتخب",
+    "workExperience": "سوابق کاری",
+    "blog": "وبلاگ",
+    "connect": "ارتباط",
+    "present": "اکنون",
+    "viewAllPosts": "مشاهده همه مطالب",
+    "viewAllProjects": "مشاهده همه پروژه‌ها",
+    "emailPrompt": "برای ارتباط به این نشانی ایمیل بزنید"
+  },
+  "blog": {
+    "title": "وبلاگ",
+    "readMore": "ادامه مطلب",
+    "backToBlog": "بازگشت به وبلاگ",
+    "empty": "هنوز مطلبی منتشر نشده.",
+    "publishedOn": "منتشر شده در"
+  },
+  "portfolio": {
+    "title": "نمونه‌کارها",
+    "empty": "هنوز پروژه‌ای اضافه نشده.",
+    "visitProject": "مشاهده پروژه",
+    "viewSource": "کد منبع",
+    "technologies": "تکنولوژی‌ها",
+    "backToPortfolio": "بازگشت به نمونه‌کارها"
+  },
+  "common": {
+    "toggleTheme": "تغییر تم",
+    "language": "زبان",
+    "notFound": "صفحه یافت نشد",
+    "backHome": "بازگشت به خانه"
+  },
+  "pages": {
+    "about": "درباره",
+    "contact": "تماس"
+  },
+  "footer": {
+    "rights": "تمامی حقوق محفوظ است."
+  }
+}

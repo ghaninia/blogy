@@ -7,7 +7,7 @@ ROOT_DIR  := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
 ENV_FILE  ?= $(ROOT_DIR)/.env
 COMPOSE   := docker compose --env-file $(ENV_FILE)
 
-.PHONY: help env init dev dev-d dev-db down restart logs ps migrate seed db-refresh install shell-backend shell-dashboard shell-db clean health rebuild
+.PHONY: help env init dev dev-d dev-db down restart logs ps migrate seed db-refresh install shell-backend shell-dashboard shell-client shell-db clean health rebuild
 
 help: ## Show available commands
 	@grep -E '^[a-zA-Z0-9_-]+:.*?## ' $(MAKEFILE_LIST) | \
@@ -46,6 +46,7 @@ ps: ## Show container status
 install: ## Install deps inside app containers
 	$(COMPOSE) exec backend sh -c 'cd /app && pnpm install --frozen-lockfile'
 	$(COMPOSE) exec dashboard sh -c 'cd /app && pnpm install --frozen-lockfile'
+	$(COMPOSE) exec client sh -c 'cd /app && pnpm install --frozen-lockfile'
 
 migrate: ## Run Prisma migrations in backend container
 	$(COMPOSE) exec backend sh -c 'cd /app && pnpm db:migrate:deploy'
@@ -61,6 +62,9 @@ shell-backend: ## Shell in backend container
 
 shell-dashboard: ## Shell in dashboard container
 	$(COMPOSE) exec dashboard sh
+
+shell-client: ## Shell in client container
+	$(COMPOSE) exec client sh
 
 shell-db: ## psql in database container
 	$(COMPOSE) exec db psql -U $${POSTGRES_USER:-postgres} -d $${POSTGRES_DB:-blogy}

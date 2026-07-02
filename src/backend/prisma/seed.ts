@@ -147,8 +147,8 @@ async function main() {
     },
     {
       key: 'site_tagline',
-      valueFa: 'وبلاگ حرفه‌ای دوزبانه',
-      valueEn: 'Professional Bilingual Blog',
+      valueFa: 'تمرکز بر ساخت تجربه‌های وب شهودی و پرفورمنس. پل زدن بین طراحی و توسعه.',
+      valueEn: 'Focused on creating intuitive and performant web experiences. Bridging the gap between design and development.',
     },
     {
       key: 'meta_title',
@@ -164,6 +164,22 @@ async function main() {
       key: 'robots',
       valueEn: 'index, follow',
     },
+    {
+      key: 'contact_email',
+      valueEn: 'hello@example.com',
+    },
+    {
+      key: 'twitter_handle',
+      valueEn: 'yourhandle',
+    },
+    {
+      key: 'github_url',
+      valueEn: 'https://github.com',
+    },
+    {
+      key: 'linkedin_url',
+      valueEn: 'https://linkedin.com',
+    },
   ];
 
   for (const setting of defaultSettings) {
@@ -172,6 +188,50 @@ async function main() {
       update: {},
       create: setting,
     });
+  }
+
+  const experiences = [
+    {
+      titleFa: 'مدیرعامل',
+      titleEn: 'CEO',
+      companyFa: 'استودیو Reglazed',
+      companyEn: 'Reglazed Studio',
+      startDate: new Date('2024-01-01'),
+      endDate: null,
+      isPublished: true,
+      sortOrder: 0,
+    },
+    {
+      titleFa: 'مهندس طراحی',
+      titleEn: 'Design Engineer',
+      companyFa: 'فریلنس',
+      companyEn: 'Freelance',
+      startDate: new Date('2022-01-01'),
+      endDate: null,
+      isPublished: true,
+      sortOrder: 1,
+    },
+    {
+      titleFa: 'توسعه‌دهنده فرانت‌اند',
+      titleEn: 'Front-end Developer',
+      companyFa: 'فریلنس',
+      companyEn: 'Freelance',
+      startDate: new Date('2017-01-01'),
+      endDate: null,
+      isPublished: true,
+      sortOrder: 2,
+    },
+  ];
+
+  for (const exp of experiences) {
+    const existing = await prisma.experience.findFirst({
+      where: { titleEn: exp.titleEn, companyEn: exp.companyEn },
+    });
+    if (existing) {
+      await prisma.experience.update({ where: { id: existing.id }, data: exp });
+    } else {
+      await prisma.experience.create({ data: exp });
+    }
   }
 
   console.log('Seed completed.');

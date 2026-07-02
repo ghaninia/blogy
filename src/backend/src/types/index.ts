@@ -4,6 +4,7 @@ export * from './schemas/page.js';
 export * from './schemas/category.js';
 export * from './schemas/tag.js';
 export * from './schemas/portfolio.js';
+export * from './schemas/experience.js';
 export * from './schemas/media.js';
 export * from './schemas/comment.js';
 export * from './schemas/setting.js';
