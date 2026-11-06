@@ -51,14 +51,15 @@ export default async function LocaleLayout({
   if (!locales.includes(locale as Locale)) notFound();
 
   const messages = await getMessages();
+  const siteConfig = await fetchSiteConfig(locale);
   const dir = locale === 'fa' ? 'rtl' : 'ltr';
 
   return (
-    <html lang={locale} dir={dir} suppressHydrationWarning>
+    <html lang={locale} dir={dir} data-accent={siteConfig.accentColor} suppressHydrationWarning>
       <head>
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var t=localStorage.getItem('gh-theme');if(t==='light'){document.documentElement.classList.remove('dark')}else{document.documentElement.classList.add('dark')}}catch(e){document.documentElement.classList.add('dark')}})();`,
+            __html: `(function(){try{var t=localStorage.getItem('gh-theme');var d=t==='dark'||(!t&&window.matchMedia('(prefers-color-scheme: dark)').matches);document.documentElement.classList.toggle('dark',d);document.documentElement.dataset.theme=t||'system';var a=localStorage.getItem('gh-accent');if(['violet','blue','green','rose'].includes(a))document.documentElement.dataset.accent=a}catch(e){document.documentElement.classList.add('dark')}})();`,
           }}
         />
       </head>

@@ -23,13 +23,12 @@ export function AnimatedBackground({ children, className }: AnimatedBackgroundPr
 }
 
 interface AnimatedListItemProps {
-  id: string;
   children: ReactNode;
   className?: string;
   active?: boolean;
 }
 
-export function AnimatedListItem({ id, children, className, active }: AnimatedListItemProps) {
+export function AnimatedListItem({ children, className, active }: AnimatedListItemProps) {
   return (
     <div className={cn('group relative rounded-lg', className)}>
       {active ? (

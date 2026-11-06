@@ -6,7 +6,7 @@ import { Container } from '@/components/layout/container';
 import { fetchPortfolio } from '@/lib/data';
 import { fetchSiteConfig } from '@/lib/site-config';
 import { getMediaUrl } from '@/lib/api';
-import { cn, getLocalizedField, titleFont } from '@/lib/utils';
+import { getLocalizedField, titleFont } from '@/lib/utils';
 
 export default async function PortfolioPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -52,6 +52,8 @@ export default async function PortfolioPage({ params }: { params: Promise<{ loca
         year={new Date().getFullYear()}
         footerCopyright={config.footerCopyright}
         footerRights={config.footerRights}
+        locale={locale}
+        navigation={config.footerNavigation}
       />
     </>
   );

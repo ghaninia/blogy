@@ -5,7 +5,23 @@ import { getPostShareUrl } from './share';
 import { getLocalizedField } from './utils';
 
 function stripHtml(html: string): string {
-  return html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+  return html
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+export function getPostCanonicalUrl(post: PostDetail, locale: string, slug: string) {
+  const customUrl = post.canonicalUrl?.trim();
+  if (customUrl) {
+    try {
+      const parsed = new URL(customUrl);
+      if (parsed.protocol === 'http:' || parsed.protocol === 'https:') return parsed.toString();
+    } catch {
+      // Invalid legacy values fall back to the canonical localized route.
+    }
+  }
+  return getPostShareUrl(locale, slug);
 }
 
 export function getPostSeoData(post: PostDetail, locale: string, slug: string) {
@@ -15,8 +31,9 @@ export function getPostSeoData(post: PostDetail, locale: string, slug: string) {
   const description =
     getLocalizedField(post, 'metaDesc', locale) ||
     stripHtml(getLocalizedField(post, 'excerpt', locale));
-  const url = getPostShareUrl(locale, slug);
-  const cover = post.coverMedia?.path ? getMediaUrl(post.coverMedia.path) : undefined;
+  const url = getPostCanonicalUrl(post, locale, slug);
+  const shareMedia = post.socialImageMedia ?? post.coverMedia;
+  const cover = shareMedia?.path ? getMediaUrl(shareMedia.path) : undefined;
   const authorName = post.author?.displayName || post.author?.username || undefined;
   const tagNames = post.tags?.map((item) => (isFa ? item.tag.nameFa : item.tag.nameEn)) ?? [];
   const categoryNames =
@@ -29,6 +46,7 @@ export function getPostSeoData(post: PostDetail, locale: string, slug: string) {
     description,
     url,
     cover,
+    shareMedia,
     authorName,
     tagNames,
     categoryNames,
@@ -39,8 +57,18 @@ export function getPostSeoData(post: PostDetail, locale: string, slug: string) {
 }
 
 export function buildPostMetadata(post: PostDetail, locale: string, slug: string): Metadata {
-  const { title, description, url, cover, authorName, tagNames, categoryNames, keywords, publishedTime } =
-    getPostSeoData(post, locale, slug);
+  const {
+    title,
+    description,
+    url,
+    cover,
+    shareMedia,
+    authorName,
+    tagNames,
+    categoryNames,
+    keywords,
+    publishedTime,
+  } = getPostSeoData(post, locale, slug);
 
   return {
     title,
@@ -64,8 +92,8 @@ export function buildPostMetadata(post: PostDetail, locale: string, slug: string
             {
               url: cover,
               alt: title,
-              width: post.coverMedia?.width ?? undefined,
-              height: post.coverMedia?.height ?? undefined,
+              width: shareMedia?.width ?? undefined,
+              height: shareMedia?.height ?? undefined,
             },
           ]
         : undefined,

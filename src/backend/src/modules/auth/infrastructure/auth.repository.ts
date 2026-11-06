@@ -8,6 +8,11 @@ const userSelect = {
   bio: true,
   role: true,
   avatarUrl: true,
+  website: true,
+  githubUrl: true,
+  linkedinUrl: true,
+  instagramUrl: true,
+  twitterUrl: true,
   createdAt: true,
 } as const;
 
@@ -67,8 +72,20 @@ export class AuthRepository {
         bio: true,
         role: true,
         avatarUrl: true,
+        website: true,
+        githubUrl: true,
+        linkedinUrl: true,
+        instagramUrl: true,
+        twitterUrl: true,
       },
     });
+  }
+
+  updatePasswordAndRevokeSessions(userId: string, passwordHash: string) {
+    return prisma.$transaction([
+      prisma.user.update({ where: { id: userId }, data: { passwordHash } }),
+      prisma.refreshToken.deleteMany({ where: { userId } }),
+    ]);
   }
 
   updateRole(userId: string, role: Role) {

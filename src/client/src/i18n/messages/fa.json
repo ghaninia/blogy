@@ -4,7 +4,10 @@
     "blog": "وبلاگ",
     "portfolio": "نمونه‌کارها",
     "about": "درباره",
-    "contact": "تماس"
+    "contact": "تماس",
+    "menu": "باز کردن منو",
+    "mainNavigation": "ناوبری اصلی",
+    "footerNavigation": "پیوندهای پابرگ"
   },
   "home": {
     "selectedProjects": "پروژه‌های منتخب",
@@ -49,6 +52,7 @@
     "toggleTheme": "تغییر تم",
     "lightMode": "حالت روشن",
     "darkMode": "حالت تاریک",
+    "systemMode": "هماهنگ با دستگاه",
     "language": "زبان",
     "persian": "فارسی",
     "english": "انگلیسی",
@@ -62,6 +66,17 @@
   "footer": {
     "rights": "تمامی حقوق محفوظ است.",
     "copyright": "© {year} {name}."
+  },
+  "newsletter": {
+    "title": "گاهی نامه‌ای برای خواندن",
+    "description": "مطالب تازه و خبرهای گاه‌به‌گاه را در ایمیل خود دریافت کنید.",
+    "emailLabel": "نشانی ایمیل",
+    "emailPlaceholder": "you@example.com",
+    "consent": "با دریافت خبرهای وبلاگ از طریق ایمیل موافقم.",
+    "submit": "عضویت",
+    "submitting": "در حال عضویت…",
+    "success": "ممنون؛ درخواست عضویت شما ثبت شد.",
+    "error": "ثبت عضویت انجام نشد. دوباره تلاش کنید."
   },
   "comments": {
     "title": "نظرات",

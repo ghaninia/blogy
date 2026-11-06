@@ -24,7 +24,10 @@ export const authRateLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   skip: () => env.isDev,
-  message: { success: false, error: { message: 'Too many auth attempts', code: 'AUTH_RATE_LIMIT' } },
+  message: {
+    success: false,
+    error: { message: 'Too many auth attempts', code: 'AUTH_RATE_LIMIT' },
+  },
 });
 
 export const commentRateLimiter = rateLimit({
@@ -34,4 +37,16 @@ export const commentRateLimiter = rateLimit({
   legacyHeaders: false,
   skip: () => env.isDev,
   message: { success: false, error: { message: 'Too many comments', code: 'COMMENT_RATE_LIMIT' } },
+});
+
+export const publicSubscribeRateLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000,
+  max: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  skip: () => env.isDev,
+  message: {
+    success: false,
+    error: { message: 'Too many subscription attempts', code: 'SUBSCRIBE_RATE_LIMIT' },
+  },
 });

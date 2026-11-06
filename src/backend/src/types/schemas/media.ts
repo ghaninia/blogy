@@ -6,6 +6,8 @@ export const mediaQuerySchema = z.object({
   folder: z.string().optional(),
   mimeType: z.string().optional(),
   search: z.string().optional(),
+  createdAfter: z.coerce.date().optional(),
+  createdBefore: z.coerce.date().optional(),
 });
 
 export const updateMediaSchema = z.object({

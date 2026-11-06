@@ -23,7 +23,9 @@ export class CommentRepository {
       where: { id },
       data,
       include: {
-        user: { select: { id: true, username: true, displayName: true } },
+        user: {
+          select: { id: true, username: true, displayName: true, email: true, avatarUrl: true },
+        },
         post: { select: { id: true, slug: true, titleEn: true, titleFa: true } },
       },
     });
@@ -63,7 +65,9 @@ export class CommentRepository {
       take,
       orderBy: { createdAt: 'desc' },
       include: {
-        user: { select: { id: true, username: true, displayName: true } },
+        user: {
+          select: { id: true, username: true, displayName: true, email: true, avatarUrl: true },
+        },
         post: { select: { id: true, slug: true, titleEn: true, titleFa: true } },
       },
     });
@@ -71,6 +75,16 @@ export class CommentRepository {
 
   count(where: Prisma.CommentWhereInput) {
     return prisma.comment.count({ where });
+  }
+
+  bulkModerate(ids: string[], status: CommentStatus) {
+    return prisma.$transaction(
+      ids.map((id) => prisma.comment.update({ where: { id }, data: { status } })),
+    );
+  }
+
+  bulkDelete(ids: string[]) {
+    return prisma.$transaction(ids.map((id) => prisma.comment.delete({ where: { id } })));
   }
 }
 

@@ -1,12 +1,7 @@
 import localFont from 'next/font/local';
-import { Plus_Jakarta_Sans } from 'next/font/google';
 
-export const plusJakartaSans = Plus_Jakarta_Sans({
-  subsets: ['latin'],
-  weight: ['500', '600', '700', '800'],
-  variable: '--font-sans',
-  display: 'swap',
-});
+// English fonts are resolved locally by the browser when installed, then fall back to system sans.
+export const plusJakartaSans = { variable: '', className: 'font-sans' };
 
 export const vazirmatn = localFont({
   src: [

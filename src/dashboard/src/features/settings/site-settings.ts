@@ -150,8 +150,16 @@ export function settingsToForm(settings: SettingRecord[]): SiteSettingsForm {
 
 export function formToSettingUpdates(form: SiteSettingsForm) {
   return [
-    { key: 'site_name', valueFa: form.siteNameFa || undefined, valueEn: form.siteNameEn || undefined },
-    { key: 'site_subtitle', valueFa: form.siteSubtitleFa || undefined, valueEn: form.siteSubtitleEn || undefined },
+    {
+      key: 'site_name',
+      valueFa: form.siteNameFa || undefined,
+      valueEn: form.siteNameEn || undefined,
+    },
+    {
+      key: 'site_subtitle',
+      valueFa: form.siteSubtitleFa || undefined,
+      valueEn: form.siteSubtitleEn || undefined,
+    },
     {
       key: 'site_description',
       valueFa: form.siteDescriptionFa || undefined,
@@ -164,9 +172,21 @@ export function formToSettingUpdates(form: SiteSettingsForm) {
     },
     { key: 'site_logo', valueEn: form.logoPath || undefined },
     { key: 'site_favicon', valueEn: form.faviconPath || undefined },
-    { key: 'meta_title', valueFa: form.metaTitleFa || undefined, valueEn: form.metaTitleEn || undefined },
-    { key: 'meta_description', valueFa: form.metaDescFa || undefined, valueEn: form.metaDescEn || undefined },
-    { key: 'meta_keywords', valueFa: form.metaKeywordsFa || undefined, valueEn: form.metaKeywordsEn || undefined },
+    {
+      key: 'meta_title',
+      valueFa: form.metaTitleFa || undefined,
+      valueEn: form.metaTitleEn || undefined,
+    },
+    {
+      key: 'meta_description',
+      valueFa: form.metaDescFa || undefined,
+      valueEn: form.metaDescEn || undefined,
+    },
+    {
+      key: 'meta_keywords',
+      valueFa: form.metaKeywordsFa || undefined,
+      valueEn: form.metaKeywordsEn || undefined,
+    },
     { key: 'og_image', valueEn: form.ogImagePath || undefined },
     { key: 'site_url', valueEn: form.siteUrl || undefined },
     { key: 'twitter_handle', valueEn: form.twitterHandle || undefined },
@@ -186,6 +206,7 @@ export function formToSettingUpdates(form: SiteSettingsForm) {
 }
 
 export interface SiteConfig {
+  accentColor: 'violet' | 'blue' | 'green' | 'rose';
   name: string;
   subtitle: string;
   description: string;
@@ -207,10 +228,18 @@ export interface SiteConfig {
 export function resolveSiteConfig(settings: SettingRecord[], locale: string): SiteConfig {
   const form = settingsToForm(settings);
   const isFa = locale === 'fa';
+  const configuredAccent = getSettingValue(settings, 'site_appearance')?.valueJson?.accent;
+  const accentColor = ['violet', 'blue', 'green', 'rose'].includes(String(configuredAccent))
+    ? (configuredAccent as SiteConfig['accentColor'])
+    : 'violet';
 
   return {
+    accentColor,
     name: (isFa ? form.siteNameFa : form.siteNameEn) || form.siteNameEn || form.siteNameFa,
-    subtitle: (isFa ? form.siteSubtitleFa : form.siteSubtitleEn) || form.siteSubtitleEn || form.siteSubtitleFa,
+    subtitle:
+      (isFa ? form.siteSubtitleFa : form.siteSubtitleEn) ||
+      form.siteSubtitleEn ||
+      form.siteSubtitleFa,
     description:
       (isFa ? form.siteDescriptionFa : form.siteDescriptionEn) ||
       form.siteDescriptionEn ||
@@ -222,8 +251,12 @@ export function resolveSiteConfig(settings: SettingRecord[], locale: string): Si
     logoPath: form.logoPath,
     faviconPath: form.faviconPath,
     metaTitle: (isFa ? form.metaTitleFa : form.metaTitleEn) || form.metaTitleEn || form.metaTitleFa,
-    metaDescription: (isFa ? form.metaDescFa : form.metaDescEn) || form.metaDescEn || form.metaDescFa,
-    metaKeywords: (isFa ? form.metaKeywordsFa : form.metaKeywordsEn) || form.metaKeywordsEn || form.metaKeywordsFa,
+    metaDescription:
+      (isFa ? form.metaDescFa : form.metaDescEn) || form.metaDescEn || form.metaDescFa,
+    metaKeywords:
+      (isFa ? form.metaKeywordsFa : form.metaKeywordsEn) ||
+      form.metaKeywordsEn ||
+      form.metaKeywordsFa,
     ogImagePath: form.ogImagePath,
     siteUrl: form.siteUrl,
     twitterHandle: form.twitterHandle,

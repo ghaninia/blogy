@@ -5,6 +5,7 @@ export class PostRepository {
     return {
       author: { select: { id: true, username: true, displayName: true, avatarUrl: true } },
       coverMedia: true,
+      socialImageMedia: true,
       categories: { include: { category: true } },
       tags: { include: { tag: true } },
     };
@@ -47,12 +48,22 @@ export class PostRepository {
     return prisma.post.delete({ where: { id } });
   }
 
-  findMany(where: Prisma.PostWhereInput, skip: number, take: number) {
+  findMany(
+    where: Prisma.PostWhereInput,
+    skip: number,
+    take: number,
+    sort: 'newest' | 'oldest' | 'title' = 'newest',
+  ) {
     return prisma.post.findMany({
       where,
       skip,
       take,
-      orderBy: { publishedAt: 'desc' },
+      orderBy:
+        sort === 'oldest'
+          ? { createdAt: 'asc' }
+          : sort === 'title'
+            ? [{ titleEn: 'asc' }, { titleFa: 'asc' }]
+            : { updatedAt: 'desc' },
       include: this.defaultInclude(),
     });
   }
@@ -67,6 +78,16 @@ export class PostRepository {
 
   deleteTags(postId: string) {
     return prisma.postTag.deleteMany({ where: { postId } });
+  }
+
+  bulkUpdateStatus(ids: string[], status: Prisma.PostUpdateInput['status']) {
+    const data: Prisma.PostUpdateInput = { status };
+    if (status === 'PUBLISHED') data.publishedAt = new Date();
+    return prisma.$transaction(ids.map((id) => prisma.post.update({ where: { id }, data })));
+  }
+
+  bulkDelete(ids: string[]) {
+    return prisma.$transaction(ids.map((id) => prisma.post.delete({ where: { id } })));
   }
 }
 

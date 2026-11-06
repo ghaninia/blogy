@@ -4,8 +4,12 @@
 
 @layer base {
   :root {
+    --font-sans: Geist, Arial, sans-serif;
+    --font-mono: 'Geist Mono', ui-monospace, monospace;
     --background: 0 0% 100%;
     --foreground: 240 10% 3.9%;
+    --primary: 243 100% 68%;
+    --primary-foreground: 0 0% 100%;
     --muted: 240 4.8% 95.9%;
     --muted-foreground: 240 3.8% 46.1%;
     --border: 240 5.9% 90%;
@@ -15,10 +19,31 @@
   .dark {
     --background: 240 10% 3.9%;
     --foreground: 0 0% 98%;
+    --primary: 244 100% 74%;
+    --primary-foreground: 225 5% 7%;
     --muted: 240 3.7% 15.9%;
     --muted-foreground: 240 5% 64.9%;
     --border: 240 3.7% 15.9%;
     --ring: 240 4.9% 83.9%;
+  }
+
+  :root[data-accent='blue'] {
+    --primary: 217 91% 60%;
+  }
+  .dark[data-accent='blue'] {
+    --primary: 217 90% 69%;
+  }
+  :root[data-accent='green'] {
+    --primary: 153 60% 42%;
+  }
+  .dark[data-accent='green'] {
+    --primary: 153 60% 55%;
+  }
+  :root[data-accent='rose'] {
+    --primary: 344 76% 58%;
+  }
+  .dark[data-accent='rose'] {
+    --primary: 344 76% 68%;
   }
 
   * {
@@ -127,6 +152,11 @@
 
   .rich-content img {
     @apply my-6 w-full rounded-xl border border-border bg-muted/20;
+  }
+
+  .rich-content iframe.post-video-embed {
+    @apply my-6 block aspect-video w-full rounded-xl border border-border bg-muted/20;
+    height: auto;
   }
 
   .rich-content table {

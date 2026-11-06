@@ -21,6 +21,11 @@ export interface AuthUser {
   displayName: string | null;
   role: 'ADMIN' | 'EDITOR' | 'AUTHOR' | 'USER';
   avatarUrl: string | null;
+  website?: string | null;
+  githubUrl?: string | null;
+  linkedinUrl?: string | null;
+  instagramUrl?: string | null;
+  twitterUrl?: string | null;
 }
 
 export interface JwtPayload {

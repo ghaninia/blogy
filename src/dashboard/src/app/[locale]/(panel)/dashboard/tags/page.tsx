@@ -47,7 +47,7 @@ export default function DashboardTagsPage() {
   const [search, setSearch] = useState('');
   const debouncedSearch = useDebouncedValue(search);
 
-  const { items, meta, isLoading } = useCrudList<Tag>({
+  const { items, meta, isLoading, isError, refetch } = useCrudList<Tag>({
     queryKey: ['tags'],
     endpoint: '/api/tags',
     params: {
@@ -75,10 +75,17 @@ export default function DashboardTagsPage() {
   const renderActions = (tag: Tag) => (
     <div className="flex justify-end gap-2">
       <Link href={`/${locale}/dashboard/tags/${tag.id}/edit`}>
-        <Button variant="ghost" size="icon"><Pencil className="h-4 w-4" /></Button>
+        <Button variant="ghost" size="icon" aria-label={t('actions.edit')}>
+          <Pencil className="h-4 w-4" />
+        </Button>
       </Link>
       {user && isAdmin(user.role) ? (
-        <Button variant="ghost" size="icon" onClick={() => handleDelete(tag)}>
+        <Button
+          variant="ghost"
+          size="icon"
+          aria-label={t('actions.delete')}
+          onClick={() => handleDelete(tag)}
+        >
           <Trash2 className="h-4 w-4 text-destructive" />
         </Button>
       ) : null}
@@ -91,7 +98,10 @@ export default function DashboardTagsPage() {
         title={t('tags')}
         action={
           <Link href={`/${locale}/dashboard/tags/new`}>
-            <Button><Plus className="me-2 h-4 w-4" />{t('newTag')}</Button>
+            <Button>
+              <Plus className="me-2 h-4 w-4" />
+              {t('newTag')}
+            </Button>
           </Link>
         }
       />
@@ -100,13 +110,20 @@ export default function DashboardTagsPage() {
         <Input
           placeholder={tt('search')}
           value={search}
-          onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            setPage(1);
+          }}
           className="max-w-xs"
         />
       </div>
 
       <DataTable
         isLoading={isLoading}
+        isError={isError}
+        onRetry={() => {
+          void refetch();
+        }}
         isEmpty={!isLoading && items.length === 0}
         items={items}
         mobileCardRender={(tag) => (

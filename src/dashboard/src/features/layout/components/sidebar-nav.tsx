@@ -16,12 +16,15 @@ import {
   Users,
   Settings,
   File,
+  Search,
+  List,
   Plus,
 } from 'lucide-react';
 import { cn } from '@/shared/lib/utils';
 
 export type SidebarItemKey =
   | 'overview'
+  | 'activity'
   | 'posts'
   | 'pages'
   | 'media'
@@ -30,6 +33,12 @@ export type SidebarItemKey =
   | 'portfolio'
   | 'experiences'
   | 'comments'
+  | 'subscribers'
+  | 'newsletter'
+  | 'analytics'
+  | 'seo'
+  | 'appearance'
+  | 'navigation'
   | 'users'
   | 'settings';
 
@@ -42,7 +51,7 @@ export interface SidebarNavItem {
 }
 
 export interface SidebarNavGroup {
-  key: 'main' | 'content' | 'structure' | 'community';
+  key: 'main' | 'content' | 'community' | 'library' | 'insights' | 'customization';
   items: SidebarNavItem[];
 }
 
@@ -57,6 +66,7 @@ export const sidebarGroups: SidebarNavGroup[] = [
     key: 'main',
     items: [
       { key: 'overview', href: '/dashboard', icon: LayoutDashboard, exact: true, roles: ROLES.all },
+      { key: 'activity', href: '/dashboard/activity', icon: History, roles: ROLES.all },
     ],
   },
   {
@@ -64,22 +74,41 @@ export const sidebarGroups: SidebarNavGroup[] = [
     items: [
       { key: 'posts', href: '/dashboard/posts', icon: FileText, roles: ROLES.all },
       { key: 'pages', href: '/dashboard/pages', icon: File, roles: ROLES.editor },
-      { key: 'media', href: '/dashboard/media', icon: Image, roles: ROLES.all },
-      { key: 'portfolio', href: '/dashboard/portfolio', icon: Briefcase, roles: ROLES.editor },
-      { key: 'experiences', href: '/dashboard/experiences', icon: History, roles: ROLES.editor },
-    ],
-  },
-  {
-    key: 'structure',
-    items: [
       { key: 'categories', href: '/dashboard/categories', icon: FolderTree, roles: ROLES.editor },
       { key: 'tags', href: '/dashboard/tags', icon: Tag, roles: ROLES.editor },
+      { key: 'portfolio', href: '/dashboard/portfolio', icon: Briefcase, roles: ROLES.editor },
+      { key: 'experiences', href: '/dashboard/experiences', icon: History, roles: ROLES.editor },
     ],
   },
   {
     key: 'community',
     items: [
       { key: 'comments', href: '/dashboard/comments', icon: MessageSquare, roles: ROLES.editor },
+      { key: 'subscribers', href: '/dashboard/subscribers', icon: Users, roles: ROLES.editor },
+      { key: 'newsletter', href: '/dashboard/newsletter', icon: FileText, roles: ROLES.editor },
+    ],
+  },
+  {
+    key: 'library',
+    items: [{ key: 'media', href: '/dashboard/media', icon: Image, roles: ROLES.all }],
+  },
+  {
+    key: 'insights',
+    items: [
+      {
+        key: 'analytics',
+        href: '/dashboard/analytics',
+        icon: LayoutDashboard,
+        roles: ROLES.editor,
+      },
+      { key: 'seo', href: '/dashboard/seo', icon: Search, roles: ROLES.admin },
+    ],
+  },
+  {
+    key: 'customization',
+    items: [
+      { key: 'appearance', href: '/dashboard/appearance', icon: Settings, roles: ROLES.admin },
+      { key: 'navigation', href: '/dashboard/navigation', icon: List, roles: ROLES.admin },
     ],
   },
 ];
@@ -109,9 +138,10 @@ interface SidebarNavLinkProps {
   active: boolean;
   label: string;
   onNavigate?: () => void;
+  collapsed?: boolean;
 }
 
-export function SidebarNavLink({ item, href, active, label, onNavigate }: SidebarNavLinkProps) {
+export function SidebarNavLink({ item, href, active, label, onNavigate, collapsed = false }: SidebarNavLinkProps) {
   const Icon = item.icon;
 
   return (
@@ -119,11 +149,14 @@ export function SidebarNavLink({ item, href, active, label, onNavigate }: Sideba
       href={href}
       onClick={onNavigate}
       aria-current={active ? 'page' : undefined}
+      aria-label={collapsed ? label : undefined}
+      title={collapsed ? label : undefined}
       className={cn(
-        'group flex items-center gap-3 rounded-xl px-3 py-2 text-[13px] font-medium transition-all duration-150',
+        'group relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] font-medium transition-all duration-150',
+        collapsed && 'justify-center px-0',
         active
-          ? 'border border-primary/25 bg-primary/12 text-primary elevated-sm'
-          : 'border border-transparent text-muted-foreground hover:border-glass-border hover:bg-accent/30 hover:text-foreground',
+          ? 'border border-primary/15 bg-primary/10 text-primary shadow-none before:absolute before:inset-y-2 before:start-0 before:w-[3px] before:rounded-full before:bg-primary'
+          : 'border border-transparent text-muted-foreground hover:bg-muted/80 hover:text-foreground',
       )}
     >
       <Icon
@@ -133,16 +166,17 @@ export function SidebarNavLink({ item, href, active, label, onNavigate }: Sideba
         )}
         strokeWidth={active ? 2.25 : 2}
       />
-      <span className={cn('min-w-0 flex-1 truncate', active && 'font-semibold')}>{label}</span>
+      <span className={cn('min-w-0 flex-1 truncate', collapsed && 'sr-only', active && 'font-semibold')}>{label}</span>
     </Link>
   );
 }
 
 interface SidebarNewPostButtonProps {
   onNavigate?: () => void;
+  collapsed?: boolean;
 }
 
-export function SidebarNewPostButton({ onNavigate }: SidebarNewPostButtonProps) {
+export function SidebarNewPostButton({ onNavigate, collapsed = false }: SidebarNewPostButtonProps) {
   const t = useTranslations('dashboard');
   const locale = useLocale();
 
@@ -150,10 +184,15 @@ export function SidebarNewPostButton({ onNavigate }: SidebarNewPostButtonProps) 
     <Link
       href={`/${locale}/dashboard/posts/new`}
       onClick={onNavigate}
-      className="elevated-interactive-primary inline-flex h-10 w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 text-sm font-semibold text-primary-foreground shadow-none transition-colors hover:bg-primary/90"
+      title={collapsed ? t('newPost') : undefined}
+      aria-label={collapsed ? t('newPost') : undefined}
+      className={cn(
+        'inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 text-sm font-semibold text-primary-foreground transition hover:brightness-105',
+        collapsed && 'w-11 px-0',
+      )}
     >
       <Plus className="h-4 w-4" strokeWidth={2.5} />
-      {t('newPost')}
+      <span className={cn(collapsed && 'sr-only')}>{t('newPost')}</span>
     </Link>
   );
 }
@@ -163,6 +202,7 @@ interface SidebarNavSectionsProps {
   onNavigate?: () => void;
   showSystem?: boolean;
   showNewPost?: boolean;
+  collapsed?: boolean;
 }
 
 export function SidebarNavSections({
@@ -170,6 +210,7 @@ export function SidebarNavSections({
   onNavigate,
   showSystem = true,
   showNewPost = true,
+  collapsed = false,
 }: SidebarNavSectionsProps) {
   const t = useTranslations('dashboard');
   const ts = useTranslations('dashboard.sidebar');
@@ -189,6 +230,7 @@ export function SidebarNavSections({
         active={isSidebarLinkActive(pathname, href, item.exact)}
         label={itemLabel(item.key)}
         onNavigate={onNavigate}
+        collapsed={collapsed}
       />
     );
   };
@@ -200,22 +242,26 @@ export function SidebarNavSections({
   return (
     <div className="flex h-full flex-col">
       {showNewPost ? (
-        <div className="mb-4 shrink-0 px-1">
-          <SidebarNewPostButton onNavigate={onNavigate} />
+        <div className={cn('mb-4 shrink-0 px-1', collapsed && 'flex justify-center')}>
+          <SidebarNewPostButton onNavigate={onNavigate} collapsed={collapsed} />
         </div>
       ) : null}
 
       <div className="sidebar-scroll min-h-0 flex-1 space-y-5 overflow-y-auto px-1">
         {sidebarGroups.map((group) => {
-          const visibleItems = group.items.filter((item) => canAccessSidebarItem(item.roles, userRole));
+          const visibleItems = group.items.filter((item) =>
+            canAccessSidebarItem(item.roles, userRole),
+          );
           if (visibleItems.length === 0) return null;
 
           const showLabel = group.key !== 'main' && visibleItems.length > 0;
 
           return (
             <div key={group.key}>
-              {showLabel ? (
-                <p className="mb-2 px-3 text-xs font-medium text-muted-foreground/75">{ts(group.key)}</p>
+              {showLabel && !collapsed ? (
+                <p className="mb-2 px-3 text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground/75">
+                  {ts(group.key)}
+                </p>
               ) : null}
               <div className="space-y-0.5">{group.items.map(renderItem)}</div>
             </div>
@@ -224,8 +270,12 @@ export function SidebarNavSections({
 
         {showSystem && visibleSystemItems.length > 0 ? (
           <div className="pb-1">
-            <div className="mb-3 h-px bg-gradient-to-r from-transparent via-glass-border to-transparent" />
-            <p className="mb-2 px-3 text-xs font-medium text-muted-foreground/75">{ts('system')}</p>
+            <div className="mb-3 h-px bg-border" />
+            {!collapsed ? (
+              <p className="mb-2 px-3 text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground/75">
+                {ts('system')}
+              </p>
+            ) : null}
             <div className="space-y-0.5">{sidebarSystemItems.map(renderItem)}</div>
           </div>
         ) : null}

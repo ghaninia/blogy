@@ -4,7 +4,16 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useLocale, useTranslations } from 'next-intl';
 import { Plus, Pencil } from 'lucide-react';
-import { Button, Input, Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@gh/ui';
+import {
+  Button,
+  Input,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@gh/ui';
 import { getLocalizedField } from '@/shared/lib/localized';
 import { PageHeader } from '@/features/layout/components/page-header';
 import { DataTable } from '@/features/layout/components/data-table';
@@ -29,7 +38,7 @@ export default function DashboardCategoriesPage() {
   const [search, setSearch] = useState('');
   const debouncedSearch = useDebouncedValue(search);
 
-  const { items, meta, isLoading } = useCrudList<Category>({
+  const { items, meta, isLoading, isError, refetch } = useCrudList<Category>({
     queryKey: ['categories'],
     endpoint: '/api/categories',
     params: {
@@ -41,7 +50,9 @@ export default function DashboardCategoriesPage() {
 
   const renderActions = (cat: Category) => (
     <Link href={`/${locale}/dashboard/categories/${cat.id}/edit`}>
-      <Button variant="ghost" size="icon"><Pencil className="h-4 w-4" /></Button>
+      <Button variant="ghost" size="icon" aria-label={t('actions.edit')}>
+        <Pencil className="h-4 w-4" />
+      </Button>
     </Link>
   );
 
@@ -51,7 +62,10 @@ export default function DashboardCategoriesPage() {
         title={t('categories')}
         action={
           <Link href={`/${locale}/dashboard/categories/new`}>
-            <Button><Plus className="me-2 h-4 w-4" />{t('newCategory')}</Button>
+            <Button>
+              <Plus className="me-2 h-4 w-4" />
+              {t('newCategory')}
+            </Button>
           </Link>
         }
       />
@@ -60,13 +74,20 @@ export default function DashboardCategoriesPage() {
         <Input
           placeholder={tt('search')}
           value={search}
-          onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            setPage(1);
+          }}
           className="max-w-xs"
         />
       </div>
 
       <DataTable
         isLoading={isLoading}
+        isError={isError}
+        onRetry={() => {
+          void refetch();
+        }}
         isEmpty={!isLoading && items.length === 0}
         items={items}
         mobileCardRender={(cat) => (

@@ -23,7 +23,9 @@ const allowedAttributes = {
   a: ['href', 'name', 'target', 'rel', 'class'],
   code: ['class'],
   pre: ['class'],
-  iframe: ['src', 'width', 'height', 'frameborder', 'allowfullscreen', 'class'],
+  iframe: ['src', 'width', 'height', 'frameborder', 'allowfullscreen', 'class', 'title'],
+  th: ['colspan', 'rowspan', 'scope'],
+  td: ['colspan', 'rowspan'],
   '*': ['class', 'id'],
 };
 

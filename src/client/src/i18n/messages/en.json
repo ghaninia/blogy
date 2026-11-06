@@ -4,7 +4,10 @@
     "blog": "Blog",
     "portfolio": "Portfolio",
     "about": "About",
-    "contact": "Contact"
+    "contact": "Contact",
+    "menu": "Open menu",
+    "mainNavigation": "Main navigation",
+    "footerNavigation": "Footer navigation"
   },
   "home": {
     "selectedProjects": "Selected Projects",
@@ -49,6 +52,7 @@
     "toggleTheme": "Toggle theme",
     "lightMode": "Light mode",
     "darkMode": "Dark mode",
+    "systemMode": "Use system theme",
     "language": "Language",
     "persian": "Persian",
     "english": "English",
@@ -62,6 +66,17 @@
   "footer": {
     "rights": "All rights reserved.",
     "copyright": "© {year} {name}."
+  },
+  "newsletter": {
+    "title": "A thoughtful note, now and then",
+    "description": "Get new essays and occasional updates in your inbox.",
+    "emailLabel": "Email address",
+    "emailPlaceholder": "you@example.com",
+    "consent": "I agree to receive blog updates by email.",
+    "submit": "Subscribe",
+    "submitting": "Joining…",
+    "success": "Thanks. Your subscription has been recorded.",
+    "error": "We could not save your subscription. Please try again."
   },
   "comments": {
     "title": "Comments",

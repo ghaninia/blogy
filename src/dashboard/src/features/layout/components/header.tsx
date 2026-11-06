@@ -1,9 +1,10 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { useLocale, useTranslations } from 'next-intl';
 import { usePathname, useRouter } from 'next/navigation';
-import { ExternalLink, LogOut, Menu, Moon, Sun, User } from 'lucide-react';
+import { ExternalLink, LogOut, Menu, PanelLeft, PanelLeftClose, Plus, User } from 'lucide-react';
 import {
   Avatar,
   AvatarFallback,
@@ -16,23 +17,29 @@ import {
   DropdownMenuTrigger,
 } from '@gh/ui';
 import { useAuthStore } from '@/shared/store/auth';
-import { useTheme } from '@/shared/components/theme-provider';
 import { getPublicSiteHomeUrl } from '@/shared/lib/site-url';
 import { cn } from '@/shared/lib/utils';
 import { MobileNav } from '@/features/layout/components/mobile-nav';
 import { LocaleSwitcher } from '@/features/layout/components/locale-switcher';
 import { AuthNavSwitch } from '@/features/layout/components/auth-nav-switch';
 import { SiteBrand } from '@/features/layout/components/site-brand';
+import { ThemeSelector } from '@/features/layout/components/theme-selector';
+import { CommandPalette } from '@/features/layout/components/command-palette';
 
-export function Header() {
+export function Header({
+  sidebarCollapsed = false,
+  onToggleSidebar = () => {},
+}: {
+  sidebarCollapsed?: boolean;
+  onToggleSidebar?: () => void;
+}) {
   const t = useTranslations('nav');
-  const tTheme = useTranslations('theme');
+  const td = useTranslations('dashboard');
   const locale = useLocale();
   const pathname = usePathname();
   const router = useRouter();
   const user = useAuthStore((s) => s.user);
   const logout = useAuthStore((s) => s.logout);
-  const { theme, toggleTheme } = useTheme();
 
   const isAuthPage = pathname.includes('/login') || pathname.includes('/register');
   const publicSiteUrl = getPublicSiteHomeUrl(locale);
@@ -42,24 +49,45 @@ export function Header() {
 
   return (
     <>
-      <header className="glass sticky top-4 z-50 mb-4 rounded-2xl">
-        <div className="flex items-center justify-between gap-3 px-4 py-3 sm:px-6">
+      <header className="dashboard-topbar relative z-20 mb-5 border-b border-border/70 bg-background/85 px-1 backdrop-blur-xl sm:mb-7">
+        <div className="flex min-h-[62px] items-center justify-between gap-3 px-1 sm:min-h-[72px] sm:px-2">
           <div className="flex min-w-0 items-center gap-2">
             {!isAuthPage ? (
               <Button
                 variant="ghost"
                 size="icon"
-                className="shrink-0 md:hidden"
-                onClick={() => setMobileNavOpen(true)}
-                aria-label="Menu"
+                className="dashboard-menu-button h-10 w-10 shrink-0 rounded-full"
+                onClick={() => {
+                  if (window.matchMedia('(min-width: 768px)').matches) onToggleSidebar();
+                  else setMobileNavOpen(true);
+                }}
+                aria-label={t('toggleNavigation')}
+                title={sidebarCollapsed ? t('expandSidebar') : t('collapseSidebar')}
               >
-                <Menu className="h-5 w-5" />
+                <Menu className="h-5 w-5 md:hidden" />
+                {sidebarCollapsed ? (
+                  <PanelLeft className="hidden h-5 w-5 md:block" />
+                ) : (
+                  <PanelLeftClose className="hidden h-5 w-5 md:block" />
+                )}
               </Button>
             ) : null}
             <SiteBrand href={isAuthPage ? `/${locale}/login` : `/${locale}/dashboard`} />
           </div>
 
           <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
+            {!isAuthPage ? <CommandPalette /> : null}
+            {!isAuthPage ? (
+              <Link
+                href={`/${locale}/dashboard/posts/new`}
+                className="dashboard-header-add grid h-9 w-9 place-items-center rounded-full transition hover:-translate-y-0.5 sm:me-1"
+                title={td('newPost')}
+                aria-label={td('newPost')}
+              >
+                <Plus className="h-4 w-4" />
+              </Link>
+            ) : null}
+
             {!isAuthPage ? (
               <a
                 href={publicSiteUrl}
@@ -67,7 +95,7 @@ export function Header() {
                 rel="noopener noreferrer"
                 className={cn(
                   buttonVariants({ variant: 'outline', size: 'sm' }),
-                  'hidden h-9 gap-1.5 px-3 sm:inline-flex',
+                  'hidden h-9 gap-1.5 rounded-full px-4 sm:inline-flex',
                 )}
               >
                 <ExternalLink className="h-4 w-4" />
@@ -81,7 +109,10 @@ export function Header() {
                 target="_blank"
                 rel="noopener noreferrer"
                 title={t('viewSite')}
-                className={cn(buttonVariants({ variant: 'ghost', size: 'icon' }), 'h-9 w-9 sm:hidden')}
+                className={cn(
+                  buttonVariants({ variant: 'ghost', size: 'icon' }),
+                  'h-9 w-9 rounded-full sm:hidden',
+                )}
               >
                 <ExternalLink className="h-4 w-4" />
                 <span className="sr-only">{t('viewSite')}</span>
@@ -90,20 +121,16 @@ export function Header() {
 
             <LocaleSwitcher />
 
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-9 w-9"
-              onClick={toggleTheme}
-              title={tTheme('toggle')}
-            >
-              {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-            </Button>
+            <ThemeSelector />
 
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="h-9 gap-2 px-2">
+                  <Button
+                    variant="ghost"
+                    className="h-10 gap-2 rounded-full px-2"
+                    aria-label={`${t('profile')}: ${user.displayName ?? user.username}`}
+                  >
                     <Avatar className="h-8 w-8">
                       <AvatarFallback className="bg-primary/20 text-xs text-primary">
                         {initials}

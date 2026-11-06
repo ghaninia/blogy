@@ -51,7 +51,7 @@ export default function DashboardPortfolioPage() {
   const [search, setSearch] = useState('');
   const debouncedSearch = useDebouncedValue(search);
 
-  const { items, meta, isLoading } = useCrudList<PortfolioItem>({
+  const { items, meta, isLoading, isError, refetch } = useCrudList<PortfolioItem>({
     queryKey: ['dashboard-portfolio'],
     endpoint: '/api/portfolio',
     params: {
@@ -79,10 +79,17 @@ export default function DashboardPortfolioPage() {
   const renderActions = (item: PortfolioItem) => (
     <div className="flex justify-end gap-2">
       <Link href={`/${locale}/dashboard/portfolio/${item.id}/edit`}>
-        <Button variant="ghost" size="icon"><Pencil className="h-4 w-4" /></Button>
+        <Button variant="ghost" size="icon" aria-label={t('actions.edit')}>
+          <Pencil className="h-4 w-4" />
+        </Button>
       </Link>
       {user && isAdmin(user.role) ? (
-        <Button variant="ghost" size="icon" onClick={() => handleDelete(item)}>
+        <Button
+          variant="ghost"
+          size="icon"
+          aria-label={t('actions.delete')}
+          onClick={() => handleDelete(item)}
+        >
           <Trash2 className="h-4 w-4 text-destructive" />
         </Button>
       ) : null}
@@ -95,7 +102,10 @@ export default function DashboardPortfolioPage() {
         title={t('portfolio')}
         action={
           <Link href={`/${locale}/dashboard/portfolio/new`}>
-            <Button><Plus className="me-2 h-4 w-4" />{t('newPortfolio')}</Button>
+            <Button>
+              <Plus className="me-2 h-4 w-4" />
+              {t('newPortfolio')}
+            </Button>
           </Link>
         }
       />
@@ -104,13 +114,20 @@ export default function DashboardPortfolioPage() {
         <Input
           placeholder={tt('search')}
           value={search}
-          onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            setPage(1);
+          }}
           className="max-w-xs"
         />
       </div>
 
       <DataTable
         isLoading={isLoading}
+        isError={isError}
+        onRetry={() => {
+          void refetch();
+        }}
         isEmpty={!isLoading && items.length === 0}
         items={items}
         mobileCardRender={(item) => (
@@ -120,14 +137,18 @@ export default function DashboardPortfolioPage() {
               <p className="text-xs text-muted-foreground">{item.slug}</p>
               <div className="mt-1 flex flex-wrap gap-1">
                 {item.technologies.slice(0, 3).map((tech) => (
-                  <Badge key={tech} variant="glass">{tech}</Badge>
+                  <Badge key={tech} variant="glass">
+                    {tech}
+                  </Badge>
                 ))}
                 {item.technologies.length > 3 ? (
                   <Badge variant="secondary">+{item.technologies.length - 3}</Badge>
                 ) : null}
               </div>
               <div className="mt-1 flex gap-2">
-                <span className="text-xs text-muted-foreground">{tt('sortOrder')}: {item.sortOrder}</span>
+                <span className="text-xs text-muted-foreground">
+                  {tt('sortOrder')}: {item.sortOrder}
+                </span>
                 <Badge variant={item.isPublished ? 'success' : 'secondary'}>
                   {item.isPublished ? tt('published') : t('draft')}
                 </Badge>
@@ -158,7 +179,9 @@ export default function DashboardPortfolioPage() {
                 <TableCell>
                   <div className="flex flex-wrap gap-1">
                     {item.technologies.slice(0, 3).map((tech) => (
-                      <Badge key={tech} variant="glass">{tech}</Badge>
+                      <Badge key={tech} variant="glass">
+                        {tech}
+                      </Badge>
                     ))}
                     {item.technologies.length > 3 ? (
                       <Badge variant="secondary">+{item.technologies.length - 3}</Badge>

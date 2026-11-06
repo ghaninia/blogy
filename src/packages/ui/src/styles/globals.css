@@ -4,74 +4,132 @@
 
 @layer base {
   :root {
-    --background: 45 10% 96%;
-    --foreground: 45 20% 8%;
-    --card: 45 15% 98%;
-    --card-foreground: 45 20% 8%;
-    --primary: 48 96% 53%;
-    --primary-foreground: 45 20% 8%;
-    --primary-border: 42 90% 38%;
-    --secondary: 45 12% 90%;
-    --secondary-foreground: 45 20% 12%;
-    --muted: 45 10% 92%;
-    --muted-foreground: 45 8% 40%;
-    --accent: 48 80% 88%;
-    --accent-foreground: 45 20% 8%;
-    --destructive: 0 84% 60%;
+    --font-sans: 'Plus Jakarta Sans', Geist, Arial, sans-serif;
+    --font-mono: 'Geist Mono', ui-monospace, monospace;
+    --background: 210 20% 98%;
+    --surface: 0 0% 100%;
+    --surface-secondary: 228 22% 95%;
+    --surface-elevated: 0 0% 100%;
+    --foreground: 228 15% 11%;
+    --foreground-secondary: 224 7% 46%;
+    --card: 0 0% 100%;
+    --card-foreground: 228 15% 11%;
+    --primary: 243 100% 68%;
+    --primary-foreground: 0 0% 100%;
+    --primary-border: 243 65% 55%;
+    --secondary: 228 22% 95%;
+    --secondary-foreground: 228 15% 11%;
+    --muted: 228 22% 95%;
+    --muted-foreground: 225 8% 60%;
+    --accent: 243 100% 96%;
+    --accent-foreground: 243 75% 42%;
+    --destructive: 0 66% 60%;
     --destructive-foreground: 0 0% 100%;
-    --success: 142 76% 36%;
+    --success: 153 73% 36%;
     --success-foreground: 0 0% 100%;
-    --warning: 38 92% 50%;
-    --warning-foreground: 45 20% 8%;
-    --info: 199 89% 48%;
+    --warning: 36 78% 54%;
+    --warning-foreground: 228 15% 11%;
+    --info: 207 82% 56%;
     --info-foreground: 0 0% 100%;
-    --border: 45 12% 85%;
-    --input: 45 12% 85%;
-    --ring: 48 96% 53%;
-    --radius: 0.75rem;
-    --glass-bg: 45 15% 98% / 0.7;
-    --glass-border: 48 60% 50% / 0.2;
-    --glass-highlight: 48 96% 70% / 0.15;
-    --glass-blur: 16px;
-    --elevated-border: 45 12% 72%;
-    --mesh-1: 48 96% 53% / 0.12;
-    --mesh-2: 42 90% 38% / 0.08;
-    --mesh-3: 45 20% 8% / 0.04;
+    --border: 225 20% 92%;
+    --input: 225 20% 88%;
+    --ring: 243 100% 68%;
+    --radius: 0.625rem;
+    --glass-bg: 0 0% 100% / 0.86;
+    --glass-border: 225 20% 88%;
+    --glass-highlight: 0 0% 100% / 0.4;
+    --glass-blur: 12px;
+    --elevated-border: 225 20% 90%;
+    --mesh-1: 243 100% 68% / 0.035;
+    --mesh-2: 207 82% 56% / 0.025;
+    --mesh-3: 225 10% 45% / 0.02;
   }
 
   .dark {
-    --background: 45 8% 4%;
-    --foreground: 45 20% 95%;
-    --card: 45 10% 8%;
-    --card-foreground: 45 20% 95%;
-    --primary: 48 96% 53%;
-    --primary-foreground: 45 20% 8%;
-    --primary-border: 42 90% 32%;
-    --secondary: 45 8% 14%;
-    --secondary-foreground: 45 20% 95%;
-    --muted: 45 8% 14%;
-    --muted-foreground: 45 10% 60%;
-    --accent: 45 10% 16%;
-    --accent-foreground: 48 96% 53%;
-    --destructive: 0 62% 50%;
-    --destructive-foreground: 45 20% 95%;
-    --success: 142 70% 45%;
+    --background: 225 5% 7%;
+    --surface: 225 14% 11%;
+    --surface-secondary: 222 15% 15%;
+    --surface-elevated: 225 13% 16%;
+    --foreground: 240 10% 96%;
+    --foreground-secondary: 225 8% 60%;
+    --card: 225 14% 11%;
+    --card-foreground: 240 10% 96%;
+    --primary: 244 100% 74%;
+    --primary-foreground: 225 5% 7%;
+    --primary-border: 244 75% 64%;
+    --secondary: 222 15% 15%;
+    --secondary-foreground: 240 10% 96%;
+    --muted: 222 15% 15%;
+    --muted-foreground: 225 8% 60%;
+    --accent: 244 28% 21%;
+    --accent-foreground: 244 100% 82%;
+    --destructive: 0 78% 69%;
+    --destructive-foreground: 225 5% 7%;
+    --success: 153 60% 49%;
     --success-foreground: 0 0% 100%;
-    --warning: 38 92% 50%;
-    --warning-foreground: 45 20% 8%;
-    --info: 199 89% 48%;
+    --warning: 38 86% 62%;
+    --warning-foreground: 225 5% 7%;
+    --info: 207 85% 66%;
     --info-foreground: 0 0% 100%;
-    --border: 45 8% 18%;
-    --input: 45 8% 18%;
-    --ring: 48 96% 53%;
-    --glass-bg: 45 10% 8% / 0.55;
-    --glass-border: 48 60% 50% / 0.12;
-    --glass-highlight: 48 96% 53% / 0.08;
-    --glass-blur: 20px;
-    --elevated-border: 45 8% 10%;
-    --mesh-1: 48 96% 53% / 0.1;
-    --mesh-2: 42 90% 38% / 0.06;
-    --mesh-3: 45 20% 8% / 0.5;
+    --border: 225 12% 19%;
+    --input: 225 12% 23%;
+    --ring: 244 100% 74%;
+    --glass-bg: 225 14% 11% / 0.92;
+    --glass-border: 225 12% 19%;
+    --glass-highlight: 0 0% 100% / 0.025;
+    --glass-blur: 12px;
+    --elevated-border: 225 12% 19%;
+    --mesh-1: 244 100% 74% / 0.045;
+    --mesh-2: 207 82% 56% / 0.025;
+    --mesh-3: 225 5% 7% / 0.02;
+  }
+
+  :root[data-accent='blue'] {
+    --primary: 217 91% 60%;
+    --primary-border: 217 72% 48%;
+    --ring: 217 91% 60%;
+    --accent: 217 90% 96%;
+    --accent-foreground: 217 75% 39%;
+  }
+
+  .dark[data-accent='blue'] {
+    --primary: 217 90% 69%;
+    --primary-border: 217 72% 55%;
+    --ring: 217 90% 69%;
+    --accent: 217 30% 21%;
+    --accent-foreground: 217 90% 80%;
+  }
+
+  :root[data-accent='green'] {
+    --primary: 153 60% 42%;
+    --primary-border: 153 60% 34%;
+    --ring: 153 60% 42%;
+    --accent: 153 45% 94%;
+    --accent-foreground: 153 60% 30%;
+  }
+
+  .dark[data-accent='green'] {
+    --primary: 153 60% 55%;
+    --primary-border: 153 60% 44%;
+    --ring: 153 60% 55%;
+    --accent: 153 28% 20%;
+    --accent-foreground: 153 65% 74%;
+  }
+
+  :root[data-accent='rose'] {
+    --primary: 344 76% 58%;
+    --primary-border: 344 65% 46%;
+    --ring: 344 76% 58%;
+    --accent: 344 80% 96%;
+    --accent-foreground: 344 68% 42%;
+  }
+
+  .dark[data-accent='rose'] {
+    --primary: 344 76% 68%;
+    --primary-border: 344 65% 52%;
+    --ring: 344 76% 68%;
+    --accent: 344 28% 22%;
+    --accent-foreground: 344 78% 82%;
   }
 
   * {
@@ -132,7 +190,10 @@
     border-bottom-width: 3px;
     border-bottom-color: hsl(var(--elevated-border));
     box-shadow: 0 2px 0 hsl(var(--elevated-border));
-    transition: transform 0.1s ease, box-shadow 0.1s ease, border-bottom-width 0.1s ease;
+    transition:
+      transform 0.1s ease,
+      box-shadow 0.1s ease,
+      border-bottom-width 0.1s ease;
   }
 
   .elevated-interactive:active {
@@ -145,7 +206,10 @@
     border-bottom-width: 3px;
     border-bottom-color: hsl(var(--primary-border));
     box-shadow: 0 2px 0 hsl(var(--primary-border));
-    transition: transform 0.1s ease, box-shadow 0.1s ease, border-bottom-width 0.1s ease;
+    transition:
+      transform 0.1s ease,
+      box-shadow 0.1s ease,
+      border-bottom-width 0.1s ease;
   }
 
   .elevated-interactive-primary:active {
@@ -178,6 +242,322 @@
       0 3px 0 hsl(var(--elevated-border)),
       0 8px 32px -8px hsl(0 0% 0% / 0.3),
       inset 0 1px 0 0 hsl(var(--glass-highlight));
+  }
+
+  .dashboard-frame {
+    background: hsl(var(--background));
+  }
+
+  .dashboard-shell {
+    border: 1px solid hsl(var(--border));
+    color: hsl(var(--foreground));
+    background: hsl(var(--background));
+    box-shadow: 0 24px 72px -56px hsl(225 20% 15% / 0.22);
+  }
+
+  .dashboard-sidebar {
+    color: hsl(var(--foreground));
+    border-color: hsl(var(--border));
+    background: hsl(var(--surface));
+    box-shadow: 0 20px 60px -48px hsl(225 20% 10% / 0.32);
+  }
+
+  .dashboard-sidebar-brand {
+    border-bottom: 1px solid hsl(var(--border));
+  }
+
+  .dashboard-sidebar-brand > p {
+    color: hsl(var(--muted-foreground));
+  }
+
+  .dashboard-shell .glass {
+    background: hsl(var(--surface));
+    border-color: hsl(var(--border));
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    box-shadow: 0 8px 24px -24px hsl(225 20% 10% / 0.28);
+  }
+
+  .dashboard-shell .glass,
+  .dashboard-shell .glass-strong {
+    border-bottom-width: 1px;
+    border-bottom-color: hsl(var(--border));
+  }
+
+  .dashboard-sidebar.glass-strong {
+    background: hsl(var(--surface));
+    border-color: hsl(var(--border));
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  .dashboard-shell .elevated,
+  .dashboard-shell .elevated-sm,
+  .dashboard-shell .elevated-interactive,
+  .dashboard-shell .elevated-interactive-primary {
+    border-bottom-width: 1px;
+    box-shadow: none;
+  }
+
+  .dashboard-shell .elevated-interactive:active,
+  .dashboard-shell .elevated-interactive-primary:active {
+    transform: none;
+    border-bottom-width: 1px;
+    box-shadow: none;
+  }
+
+  .dashboard-main input:not([type='checkbox']):not([type='radio']),
+  .dashboard-main textarea,
+  .dashboard-main [role='combobox'],
+  .dashboard-main [data-radix-select-trigger] {
+    border-radius: 0.75rem;
+    background-color: hsl(var(--card) / 0.68);
+    box-shadow: inset 0 1px 2px hsl(0 0% 0% / 0.04);
+  }
+
+  .dashboard-main input:focus-visible,
+  .dashboard-main textarea:focus-visible,
+  .dashboard-main [role='combobox']:focus-visible,
+  .dashboard-main [data-radix-select-trigger]:focus-visible {
+    background-color: hsl(var(--card));
+  }
+
+  .dashboard-main table {
+    border-collapse: separate;
+    border-spacing: 0;
+  }
+
+  .dashboard-main thead tr {
+    background: hsl(var(--muted) / 0.52);
+  }
+
+  .dashboard-main thead th {
+    height: 3rem;
+    color: hsl(var(--muted-foreground));
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.035em;
+  }
+
+  .dashboard-main tbody tr {
+    border-bottom-width: 1px;
+    border-bottom-color: hsl(var(--border) / 0.72);
+  }
+
+  .dashboard-main tbody tr:hover {
+    background: hsl(var(--primary) / 0.045);
+  }
+
+  .dashboard-main tbody td {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+  }
+
+  .dashboard-page-header {
+    position: relative;
+  }
+
+  .dashboard-page-header h1 {
+    letter-spacing: -0.035em;
+  }
+
+  .dashboard-page-header > div:first-child > p {
+    max-width: 48rem;
+    line-height: 1.8;
+  }
+
+  .dashboard-page-header > div:last-child > * {
+    border-radius: 0.75rem;
+  }
+
+  .dashboard-main .grid > .group.relative {
+    border-radius: 1rem;
+    transition:
+      transform 180ms ease,
+      box-shadow 180ms ease;
+  }
+
+  .dashboard-main .grid > .group.relative:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 34px -26px hsl(0 0% 0% / 0.55);
+  }
+
+  .dashboard-main .border-t.border-border,
+  .dashboard-main .border-b.border-border {
+    border-color: hsl(var(--border) / 0.7);
+  }
+
+  .dashboard-welcome {
+    isolation: isolate;
+    color: hsl(var(--foreground));
+    border: 1px solid hsl(var(--border) / 0.82);
+    background: linear-gradient(125deg, hsl(var(--card)), hsl(var(--card) / 0.76));
+    box-shadow:
+      0 18px 46px -40px hsl(0 0% 0% / 0.4),
+      inset 0 1px 0 hsl(0 0% 100% / 0.65);
+  }
+
+  .dashboard-welcome-orbit {
+    position: absolute;
+    z-index: -1;
+    border: 1px solid hsl(var(--foreground) / 0.045);
+    border-radius: 9999px;
+    pointer-events: none;
+  }
+
+  .dashboard-welcome-orbit-one {
+    width: 28rem;
+    height: 28rem;
+    inset-inline-end: -11rem;
+    top: -15rem;
+    box-shadow:
+      0 0 0 2rem hsl(var(--foreground) / 0.018),
+      0 0 0 5rem hsl(var(--foreground) / 0.014);
+  }
+
+  .dashboard-welcome-orbit-two {
+    width: 15rem;
+    height: 15rem;
+    inset-inline-end: 9rem;
+    bottom: -12rem;
+    border-color: hsl(var(--primary) / 0.14);
+  }
+
+  .dashboard-date-disc {
+    color: hsl(var(--foreground));
+    background-color: hsl(var(--card));
+  }
+
+  .dashboard-primary-action {
+    color: hsl(var(--primary-foreground));
+    background: hsl(var(--primary));
+    box-shadow: 0 8px 24px -16px hsl(var(--primary) / 0.8);
+  }
+
+  .dashboard-primary-action:hover {
+    background: hsl(var(--primary) / 0.92);
+  }
+
+  .dashboard-post-feature {
+    isolation: isolate;
+    color: hsl(var(--primary-foreground));
+    border: 1px solid hsl(var(--primary-border));
+    background: linear-gradient(145deg, hsl(var(--primary)), hsl(var(--primary) / 0.82));
+    box-shadow: 0 16px 36px -30px hsl(var(--primary) / 0.55);
+  }
+
+  .dashboard-feature-ring {
+    position: absolute;
+    z-index: -1;
+    border: 1px solid hsl(0 0% 100% / 0.18);
+    border-radius: 9999px;
+    pointer-events: none;
+  }
+
+  .dashboard-feature-ring-one {
+    width: 15rem;
+    height: 15rem;
+    inset-inline-end: -5.5rem;
+    top: -7rem;
+    box-shadow:
+      0 0 0 1.5rem hsl(0 0% 100% / 0.06),
+      0 0 0 3.5rem hsl(0 0% 100% / 0.04);
+  }
+
+  .dashboard-feature-ring-two {
+    width: 9rem;
+    height: 9rem;
+    inset-inline-start: -4rem;
+    bottom: -5rem;
+    border-color: hsl(0 0% 100% / 0.12);
+  }
+
+  .dashboard-widget,
+  .dashboard-metric-card {
+    border: 1px solid hsl(var(--border) / 0.85);
+    background: hsl(var(--surface));
+    box-shadow: 0 8px 24px -24px hsl(225 20% 10% / 0.3);
+  }
+
+  .dashboard-quick-link:hover {
+    background: hsl(var(--muted) / 0.78);
+  }
+
+  .dashboard-menu-button {
+    background: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+  }
+
+  .dashboard-menu-button:hover {
+    background: hsl(var(--muted));
+  }
+
+  .dashboard-header-add {
+    color: hsl(var(--foreground));
+    border: 1px solid hsl(var(--border));
+    background: hsl(var(--card));
+  }
+
+  .dashboard-header-add:hover {
+    color: hsl(var(--primary));
+    border-color: hsl(var(--primary) / 0.3);
+  }
+
+  .dashboard-main button.bg-primary,
+  .dashboard-main a.bg-primary {
+    border-radius: 9999px;
+  }
+
+  body:has(.dashboard-shell) [role='dialog']:not(.dashboard-sidebar),
+  body:has(.dashboard-shell) [role='listbox'] {
+    border-color: hsl(var(--border));
+    border-radius: 0.875rem;
+    background: hsl(var(--surface-elevated));
+    color: hsl(var(--foreground));
+    box-shadow: 0 20px 60px -40px hsl(225 20% 10% / 0.38);
+  }
+
+  body:has(.dashboard-shell) [role='dialog'] input:not([type='checkbox']):not([type='radio']),
+  body:has(.dashboard-shell) [role='dialog'] textarea,
+  body:has(.dashboard-shell) [role='dialog'] [role='combobox'] {
+    border-radius: 0.75rem;
+    background: hsl(var(--card));
+  }
+
+  body:has(.dashboard-shell) [role='dialog'] .elevated,
+  body:has(.dashboard-shell) [role='dialog'] .elevated-sm,
+  body:has(.dashboard-shell) [role='dialog'] .elevated-interactive,
+  body:has(.dashboard-shell) [role='dialog'] .elevated-interactive-primary {
+    border-bottom-width: 1px;
+    box-shadow: none;
+  }
+
+  .dashboard-stat {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .dashboard-stat-icon {
+    background: hsl(var(--primary) / 0.12);
+  }
+
+  .dashboard-stat .glass {
+    background: hsl(var(--card));
+    box-shadow: none;
+  }
+
+  .dashboard-topbar {
+    background: hsl(var(--background) / 0.9);
+    box-shadow: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .dashboard-overview *,
+    .dashboard-shell * {
+      scroll-behavior: auto !important;
+      transition-duration: 0.01ms !important;
+      animation-duration: 0.01ms !important;
+    }
   }
 
   .sidebar-scroll {

@@ -17,7 +17,7 @@ const upload = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: env.maxFileSize },
   fileFilter: (_req, file, cb) => {
-    const allowed = /^(image\/|video\/|application\/pdf)/;
+    const allowed = /^(image\/|video\/|audio\/|application\/pdf)/;
     if (allowed.test(file.mimetype)) cb(null, true);
     else cb(new Error('File type not allowed'));
   },
@@ -47,19 +47,14 @@ router.get(
   },
 );
 
-router.get(
-  '/:id',
-  authenticate,
-  authorize(...staffRoles),
-  async (req, res, next) => {
-    try {
-      const media = await mediaService.getById(paramId(req.params.id));
-      sendSuccess(res, { ...media, url: mediaService.getPublicUrl(media.path) });
-    } catch (e) {
-      next(e);
-    }
-  },
-);
+router.get('/:id', authenticate, authorize(...staffRoles), async (req, res, next) => {
+  try {
+    const media = await mediaService.getById(paramId(req.params.id));
+    sendSuccess(res, { ...media, url: mediaService.getPublicUrl(media.path) });
+  } catch (e) {
+    next(e);
+  }
+});
 
 router.post(
   '/upload',
@@ -81,19 +76,14 @@ router.post(
   },
 );
 
-router.delete(
-  '/:id',
-  authenticate,
-  authorize(Role.ADMIN, Role.EDITOR),
-  async (req, res, next) => {
-    try {
-      const result = await mediaService.delete(paramId(req.params.id));
-      sendSuccess(res, result);
-    } catch (e) {
-      next(e);
-    }
-  },
-);
+router.delete('/:id', authenticate, authorize(Role.ADMIN, Role.EDITOR), async (req, res, next) => {
+  try {
+    const result = await mediaService.delete(paramId(req.params.id));
+    sendSuccess(res, result);
+  } catch (e) {
+    next(e);
+  }
+});
 
 router.patch(
   '/:id',

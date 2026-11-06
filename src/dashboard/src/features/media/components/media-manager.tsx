@@ -36,9 +36,16 @@ interface MediaManagerProps {
   onClose: () => void;
   onSelect: (media: MediaItem) => void;
   mode?: 'single' | 'multi';
+  mimeType?: string;
 }
 
-export function MediaManager({ open, onClose, onSelect, mode = 'single' }: MediaManagerProps) {
+export function MediaManager({
+  open,
+  onClose,
+  onSelect,
+  mode = 'single',
+  mimeType,
+}: MediaManagerProps) {
   const t = useTranslations('dashboard.mediaManager');
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -48,10 +55,11 @@ export function MediaManager({ open, onClose, onSelect, mode = 'single' }: Media
   const debouncedSearch = useDebouncedValue(search);
 
   const { data, refetch, isLoading, isError } = useQuery({
-    queryKey: ['media-picker', debouncedSearch, page],
+    queryKey: ['media-picker', debouncedSearch, page, mimeType],
     queryFn: async () => {
       const res = await api.get<MediaItem[]>('/api/media', {
         search: debouncedSearch || undefined,
+        mimeType,
         page,
         limit: DASHBOARD_LIST_PAGE_SIZE,
       });
@@ -112,7 +120,7 @@ export function MediaManager({ open, onClose, onSelect, mode = 'single' }: Media
             ref={fileInputRef}
             type="file"
             className="hidden"
-            accept="image/*,video/*,.pdf"
+            accept="image/*,video/*,audio/*,.pdf"
             onChange={handleUpload}
           />
           <Button type="button" disabled={uploading} onClick={() => fileInputRef.current?.click()}>
@@ -127,7 +135,19 @@ export function MediaManager({ open, onClose, onSelect, mode = 'single' }: Media
               <Spinner />
             </div>
           ) : isError ? (
-            <EmptyState title={t('loadError')} />
+            <EmptyState
+              title={t('loadError')}
+              action={
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    void refetch();
+                  }}
+                >
+                  {t('retry')}
+                </Button>
+              }
+            />
           ) : !data?.items.length ? (
             <EmptyState title={t('empty')} />
           ) : (
@@ -154,7 +174,9 @@ export function MediaManager({ open, onClose, onSelect, mode = 'single' }: Media
                       {item.mimeType}
                     </div>
                   )}
-                  <p className="truncate px-2 py-1.5 text-xs text-muted-foreground">{item.originalName}</p>
+                  <p className="truncate px-2 py-1.5 text-xs text-muted-foreground">
+                    {item.originalName}
+                  </p>
                 </button>
               ))}
             </div>

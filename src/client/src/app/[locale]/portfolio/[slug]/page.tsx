@@ -82,6 +82,8 @@ export default async function PortfolioDetailPage({
         year={new Date().getFullYear()}
         footerCopyright={config.footerCopyright}
         footerRights={config.footerRights}
+        locale={locale}
+        navigation={config.footerNavigation}
       />
     </>
   );

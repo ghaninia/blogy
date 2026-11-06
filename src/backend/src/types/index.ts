@@ -8,5 +8,6 @@ export * from './schemas/experience.js';
 export * from './schemas/media.js';
 export * from './schemas/comment.js';
 export * from './schemas/setting.js';
+export * from './schemas/newsletter.js';
 export * from './schemas/common.js';
 export * from './api.js';

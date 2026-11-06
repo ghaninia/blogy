@@ -26,14 +26,14 @@ export function MobileNav({ open, onOpenChange }: MobileNavProps) {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         className={cn(
-          'glass-strong !fixed !inset-y-0 !start-0 !end-auto !top-0 !left-auto !flex !h-full !w-[min(88vw,17.5rem)] !max-w-none !translate-x-0 !translate-y-0 !flex-col !rounded-none !border-e !p-0 shadow-xl duration-300',
+          'dashboard-sidebar glass-strong !fixed !inset-y-0 !start-0 !end-auto !top-0 !left-auto !flex !h-full !w-[min(88vw,18rem)] !max-w-none !translate-x-0 !translate-y-0 !flex-col !rounded-e-[1.5rem] !rounded-s-none !border-e !p-0 shadow-xl duration-300',
           'data-[state=open]:!translate-x-0 data-[state=closed]:!-translate-x-full rtl:data-[state=closed]:!translate-x-full',
           locale === 'fa' && 'font-fa',
         )}
       >
         <DialogTitle className="sr-only">{t('title')}</DialogTitle>
 
-        <div className="shrink-0 border-b border-glass-border/80 px-4 py-4">
+        <div className="dashboard-sidebar-brand shrink-0 border-b border-border px-5 py-5">
           <SiteBrand href={`/${locale}/dashboard`} />
           {config.subtitle || config.description ? (
             <p className="mt-1.5 line-clamp-2 text-xs leading-relaxed text-muted-foreground">

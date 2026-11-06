@@ -6,7 +6,7 @@ export type Locale = z.infer<typeof localeSchema>;
 export const roleSchema = z.enum(['ADMIN', 'EDITOR', 'AUTHOR', 'USER']);
 export type Role = z.infer<typeof roleSchema>;
 
-export const postStatusSchema = z.enum(['DRAFT', 'PUBLISHED', 'SCHEDULED']);
+export const postStatusSchema = z.enum(['DRAFT', 'PUBLISHED', 'SCHEDULED', 'ARCHIVED']);
 export type PostStatus = z.infer<typeof postStatusSchema>;
 
 export const commentStatusSchema = z.enum(['PENDING', 'APPROVED', 'REJECTED', 'SPAM']);

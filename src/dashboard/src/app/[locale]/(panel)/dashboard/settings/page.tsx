@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { Button, useToast } from '@gh/ui';
+import { Button, Card, CardContent, useToast } from '@gh/ui';
+import { RefreshCw } from 'lucide-react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { api, ApiError } from '@/shared/api-client';
 import { PageHeader } from '@/features/layout/components/page-header';
@@ -18,6 +19,7 @@ import {
 export default function DashboardSettingsPage() {
   const t = useTranslations('dashboard');
   const ts = useTranslations('dashboard.siteSettings');
+  const tt = useTranslations('dashboard.table');
   const tToast = useTranslations('dashboard.toast');
   const { toast } = useToast();
   const qc = useQueryClient();
@@ -25,7 +27,12 @@ export default function DashboardSettingsPage() {
   const [form, setForm] = useState<SiteSettingsForm>(emptySiteSettings());
   const [saving, setSaving] = useState(false);
 
-  const { data: items = [], isLoading } = useQuery({
+  const {
+    data: items = [],
+    isLoading,
+    isError,
+    refetch,
+  } = useQuery({
     queryKey: ['settings'],
     queryFn: async () => {
       const res = await api.get<SettingRecord[]>('/api/settings');
@@ -64,13 +71,31 @@ export default function DashboardSettingsPage() {
         title={t('settings')}
         description={ts('description')}
         action={
-          <Button onClick={handleSave} disabled={saving || isLoading}>
+          <Button onClick={handleSave} disabled={saving || isLoading || isError}>
             {t('actions.save')}
           </Button>
         }
       />
 
-      <SiteSettingsFormView form={form} onChange={setForm} isLoading={isLoading} />
+      {isError ? (
+        <Card variant="glass">
+          <CardContent className="flex flex-col items-center gap-3 py-12 text-center" role="alert">
+            <p className="text-sm font-medium">{tt('loadError')}</p>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                void refetch();
+              }}
+            >
+              <RefreshCw className="me-2 h-4 w-4" />
+              {tt('retry')}
+            </Button>
+          </CardContent>
+        </Card>
+      ) : (
+        <SiteSettingsFormView form={form} onChange={setForm} isLoading={isLoading} />
+      )}
     </div>
   );
 }

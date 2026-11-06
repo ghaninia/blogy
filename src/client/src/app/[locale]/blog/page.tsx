@@ -83,6 +83,8 @@ export default async function BlogPage({
         year={new Date().getFullYear()}
         footerCopyright={config.footerCopyright}
         footerRights={config.footerRights}
+        locale={locale}
+        navigation={config.footerNavigation}
       />
     </>
   );

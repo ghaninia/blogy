@@ -50,7 +50,7 @@ export default function DashboardPagesPage() {
   const [search, setSearch] = useState('');
   const debouncedSearch = useDebouncedValue(search);
 
-  const { items, meta, isLoading } = useCrudList<PageItem>({
+  const { items, meta, isLoading, isError, refetch } = useCrudList<PageItem>({
     queryKey: ['dashboard-pages'],
     endpoint: '/api/pages',
     params: {
@@ -80,10 +80,17 @@ export default function DashboardPagesPage() {
   const renderActions = (pageItem: PageItem) => (
     <div className="flex justify-end gap-2">
       <Link href={`/${locale}/dashboard/pages/${pageItem.id}/edit`}>
-        <Button variant="ghost" size="icon"><Pencil className="h-4 w-4" /></Button>
+        <Button variant="ghost" size="icon" aria-label={t('actions.edit')}>
+          <Pencil className="h-4 w-4" />
+        </Button>
       </Link>
       {canDelete ? (
-        <Button variant="ghost" size="icon" onClick={() => handleDelete(pageItem)}>
+        <Button
+          variant="ghost"
+          size="icon"
+          aria-label={t('actions.delete')}
+          onClick={() => handleDelete(pageItem)}
+        >
           <Trash2 className="h-4 w-4 text-destructive" />
         </Button>
       ) : null}
@@ -108,19 +115,28 @@ export default function DashboardPagesPage() {
         <Input
           placeholder={tt('search')}
           value={search}
-          onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            setPage(1);
+          }}
           className="max-w-xs"
         />
       </div>
 
       <DataTable
         isLoading={isLoading}
+        isError={isError}
+        onRetry={() => {
+          void refetch();
+        }}
         isEmpty={!isLoading && items.length === 0}
         items={items}
         mobileCardRender={(pageItem) => (
           <div className="space-y-2">
             <div>
-              <p className="font-medium">{getLocalizedField(pageItem, 'title', locale) || pageItem.slug}</p>
+              <p className="font-medium">
+                {getLocalizedField(pageItem, 'title', locale) || pageItem.slug}
+              </p>
               <p className="text-xs text-muted-foreground">{pageItem.slug}</p>
               <div className="mt-1 flex flex-wrap gap-2">
                 <Badge variant="secondary">{pageItem.type}</Badge>
@@ -147,7 +163,9 @@ export default function DashboardPagesPage() {
             {items.map((pageItem) => (
               <TableRow key={pageItem.id}>
                 <TableCell>
-                  <p className="font-medium">{getLocalizedField(pageItem, 'title', locale) || pageItem.slug}</p>
+                  <p className="font-medium">
+                    {getLocalizedField(pageItem, 'title', locale) || pageItem.slug}
+                  </p>
                   <p className="text-xs text-muted-foreground">{pageItem.slug}</p>
                 </TableCell>
                 <TableCell>{pageItem.type}</TableCell>

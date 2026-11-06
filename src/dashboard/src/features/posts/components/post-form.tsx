@@ -1,6 +1,13 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState, type Dispatch, type SetStateAction } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type Dispatch,
+  type SetStateAction,
+} from 'react';
 import { useQuery } from '@tanstack/react-query';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
@@ -26,7 +33,11 @@ import { SlugField } from '@/shared/components/slug-field';
 import { optionalRichText, optionalString } from '@/shared/lib/rich-text';
 import { randomSlug, slugifyFromEn } from '@/shared/lib/slug';
 import { FormTabPanel, FormTabs, type FormTabItem } from '@/features/layout/components/form-tabs';
-import { RichTextEditor, type RichTextEditorHandle } from '@/features/posts/components/rich-text-editor';
+import {
+  RichTextEditor,
+  type RichTextEditorHandle,
+} from '@/features/posts/components/rich-text-editor';
+import type { JSONContent } from '@tiptap/react';
 import { CreatableTagPicker } from '@/features/posts/components/creatable-tag-picker';
 import { CategoryCombobox } from '@/features/posts/components/category-combobox';
 import { MediaManager } from '@/features/media/components/media-manager';
@@ -39,9 +50,13 @@ export interface PostFormData {
   excerptEn: string;
   contentFa: string;
   contentEn: string;
+  contentFaJson?: JSONContent;
+  contentEnJson?: JSONContent;
   status: 'DRAFT' | 'PUBLISHED' | 'SCHEDULED';
   publishedAt: string;
   coverMediaId: string;
+  socialImageMediaId: string;
+  canonicalUrl: string;
   categoryIds: string[];
   tagIds: string[];
   metaTitleFa: string;
@@ -71,6 +86,7 @@ interface PostFormProps {
   form: PostFormData;
   onChange: Dispatch<SetStateAction<PostFormData>>;
   coverPath?: string;
+  socialImagePath?: string;
   formId?: string;
   autoSlug?: boolean;
 }
@@ -86,6 +102,8 @@ export const emptyPostForm = (): PostFormData => ({
   status: 'DRAFT',
   publishedAt: '',
   coverMediaId: '',
+  socialImageMediaId: '',
+  canonicalUrl: '',
   categoryIds: [],
   tagIds: [],
   metaTitleFa: '',
@@ -95,20 +113,33 @@ export const emptyPostForm = (): PostFormData => ({
   commentsEnabled: true,
 });
 
-export function PostForm({ locale, form, onChange, coverPath, formId = 'post-form', autoSlug = true }: PostFormProps) {
+export function PostForm({
+  locale,
+  form,
+  onChange,
+  coverPath,
+  socialImagePath,
+  formId = 'post-form',
+  autoSlug = true,
+}: PostFormProps) {
   const t = useTranslations('dashboard');
   const tf = useTranslations('dashboard.form');
   const ts = useTranslations('status');
   const [activeTab, setActiveTab] = useState('basic');
   const [mediaOpen, setMediaOpen] = useState(false);
-  const [mediaTarget, setMediaTarget] = useState<'cover' | 'fa' | 'en'>('cover');
+  const [mediaTarget, setMediaTarget] = useState<'cover' | 'social' | 'fa' | 'en'>('cover');
   const [coverPreview, setCoverPreview] = useState(coverPath ?? '');
+  const [socialImagePreview, setSocialImagePreview] = useState(socialImagePath ?? '');
   const editorFaRef = useRef<RichTextEditorHandle>(null);
   const editorEnRef = useRef<RichTextEditorHandle>(null);
 
   useEffect(() => {
     if (coverPath) setCoverPreview(coverPath);
   }, [coverPath]);
+
+  useEffect(() => {
+    if (socialImagePath) setSocialImagePreview(socialImagePath);
+  }, [socialImagePath]);
 
   const { data: categories = [] } = useQuery({
     queryKey: ['categories', 'all'],
@@ -143,7 +174,9 @@ export function PostForm({ locale, form, onChange, coverPath, formId = 'post-for
       <FormTabs value={activeTab} onValueChange={setActiveTab} items={formTabs}>
         <FormTabPanel value="basic">
           <Card variant="glass">
-            <CardHeader><CardTitle>{tf('basicInfo')}</CardTitle></CardHeader>
+            <CardHeader>
+              <CardTitle>{tf('basicInfo')}</CardTitle>
+            </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid gap-4 lg:grid-cols-2">
                 <FormField label={tf('titleFa')}>
@@ -166,19 +199,32 @@ export function PostForm({ locale, form, onChange, coverPath, formId = 'post-for
               <div className="grid gap-4 lg:grid-cols-2">
                 <FormField label={tf('excerptFa')}>
                   {activeTab === 'basic' ? (
-                    <RichTextEditor variant="compact" content={form.excerptFa} onChange={(html) => set({ excerptFa: html })} />
+                    <RichTextEditor
+                      variant="compact"
+                      content={form.excerptFa}
+                      onChange={(html) => set({ excerptFa: html })}
+                    />
                   ) : null}
                 </FormField>
                 <FormField label={tf('excerptEn')}>
                   {activeTab === 'basic' ? (
-                    <RichTextEditor variant="compact" content={form.excerptEn} onChange={(html) => set({ excerptEn: html })} />
+                    <RichTextEditor
+                      variant="compact"
+                      content={form.excerptEn}
+                      onChange={(html) => set({ excerptEn: html })}
+                    />
                   ) : null}
                 </FormField>
               </div>
               <div className="grid gap-4 lg:grid-cols-2">
                 <FormField label={tf('status')}>
-                  <Select value={form.status} onValueChange={(v) => set({ status: v as PostFormData['status'] })}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
+                  <Select
+                    value={form.status}
+                    onValueChange={(v) => set({ status: v as PostFormData['status'] })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="DRAFT">{ts('DRAFT')}</SelectItem>
                       <SelectItem value="PUBLISHED">{ts('PUBLISHED')}</SelectItem>
@@ -188,7 +234,11 @@ export function PostForm({ locale, form, onChange, coverPath, formId = 'post-for
                 </FormField>
                 {form.status === 'SCHEDULED' ? (
                   <FormField label={tf('publishedAt')}>
-                    <Input type="datetime-local" value={form.publishedAt} onChange={(e) => set({ publishedAt: e.target.value })} />
+                    <Input
+                      type="datetime-local"
+                      value={form.publishedAt}
+                      onChange={(e) => set({ publishedAt: e.target.value })}
+                    />
                   </FormField>
                 ) : null}
               </div>
@@ -198,22 +248,44 @@ export function PostForm({ locale, form, onChange, coverPath, formId = 'post-for
                     checked={form.commentsEnabled}
                     onCheckedChange={(value) => set({ commentsEnabled: value })}
                   />
-                  <p className="text-xs leading-relaxed text-muted-foreground">{tf('commentsEnabledHint')}</p>
+                  <p className="text-xs leading-relaxed text-muted-foreground">
+                    {tf('commentsEnabledHint')}
+                  </p>
                 </div>
               </FormField>
               <FormField label={tf('cover')}>
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
                   {coverPreview ? (
                     <div className="relative h-20 w-full max-w-[8rem] overflow-hidden rounded-lg border">
-                      <Image src={getMediaUrl(coverPreview)} alt="" fill className="object-cover" unoptimized />
+                      <Image
+                        src={getMediaUrl(coverPreview)}
+                        alt=""
+                        fill
+                        className="object-cover"
+                        unoptimized
+                      />
                     </div>
                   ) : null}
                   <div className="flex flex-wrap gap-2">
-                    <Button type="button" variant="outline" onClick={() => { setMediaTarget('cover'); setMediaOpen(true); }}>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => {
+                        setMediaTarget('cover');
+                        setMediaOpen(true);
+                      }}
+                    >
                       {t('actions.selectCover')}
                     </Button>
                     {form.coverMediaId ? (
-                      <Button type="button" variant="ghost" onClick={() => { set({ coverMediaId: '' }); setCoverPreview(''); }}>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        onClick={() => {
+                          set({ coverMediaId: '' });
+                          setCoverPreview('');
+                        }}
+                      >
                         {t('actions.removeCover')}
                       </Button>
                     ) : null}
@@ -228,25 +300,39 @@ export function PostForm({ locale, form, onChange, coverPath, formId = 'post-for
           {activeTab === 'content' ? (
             <>
               <Card variant="glass">
-                <CardHeader><CardTitle>{tf('contentFa')}</CardTitle></CardHeader>
+                <CardHeader>
+                  <CardTitle>{tf('contentFa')}</CardTitle>
+                </CardHeader>
                 <CardContent>
                   <RichTextEditor
                     ref={editorFaRef}
                     content={form.contentFa}
-                    onChange={(html) => set({ contentFa: html })}
-                    onImageRequest={() => { setMediaTarget('fa'); setMediaOpen(true); }}
+                    contentJson={form.contentFaJson}
+                    onChange={(html, json) => set({ contentFa: html, contentFaJson: json })}
+                    onImageRequest={() => {
+                      setMediaTarget('fa');
+                      setMediaOpen(true);
+                    }}
                   />
+                  <ReadingStats content={form.contentFa} locale="fa" />
                 </CardContent>
               </Card>
               <Card variant="glass">
-                <CardHeader><CardTitle>{tf('contentEn')}</CardTitle></CardHeader>
+                <CardHeader>
+                  <CardTitle>{tf('contentEn')}</CardTitle>
+                </CardHeader>
                 <CardContent>
                   <RichTextEditor
                     ref={editorEnRef}
                     content={form.contentEn}
-                    onChange={(html) => set({ contentEn: html })}
-                    onImageRequest={() => { setMediaTarget('en'); setMediaOpen(true); }}
+                    contentJson={form.contentEnJson}
+                    onChange={(html, json) => set({ contentEn: html, contentEnJson: json })}
+                    onImageRequest={() => {
+                      setMediaTarget('en');
+                      setMediaOpen(true);
+                    }}
                   />
+                  <ReadingStats content={form.contentEn} locale="en" />
                 </CardContent>
               </Card>
             </>
@@ -256,7 +342,9 @@ export function PostForm({ locale, form, onChange, coverPath, formId = 'post-for
         <FormTabPanel value="taxonomy">
           <div className="grid gap-4 lg:grid-cols-2">
             <Card variant="glass">
-              <CardHeader><CardTitle>{tf('categories')}</CardTitle></CardHeader>
+              <CardHeader>
+                <CardTitle>{tf('categories')}</CardTitle>
+              </CardHeader>
               <CardContent>
                 <CategoryCombobox
                   locale={locale}
@@ -267,7 +355,9 @@ export function PostForm({ locale, form, onChange, coverPath, formId = 'post-for
               </CardContent>
             </Card>
             <Card variant="glass">
-              <CardHeader><CardTitle>{tf('tags')}</CardTitle></CardHeader>
+              <CardHeader>
+                <CardTitle>{tf('tags')}</CardTitle>
+              </CardHeader>
               <CardContent>
                 <CreatableTagPicker
                   locale={locale}
@@ -282,20 +372,89 @@ export function PostForm({ locale, form, onChange, coverPath, formId = 'post-for
 
         <FormTabPanel value="seo">
           <Card variant="glass">
-            <CardHeader><CardTitle>{tf('seo')}</CardTitle></CardHeader>
+            <CardHeader>
+              <CardTitle>{tf('seo')}</CardTitle>
+            </CardHeader>
             <CardContent className="grid gap-4 lg:grid-cols-2">
               <FormField label={tf('metaTitleFa')}>
-                <Input value={form.metaTitleFa} onChange={(e) => set({ metaTitleFa: e.target.value })} />
+                <Input
+                  value={form.metaTitleFa}
+                  onChange={(e) => set({ metaTitleFa: e.target.value })}
+                />
               </FormField>
               <FormField label={tf('metaTitleEn')}>
-                <Input value={form.metaTitleEn} onChange={(e) => set({ metaTitleEn: e.target.value })} />
+                <Input
+                  value={form.metaTitleEn}
+                  onChange={(e) => set({ metaTitleEn: e.target.value })}
+                />
               </FormField>
               <FormField label={tf('metaDescFa')}>
-                <Textarea value={form.metaDescFa} onChange={(e) => set({ metaDescFa: e.target.value })} rows={2} />
+                <Textarea
+                  value={form.metaDescFa}
+                  onChange={(e) => set({ metaDescFa: e.target.value })}
+                  rows={2}
+                />
               </FormField>
               <FormField label={tf('metaDescEn')}>
-                <Textarea value={form.metaDescEn} onChange={(e) => set({ metaDescEn: e.target.value })} rows={2} />
+                <Textarea
+                  value={form.metaDescEn}
+                  onChange={(e) => set({ metaDescEn: e.target.value })}
+                  rows={2}
+                />
               </FormField>
+              <div className="lg:col-span-2">
+                <FormField label={tf('canonicalUrl')}>
+                  <Input
+                    type="url"
+                    dir="ltr"
+                    value={form.canonicalUrl}
+                    onChange={(e) => set({ canonicalUrl: e.target.value })}
+                    placeholder="https://example.com/article"
+                    maxLength={2048}
+                  />
+                </FormField>
+              </div>
+              <div className="lg:col-span-2">
+                <FormField label={tf('socialImage')}>
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                    {socialImagePreview ? (
+                      <div className="relative aspect-[1.91/1] w-full max-w-56 overflow-hidden rounded-lg border">
+                        <Image
+                          src={getMediaUrl(socialImagePreview)}
+                          alt=""
+                          fill
+                          className="object-cover"
+                          unoptimized
+                        />
+                      </div>
+                    ) : null}
+                    <div className="flex flex-wrap gap-2">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => {
+                          setMediaTarget('social');
+                          setMediaOpen(true);
+                        }}
+                      >
+                        {tf('selectSocialImage')}
+                      </Button>
+                      {form.socialImageMediaId ? (
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          onClick={() => {
+                            set({ socialImageMediaId: '' });
+                            setSocialImagePreview('');
+                          }}
+                        >
+                          {t('actions.removeCover')}
+                        </Button>
+                      ) : null}
+                    </div>
+                  </div>
+                </FormField>
+              </div>
             </CardContent>
           </Card>
         </FormTabPanel>
@@ -306,10 +465,14 @@ export function PostForm({ locale, form, onChange, coverPath, formId = 'post-for
       <MediaManager
         open={mediaOpen}
         onClose={() => setMediaOpen(false)}
+        mimeType="image/"
         onSelect={(media) => {
           if (mediaTarget === 'cover') {
             set({ coverMediaId: media.id });
             setCoverPreview(media.path);
+          } else if (mediaTarget === 'social') {
+            set({ socialImageMediaId: media.id });
+            setSocialImagePreview(media.path);
           } else if (mediaTarget === 'fa') {
             editorFaRef.current?.insertImage(getMediaUrl(media.path), media.originalName);
           } else {
@@ -321,10 +484,32 @@ export function PostForm({ locale, form, onChange, coverPath, formId = 'post-for
   );
 }
 
-export function postToForm(post: Record<string, unknown>): { form: PostFormData; coverPath?: string } {
+function ReadingStats({ content, locale }: { content: string; locale: string }) {
+  const t = useTranslations('dashboard.editor');
+  const text = content
+    .replace(/<[^>]*>/g, ' ')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+  const words = text ? text.split(' ').length : 0;
+  const minutes = words ? Math.max(1, Math.ceil(words / (locale === 'fa' ? 180 : 220))) : 0;
+  return (
+    <div className="mt-2 flex justify-end gap-3 text-xs text-muted-foreground" aria-live="polite">
+      <span>{t('wordCount', { count: words })}</span>
+      <span>{t('readingTime', { count: minutes })}</span>
+    </div>
+  );
+}
+
+export function postToForm(post: Record<string, unknown>): {
+  form: PostFormData;
+  coverPath?: string;
+  socialImagePath?: string;
+} {
   const categories = (post.categories as { categoryId: string }[] | undefined) ?? [];
   const tags = (post.tags as { tagId: string }[] | undefined) ?? [];
   const coverMedia = post.coverMedia as { path?: string } | null | undefined;
+  const socialImageMedia = post.socialImageMedia as { path?: string } | null | undefined;
   const publishedAt = post.publishedAt as string | undefined;
 
   return {
@@ -336,9 +521,19 @@ export function postToForm(post: Record<string, unknown>): { form: PostFormData;
       excerptEn: (post.excerptEn as string) ?? '',
       contentFa: (post.contentFa as string) ?? '',
       contentEn: (post.contentEn as string) ?? '',
+      contentFaJson: (post.contentFaJson as JSONContent | undefined) ?? undefined,
+      contentEnJson: (post.contentEnJson as JSONContent | undefined) ?? undefined,
       status: (post.status as PostFormData['status']) ?? 'DRAFT',
-      publishedAt: publishedAt ? new Date(publishedAt).toISOString().slice(0, 16) : '',
+      publishedAt: publishedAt
+        ? new Date(
+            new Date(publishedAt).getTime() - new Date(publishedAt).getTimezoneOffset() * 60_000,
+          )
+            .toISOString()
+            .slice(0, 16)
+        : '',
       coverMediaId: (post.coverMediaId as string) ?? '',
+      socialImageMediaId: (post.socialImageMediaId as string) ?? '',
+      canonicalUrl: (post.canonicalUrl as string) ?? '',
       categoryIds: categories.map((c) => c.categoryId),
       tagIds: tags.map((t) => t.tagId),
       metaTitleFa: (post.metaTitleFa as string) ?? '',
@@ -348,13 +543,12 @@ export function postToForm(post: Record<string, unknown>): { form: PostFormData;
       commentsEnabled: (post.commentsEnabled as boolean | undefined) ?? true,
     },
     coverPath: coverMedia?.path,
+    socialImagePath: socialImageMedia?.path,
   };
 }
 
 export function formToPayload(form: PostFormData) {
-  const slug =
-    optionalString(form.slug) ??
-    (slugifyFromEn(form.titleEn) || randomSlug('post'));
+  const slug = optionalString(form.slug) ?? (slugifyFromEn(form.titleEn) || randomSlug('post'));
 
   return {
     slug,
@@ -364,14 +558,20 @@ export function formToPayload(form: PostFormData) {
     excerptEn: optionalRichText(form.excerptEn),
     contentFa: optionalRichText(form.contentFa),
     contentEn: optionalRichText(form.contentEn),
+    contentFaJson: form.contentFaJson,
+    contentEnJson: form.contentEnJson,
     status: form.status,
     publishedAt:
       form.status === 'SCHEDULED' && form.publishedAt
         ? new Date(form.publishedAt).toISOString()
         : form.status === 'PUBLISHED'
-          ? new Date().toISOString()
+          ? form.publishedAt
+            ? new Date(form.publishedAt).toISOString()
+            : new Date().toISOString()
           : undefined,
-    coverMediaId: optionalString(form.coverMediaId),
+    coverMediaId: optionalString(form.coverMediaId) ?? null,
+    socialImageMediaId: optionalString(form.socialImageMediaId) ?? null,
+    canonicalUrl: optionalString(form.canonicalUrl) ?? null,
     categoryIds: form.categoryIds.length ? form.categoryIds : undefined,
     tagIds: form.tagIds.length ? form.tagIds : undefined,
     metaTitleFa: optionalString(form.metaTitleFa),

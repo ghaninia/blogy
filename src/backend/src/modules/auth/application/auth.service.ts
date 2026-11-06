@@ -1,7 +1,13 @@
 import * as argon2 from 'argon2';
 import { Role } from '../../../db/index.js';
-import type { LoginInput, RegisterInput, UpdateProfileInput } from '../../../types/index.js';
+import type {
+  ChangePasswordInput,
+  LoginInput,
+  RegisterInput,
+  UpdateProfileInput,
+} from '../../../types/index.js';
 import { verifyRecaptcha } from '../../../shared/security/recaptcha.js';
+import { AppError } from '../../../shared/http/response.js';
 import {
   signAccessToken,
   signRefreshToken,
@@ -104,6 +110,24 @@ export class AuthService {
 
   async updateProfile(userId: string, input: UpdateProfileInput) {
     return authRepository.updateProfile(userId, input);
+  }
+
+  async changePassword(userId: string, input: ChangePasswordInput) {
+    const user = await authRepository.findById(userId);
+    if (!user) throw userNotFound();
+    if (!(await argon2.verify(user.passwordHash, input.currentPassword))) {
+      throw invalidCredentials();
+    }
+    if (await argon2.verify(user.passwordHash, input.newPassword)) {
+      throw new AppError(
+        400,
+        'Choose a password different from the current one',
+        'PASSWORD_UNCHANGED',
+      );
+    }
+    const passwordHash = await argon2.hash(input.newPassword);
+    await authRepository.updatePasswordAndRevokeSessions(userId, passwordHash);
+    return { passwordChanged: true, sessionsRevoked: true };
   }
 
   async updateUserRole(userId: string, role: Role) {

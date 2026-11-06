@@ -41,7 +41,10 @@ interface ExperienceItem {
 
 function formatPeriod(start: string, end: string | null | undefined, locale: string) {
   const fmt = (d: string) =>
-    new Date(d).toLocaleDateString(locale === 'fa' ? 'fa-IR' : 'en-US', { year: 'numeric', month: 'short' });
+    new Date(d).toLocaleDateString(locale === 'fa' ? 'fa-IR' : 'en-US', {
+      year: 'numeric',
+      month: 'short',
+    });
   if (!end) return `${fmt(start)} — ${locale === 'fa' ? 'اکنون' : 'Present'}`;
   return `${fmt(start)} — ${fmt(end)}`;
 }
@@ -60,7 +63,7 @@ export default function DashboardExperiencesPage() {
   const [search, setSearch] = useState('');
   const debouncedSearch = useDebouncedValue(search);
 
-  const { items, meta, isLoading } = useCrudList<ExperienceItem>({
+  const { items, meta, isLoading, isError, refetch } = useCrudList<ExperienceItem>({
     queryKey: ['dashboard-experiences'],
     endpoint: '/api/experiences',
     params: {
@@ -88,10 +91,17 @@ export default function DashboardExperiencesPage() {
   const renderActions = (item: ExperienceItem) => (
     <div className="flex justify-end gap-2">
       <Link href={`/${locale}/dashboard/experiences/${item.id}/edit`}>
-        <Button variant="ghost" size="icon"><Pencil className="h-4 w-4" /></Button>
+        <Button variant="ghost" size="icon" aria-label={t('actions.edit')}>
+          <Pencil className="h-4 w-4" />
+        </Button>
       </Link>
       {user && isAdmin(user.role) ? (
-        <Button variant="ghost" size="icon" onClick={() => handleDelete(item)}>
+        <Button
+          variant="ghost"
+          size="icon"
+          aria-label={t('actions.delete')}
+          onClick={() => handleDelete(item)}
+        >
           <Trash2 className="h-4 w-4 text-destructive" />
         </Button>
       ) : null}
@@ -104,7 +114,10 @@ export default function DashboardExperiencesPage() {
         title={t('experiences')}
         action={
           <Link href={`/${locale}/dashboard/experiences/new`}>
-            <Button><Plus className="me-2 h-4 w-4" />{t('newExperience')}</Button>
+            <Button>
+              <Plus className="me-2 h-4 w-4" />
+              {t('newExperience')}
+            </Button>
           </Link>
         }
       />
@@ -113,25 +126,36 @@ export default function DashboardExperiencesPage() {
         <Input
           placeholder={tt('search')}
           value={search}
-          onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            setPage(1);
+          }}
           className="max-w-xs"
         />
       </div>
 
       <DataTable
         isLoading={isLoading}
+        isError={isError}
+        onRetry={() => {
+          void refetch();
+        }}
         isEmpty={!isLoading && items.length === 0}
         items={items}
         mobileCardRender={(item) => (
           <div className="space-y-2">
             <div>
               <p className="font-medium">{getLocalizedField(item, 'title', locale)}</p>
-              <p className="text-xs text-muted-foreground">{getLocalizedField(item, 'company', locale)}</p>
+              <p className="text-xs text-muted-foreground">
+                {getLocalizedField(item, 'company', locale)}
+              </p>
               <p className="mt-1 text-xs text-muted-foreground">
                 {formatPeriod(item.startDate, item.endDate, locale)}
               </p>
               <div className="mt-1 flex gap-2">
-                <span className="text-xs text-muted-foreground">{tt('sortOrder')}: {item.sortOrder}</span>
+                <span className="text-xs text-muted-foreground">
+                  {tt('sortOrder')}: {item.sortOrder}
+                </span>
                 <Badge variant={item.isPublished ? 'success' : 'secondary'}>
                   {item.isPublished ? tt('published') : t('draft')}
                 </Badge>

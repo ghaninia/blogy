@@ -31,6 +31,8 @@ export interface PostDetail extends PostSummary {
   metaTitleEn?: string | null;
   metaDescFa?: string | null;
   metaDescEn?: string | null;
+  canonicalUrl?: string | null;
+  socialImageMedia?: MediaRef | null;
   author?: { displayName?: string | null; username: string; avatarUrl?: string | null } | null;
   categories?: { category: { id: string; slug: string; nameFa: string; nameEn: string } }[];
   tags?: { tag: { id: string; slug: string; nameFa: string; nameEn: string } }[];

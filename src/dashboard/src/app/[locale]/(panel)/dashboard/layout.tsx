@@ -1,13 +1,19 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRouter, useParams, usePathname } from 'next/navigation';
 import { Header } from '@/features/layout/components/header';
 import { DashboardSidebar } from '@/features/layout/components/sidebar';
 import { useAuthStore } from '@/shared/store/auth';
 import { Skeleton } from '@gh/ui';
 
-const ADMIN_ONLY = ['/dashboard/users', '/dashboard/settings'];
+const ADMIN_ONLY = [
+  '/dashboard/users',
+  '/dashboard/settings',
+  '/dashboard/seo',
+  '/dashboard/appearance',
+  '/dashboard/navigation',
+];
 const EDITOR_ONLY = [
   '/dashboard/pages',
   '/dashboard/categories',
@@ -15,6 +21,9 @@ const EDITOR_ONLY = [
   '/dashboard/portfolio',
   '/dashboard/experiences',
   '/dashboard/comments',
+  '/dashboard/subscribers',
+  '/dashboard/newsletter',
+  '/dashboard/analytics',
 ];
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -23,6 +32,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const pathname = usePathname();
   const locale = params.locale as string;
   const { user, isLoading } = useAuthStore();
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const redirected = useRef(false);
 
   useEffect(() => {
@@ -54,22 +64,30 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   if (isLoading || !user) {
     return (
-      <div className="mx-auto flex min-h-screen max-w-7xl flex-col px-3 pb-8 pt-4 sm:px-4 sm:pt-5">
-        <Skeleton className="h-14 w-full shrink-0 rounded-2xl" />
-        <div className="flex flex-1 gap-4 pt-4 md:items-stretch">
-          <Skeleton className="hidden min-h-full w-60 rounded-2xl md:block" />
-          <Skeleton className="min-h-96 flex-1 rounded-2xl" />
+      <div className="dashboard-frame min-h-screen p-2 sm:p-5">
+        <div className="dashboard-shell mx-auto flex min-h-[calc(100vh-1rem)] max-w-[1500px] flex-col overflow-hidden rounded-[1.5rem] p-4 sm:min-h-[calc(100vh-2.5rem)] sm:rounded-[2rem] sm:p-7 lg:p-9">
+          <Skeleton className="h-14 w-full shrink-0 rounded-xl" />
+          <div className="flex flex-1 flex-col gap-5 pt-6">
+            <Skeleton className="h-40 w-full rounded-3xl" />
+            <div className="grid flex-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+              <Skeleton className="min-h-72 rounded-3xl" />
+              <Skeleton className="min-h-72 rounded-3xl" />
+              <Skeleton className="min-h-72 rounded-3xl" />
+            </div>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="mx-auto flex min-h-screen max-w-7xl flex-col px-3 pb-8 pt-4 sm:px-4 sm:pt-5">
-      <Header />
-      <div className="flex flex-1 flex-col gap-4 pt-4 md:flex-row md:items-stretch">
-        <DashboardSidebar userRole={user.role} />
-        <main className="min-w-0 flex-1">{children}</main>
+    <div className="dashboard-frame min-h-screen p-2 sm:p-5">
+      <div className="dashboard-shell mx-auto flex min-h-[calc(100vh-1rem)] max-w-[1500px] flex-row overflow-clip rounded-[1.5rem] sm:min-h-[calc(100vh-2.5rem)] sm:rounded-[1.5rem]">
+        <DashboardSidebar userRole={user.role} collapsed={sidebarCollapsed} />
+        <div className="flex min-w-0 flex-1 flex-col">
+          <Header sidebarCollapsed={sidebarCollapsed} onToggleSidebar={() => setSidebarCollapsed((value) => !value)} />
+          <main className="dashboard-main min-w-0 flex-1 px-4 pb-7 sm:px-6 lg:px-8">{children}</main>
+        </div>
       </div>
     </div>
   );

@@ -7,6 +7,7 @@ import { locales, type Locale } from '@/i18n/request';
 import { ThemeProvider } from '@/components/theme-provider';
 import { AppProviders } from '@/components/providers';
 import { fetchSiteConfig } from '@/lib/site-config';
+import { SiteHeader } from '@/components/layout/site-header';
 import { getMediaUrl } from '@/lib/api';
 import { cn } from '@/lib/utils';
 import '../globals.css';
@@ -49,6 +50,7 @@ export default async function LocaleLayout({
   if (!locales.includes(locale as Locale)) notFound();
 
   const messages = await getMessages();
+  const config = await fetchSiteConfig(locale);
   const dir = locale === 'fa' ? 'rtl' : 'ltr';
   const isFa = locale === 'fa';
 
@@ -56,6 +58,7 @@ export default async function LocaleLayout({
     <html
       lang={locale}
       dir={dir}
+      data-accent={config.accentColor}
       suppressHydrationWarning
       className={cn(
         geistMono.variable,
@@ -64,10 +67,13 @@ export default async function LocaleLayout({
           : cn(geistSans.variable, geistSans.className),
       )}
     >
-      <body className="min-h-screen bg-background text-foreground antialiased">
+      <body className="min-h-screen bg-background font-sans text-foreground antialiased">
         <NextIntlClientProvider messages={messages}>
           <AppProviders>
-            <ThemeProvider>{children}</ThemeProvider>
+            <ThemeProvider>
+              <SiteHeader name={config.name} locale={locale} items={config.headerNavigation} />
+              {children}
+            </ThemeProvider>
           </AppProviders>
         </NextIntlClientProvider>
       </body>

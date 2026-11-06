@@ -10,9 +10,8 @@ import { CommentSection } from '@/components/blog/comment-section';
 import { PostCover } from '@/components/blog/post-cover';
 import { PostJsonLd } from '@/components/blog/post-json-ld';
 import { fetchPostBySlug } from '@/lib/data';
-import { buildPostMetadata } from '@/lib/post-seo';
+import { buildPostMetadata, getPostCanonicalUrl } from '@/lib/post-seo';
 import { fetchSiteConfig } from '@/lib/site-config';
-import { getPostShareUrl } from '@/lib/share';
 import { cn, formatDate, getLocalizedField, titleFont } from '@/lib/utils';
 
 export async function generateMetadata({
@@ -44,7 +43,7 @@ export default async function BlogPostPage({
   const content = getLocalizedField(post, 'content', locale);
   const date = post.publishedAt ?? post.createdAt;
   const isFa = locale === 'fa';
-  const shareUrl = getPostShareUrl(locale, slug);
+  const shareUrl = getPostCanonicalUrl(post, locale, slug);
   const commentsEnabled = post.commentsEnabled ?? true;
 
   return (
@@ -103,6 +102,8 @@ export default async function BlogPostPage({
         year={new Date().getFullYear()}
         footerCopyright={config.footerCopyright}
         footerRights={config.footerRights}
+        locale={locale}
+        navigation={config.footerNavigation}
       />
     </>
   );

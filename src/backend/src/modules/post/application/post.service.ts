@@ -1,10 +1,29 @@
 import { PostStatus } from '../../../db/index.js';
-import type { CreatePostInput, PostQueryInput, UpdatePostInput } from '../../../types/index.js';
+import type {
+  BulkPostActionInput,
+  CreatePostInput,
+  PostQueryInput,
+  UpdatePostInput,
+} from '../../../types/index.js';
 import { sanitizeOptionalFields } from '../../../shared/security/sanitize.js';
 import { postRepository } from '../infrastructure/post.repository.js';
 import { postNotFound, slugExists } from '../domain/post.errors.js';
 
+function omitEditorDocuments<T extends { contentFaJson?: unknown; contentEnJson?: unknown }>(
+  post: T,
+): T {
+  const result = { ...post };
+  delete result.contentFaJson;
+  delete result.contentEnJson;
+  return result;
+}
+
 export class PostService {
+  bulk(ids: string[], action: BulkPostActionInput['action']) {
+    if (action === 'DELETE') return postRepository.bulkDelete(ids);
+    return postRepository.bulkUpdateStatus(ids, action === 'PUBLISH' ? 'PUBLISHED' : 'ARCHIVED');
+  }
+
   async create(input: CreatePostInput, authorId: string) {
     const sanitized = sanitizeOptionalFields(input as Record<string, unknown>, [
       'contentFa',
@@ -70,7 +89,7 @@ export class PostService {
     if (publicOnly && post.status !== PostStatus.PUBLISHED) {
       throw postNotFound();
     }
-    return post;
+    return publicOnly ? omitEditorDocuments(post) : post;
   }
 
   async getBySlug(slug: string, publicOnly = false) {
@@ -79,11 +98,11 @@ export class PostService {
     if (publicOnly && post.status !== PostStatus.PUBLISHED) {
       throw postNotFound();
     }
-    return post;
+    return publicOnly ? omitEditorDocuments(post) : post;
   }
 
   async list(query: PostQueryInput, publicOnly = false) {
-    const { page, limit, status, categoryId, tagId, search } = query;
+    const { page, limit, status, categoryId, tagId, search, sort } = query;
     const skip = (page - 1) * limit;
 
     const where = {
@@ -101,11 +120,17 @@ export class PostService {
     };
 
     const [items, total] = await Promise.all([
-      postRepository.findMany(where, skip, limit),
+      postRepository.findMany(where, skip, limit, sort),
       postRepository.count(where),
     ]);
 
-    return { items, total, page, limit, totalPages: Math.ceil(total / limit) };
+    return {
+      items: publicOnly ? items.map(omitEditorDocuments) : items,
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    };
   }
 }
 

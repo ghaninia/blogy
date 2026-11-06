@@ -66,12 +66,18 @@ export class MediaService {
   }
 
   async list(query: MediaQueryInput) {
-    const { page, limit, folder, mimeType, search } = query;
+    const { page, limit, folder, mimeType, search, createdAfter, createdBefore } = query;
     const skip = (page - 1) * limit;
     const safeFolder = folder ? sanitizeUploadFolder(folder) : undefined;
     const where = {
       ...(safeFolder && { folder: safeFolder }),
       ...(mimeType && { mimeType: { startsWith: mimeType } }),
+      ...((createdAfter || createdBefore) && {
+        createdAt: {
+          ...(createdAfter && { gte: createdAfter }),
+          ...(createdBefore && { lte: createdBefore }),
+        },
+      }),
       ...(search && {
         OR: [
           { originalName: { contains: search, mode: 'insensitive' as const } },

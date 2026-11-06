@@ -1,18 +1,8 @@
-import { Geist, Geist_Mono } from 'next/font/google';
 import localFont from 'next/font/local';
 
-export const geistSans = Geist({
-  subsets: ['latin'],
-  weight: ['400', '500', '600'],
-  variable: '--font-sans',
-  display: 'swap',
-});
-
-export const geistMono = Geist_Mono({
-  subsets: ['latin'],
-  variable: '--font-mono',
-  display: 'swap',
-});
+// Keep production builds offline-friendly; use Geist if installed, otherwise the system stack.
+export const geistSans = { variable: '', className: '' };
+export const geistMono = { variable: '', className: '' };
 
 export const vazirmatn = localFont({
   src: [

@@ -44,7 +44,7 @@ export default function DashboardUsersPage() {
   const qc = useQueryClient();
   const [page, setPage] = useState(1);
 
-  const { items, meta, isLoading } = useCrudList<UserItem>({
+  const { items, meta, isLoading, isError, refetch } = useCrudList<UserItem>({
     queryKey: ['dashboard-users'],
     endpoint: '/api/auth/users',
     params: { page, limit: DASHBOARD_LIST_PAGE_SIZE },
@@ -60,13 +60,45 @@ export default function DashboardUsersPage() {
     }
   };
 
+  const renderRoleSelect = (user: UserItem) => (
+    <Select value={user.role} onValueChange={(role) => updateRole(user.id, role)}>
+      <SelectTrigger className="w-32" aria-label={`${tt('role')}: ${user.username}`}>
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent>
+        {ROLES.map((role) => (
+          <SelectItem key={role} value={role}>
+            {role}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  );
+
   return (
     <div>
       <PageHeader title={t('users')} />
 
       <DataTable
         isLoading={isLoading}
+        isError={isError}
+        onRetry={() => {
+          void refetch();
+        }}
         isEmpty={!isLoading && items.length === 0}
+        items={items}
+        mobileCardRender={(user) => (
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="min-w-0">
+              <p className="truncate font-medium">{user.displayName ?? user.username}</p>
+              <p className="truncate text-xs text-muted-foreground">{user.email}</p>
+              <Badge className="mt-2" variant={user.isActive ? 'success' : 'destructive'}>
+                {user.isActive ? ts('active') : ts('inactive')}
+              </Badge>
+            </div>
+            {renderRoleSelect(user)}
+          </div>
+        )}
         pagination={{ page, meta, onPageChange: setPage }}
       >
         <Table>
@@ -86,18 +118,7 @@ export default function DashboardUsersPage() {
                   <p className="text-xs text-muted-foreground">@{user.username}</p>
                 </TableCell>
                 <TableCell>{user.email}</TableCell>
-                <TableCell>
-                  <Select value={user.role} onValueChange={(role) => updateRole(user.id, role)}>
-                    <SelectTrigger className="w-32">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {ROLES.map((role) => (
-                        <SelectItem key={role} value={role}>{role}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </TableCell>
+                <TableCell>{renderRoleSelect(user)}</TableCell>
                 <TableCell>
                   <Badge variant={user.isActive ? 'success' : 'destructive'}>
                     {user.isActive ? ts('active') : ts('inactive')}

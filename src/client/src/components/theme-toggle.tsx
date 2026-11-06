@@ -1,6 +1,6 @@
 'use client';
 
-import { Moon, Sun } from 'lucide-react';
+import { Monitor, Moon, Sun } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
@@ -15,7 +15,7 @@ export function ThemeToggle({ className }: { className?: string }) {
   useEffect(() => setMounted(true), []);
 
   if (!mounted) {
-    return <span className={cn('inline-block h-9 w-[4.5rem]', className)} aria-hidden />;
+    return <span className={cn('inline-block h-9 w-[6.5rem]', className)} aria-hidden />;
   }
 
   const current = (resolvedTheme ?? theme) === 'dark' ? 'dark' : 'light';
@@ -24,7 +24,7 @@ export function ThemeToggle({ className }: { className?: string }) {
     <SegmentedControl
       className={className}
       layoutId="theme-toggle-indicator"
-      value={current}
+      value={theme === 'system' ? 'system' : current}
       onChange={(value) => setTheme(value)}
       options={[
         {
@@ -36,6 +36,11 @@ export function ThemeToggle({ className }: { className?: string }) {
           value: 'dark',
           label: <Moon className="h-3.5 w-3.5" strokeWidth={2} />,
           ariaLabel: t('darkMode'),
+        },
+        {
+          value: 'system',
+          label: <Monitor className="h-3.5 w-3.5" strokeWidth={2} />,
+          ariaLabel: t('systemMode'),
         },
       ]}
     />

@@ -4,7 +4,11 @@ import { passwordSchema, recaptchaSchema, roleSchema } from './common.js';
 export const registerSchema = z
   .object({
     email: z.string().email(),
-    username: z.string().min(3).max(50).regex(/^[a-zA-Z0-9_-]+$/),
+    username: z
+      .string()
+      .min(3)
+      .max(50)
+      .regex(/^[a-zA-Z0-9_-]+$/),
     password: passwordSchema,
     displayName: z.string().min(1).max(100).optional(),
   })
@@ -20,7 +24,17 @@ export const loginSchema = z
 export const updateProfileSchema = z.object({
   displayName: z.string().min(1).max(100).optional(),
   bio: z.string().max(500).optional(),
-  avatarUrl: z.string().url().optional(),
+  avatarUrl: z.string().url().or(z.literal('')).optional(),
+  website: z.string().url().or(z.literal('')).optional(),
+  githubUrl: z.string().url().or(z.literal('')).optional(),
+  linkedinUrl: z.string().url().or(z.literal('')).optional(),
+  instagramUrl: z.string().url().or(z.literal('')).optional(),
+  twitterUrl: z.string().url().or(z.literal('')).optional(),
+});
+
+export const changePasswordSchema = z.object({
+  currentPassword: z.string().min(1),
+  newPassword: passwordSchema,
 });
 
 export const updateUserRoleSchema = z.object({
@@ -30,3 +44,4 @@ export const updateUserRoleSchema = z.object({
 export type RegisterInput = z.infer<typeof registerSchema>;
 export type LoginInput = z.infer<typeof loginSchema>;
 export type UpdateProfileInput = z.infer<typeof updateProfileSchema>;
+export type ChangePasswordInput = z.infer<typeof changePasswordSchema>;

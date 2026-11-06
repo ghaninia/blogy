@@ -18,6 +18,7 @@ enum PostStatus {
   DRAFT
   PUBLISHED
   SCHEDULED
+  ARCHIVED
 }
 
 enum CommentStatus {
@@ -25,6 +26,17 @@ enum CommentStatus {
   APPROVED
   REJECTED
   SPAM
+}
+
+enum SubscriberStatus {
+  ACTIVE
+  UNSUBSCRIBED
+}
+
+enum CampaignStatus {
+  DRAFT
+  SCHEDULED
+  ARCHIVED
 }
 
 enum PageType {
@@ -42,6 +54,11 @@ model User {
   displayName  String?
   bio          String?
   avatarUrl    String?
+  website      String?
+  githubUrl    String?
+  linkedinUrl  String?
+  instagramUrl String?
+  twitterUrl   String?
   role         Role           @default(USER)
   isActive     Boolean        @default(true)
   createdAt    DateTime       @default(now())
@@ -74,10 +91,14 @@ model Post {
   excerptEn    String?
   contentFa    String?        @db.Text
   contentEn    String?        @db.Text
+  contentFaJson Json?
+  contentEnJson Json?
   status       PostStatus     @default(DRAFT)
   publishedAt  DateTime?
   coverMediaId String?
+  socialImageMediaId String?
   authorId     String
+  canonicalUrl String?        @db.VarChar(2048)
   metaTitleFa  String?
   metaTitleEn  String?
   metaDescFa   String?
@@ -87,12 +108,14 @@ model Post {
   updatedAt    DateTime       @updatedAt
   author       User           @relation(fields: [authorId], references: [id])
   coverMedia   Media?         @relation("PostCover", fields: [coverMediaId], references: [id], onDelete: SetNull)
+  socialImageMedia Media?     @relation("PostSocialImage", fields: [socialImageMediaId], references: [id], onDelete: SetNull)
   categories   PostCategory[]
   tags         PostTag[]
   comments     Comment[]
 
   @@index([status, publishedAt])
   @@index([authorId])
+  @@index([socialImageMediaId])
   @@map("posts")
 }
 
@@ -204,6 +227,7 @@ model Media {
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
   postCovers   Post[]      @relation("PostCover")
+  postSocialImages Post[]  @relation("PostSocialImage")
   portfolioCovers Portfolio[] @relation("PortfolioCover")
 
   @@index([folder])
@@ -258,4 +282,34 @@ model Experience {
 
   @@index([isPublished, sortOrder])
   @@map("experiences")
+}
+
+model Subscriber {
+  id           String           @id @default(uuid())
+  email        String           @unique
+  name         String?
+  status       SubscriberStatus @default(ACTIVE)
+  source       String           @default("dashboard")
+  consentedAt  DateTime?
+  subscribedAt DateTime         @default(now())
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+
+  @@index([status, subscribedAt])
+  @@map("subscribers")
+}
+
+model NewsletterCampaign {
+  id           String         @id @default(uuid())
+  title        String
+  subject      String
+  previewText  String?
+  content      String         @db.Text
+  status       CampaignStatus @default(DRAFT)
+  scheduledAt  DateTime?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  @@index([status, scheduledAt])
+  @@map("newsletter_campaigns")
 }

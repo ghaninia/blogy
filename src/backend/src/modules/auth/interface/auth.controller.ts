@@ -1,5 +1,11 @@
 import { Router } from 'express';
-import { registerSchema, loginSchema, updateProfileSchema, updateUserRoleSchema } from '../../../types/index.js';
+import {
+  changePasswordSchema,
+  registerSchema,
+  loginSchema,
+  updateProfileSchema,
+  updateUserRoleSchema,
+} from '../../../types/index.js';
 import { Role } from '../../../db/index.js';
 import { authService } from '../application/auth.service.js';
 import { authenticate, authorize, type AuthRequest } from '../../../shared/auth/middleware.js';
@@ -10,7 +16,11 @@ import { paramId } from '../../../shared/http/params.js';
 
 const router: Router = Router();
 
-function setAuthCookies(res: import('express').Response, accessToken: string, refreshToken: string) {
+function setAuthCookies(
+  res: import('express').Response,
+  accessToken: string,
+  refreshToken: string,
+) {
   const isProd = process.env.NODE_ENV === 'production';
   res.cookie('accessToken', accessToken, {
     httpOnly: true,
@@ -83,14 +93,35 @@ router.get('/me', authenticate, async (req: AuthRequest, res, next) => {
   }
 });
 
-router.patch('/profile', authenticate, validate(updateProfileSchema), async (req: AuthRequest, res, next) => {
-  try {
-    const user = await authService.updateProfile(req.user!.id, req.body);
-    sendSuccess(res, user);
-  } catch (e) {
-    next(e);
-  }
-});
+router.patch(
+  '/profile',
+  authenticate,
+  validate(updateProfileSchema),
+  async (req: AuthRequest, res, next) => {
+    try {
+      const user = await authService.updateProfile(req.user!.id, req.body);
+      sendSuccess(res, user);
+    } catch (e) {
+      next(e);
+    }
+  },
+);
+
+router.post(
+  '/change-password',
+  authenticate,
+  validate(changePasswordSchema),
+  async (req: AuthRequest, res, next) => {
+    try {
+      const result = await authService.changePassword(req.user!.id, req.body);
+      res.clearCookie('accessToken');
+      res.clearCookie('refreshToken', { path: '/api/auth/refresh' });
+      sendSuccess(res, result);
+    } catch (e) {
+      next(e);
+    }
+  },
+);
 
 router.get('/users', authenticate, authorize(Role.ADMIN), async (req, res, next) => {
   try {

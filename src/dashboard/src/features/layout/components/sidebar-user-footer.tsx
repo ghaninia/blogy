@@ -10,9 +10,10 @@ import { useAuthStore } from '@/shared/store/auth';
 interface SidebarUserFooterProps {
   onNavigate?: () => void;
   className?: string;
+  collapsed?: boolean;
 }
 
-export function SidebarUserFooter({ onNavigate, className }: SidebarUserFooterProps) {
+export function SidebarUserFooter({ onNavigate, className, collapsed = false }: SidebarUserFooterProps) {
   const t = useTranslations('nav');
   const locale = useLocale();
   const user = useAuthStore((s) => s.user);
@@ -24,37 +25,43 @@ export function SidebarUserFooter({ onNavigate, className }: SidebarUserFooterPr
   const BackChevron = locale === 'fa' ? ChevronLeft : ChevronRight;
 
   return (
-    <div className={cn('shrink-0 p-3 pt-2', className)}>
-      <div className="rounded-xl border border-glass-border bg-background/40 p-2">
+    <div
+      className={cn('dashboard-sidebar-footer shrink-0 border-t border-border p-3 pt-3', className)}
+    >
+      <div className={cn('rounded-2xl border border-border bg-muted/50 p-2', collapsed && 'border-transparent bg-transparent p-0')}>
         <Link
           href={`/${locale}/dashboard/profile`}
           onClick={onNavigate}
-          className="group flex items-center gap-2.5 rounded-lg p-1.5 transition-colors hover:bg-accent/35"
+          aria-label={collapsed ? `${t('profile')}: ${user.displayName ?? user.username}` : undefined}
+          title={collapsed ? user.displayName ?? user.username : undefined}
+          className={cn('group flex items-center gap-2.5 rounded-xl p-1.5 text-foreground transition-colors hover:bg-background', collapsed && 'justify-center p-1')}
         >
-          <Avatar className="h-9 w-9 border border-glass-border">
-            <AvatarFallback className="bg-primary/15 text-xs font-semibold text-primary">
+          <Avatar className="h-9 w-9 border border-border">
+            <AvatarFallback className="bg-primary/20 text-xs font-semibold text-primary">
               {initials}
             </AvatarFallback>
           </Avatar>
-          <div className="min-w-0 flex-1">
+          <div className={cn('min-w-0 flex-1', collapsed && 'sr-only')}>
             <p className="truncate text-sm font-medium leading-tight">
               {user.displayName ?? user.username}
             </p>
             <p className="truncate text-[11px] text-muted-foreground">{user.email}</p>
           </div>
-          <BackChevron className="h-3.5 w-3.5 shrink-0 text-muted-foreground/70 transition-transform group-hover:translate-x-0.5 rtl:group-hover:-translate-x-0.5" />
+          {!collapsed ? <BackChevron className="h-3.5 w-3.5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 rtl:group-hover:-translate-x-0.5" /> : null}
         </Link>
         <Button
           variant="ghost"
           size="sm"
-          className="mt-1 h-8 w-full justify-start gap-2 text-xs text-muted-foreground hover:text-destructive"
+          aria-label={collapsed ? t('logout') : undefined}
+          title={collapsed ? t('logout') : undefined}
+          className={cn('mt-1 h-8 w-full justify-start gap-2 rounded-lg text-xs text-muted-foreground hover:bg-background hover:text-foreground', collapsed && 'justify-center px-0')}
           onClick={() => {
             onNavigate?.();
             logout();
           }}
         >
           <LogOut className="h-3.5 w-3.5" />
-          {t('logout')}
+          <span className={cn(collapsed && 'sr-only')}>{t('logout')}</span>
         </Button>
       </div>
     </div>

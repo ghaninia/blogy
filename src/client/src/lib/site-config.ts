@@ -8,7 +8,44 @@ export interface SettingRecord {
   valueJson?: Record<string, unknown> | null;
 }
 
+export interface SiteNavigationItem {
+  id: string;
+  labelFa: string;
+  labelEn: string;
+  href: string;
+  enabled: boolean;
+}
+
+function isNavigationItem(value: unknown): value is SiteNavigationItem {
+  if (!value || typeof value !== 'object') return false;
+  const item = value as Partial<SiteNavigationItem>;
+  return (
+    typeof item.id === 'string' &&
+    typeof item.labelFa === 'string' &&
+    typeof item.labelEn === 'string' &&
+    typeof item.href === 'string' &&
+    typeof item.enabled === 'boolean'
+  );
+}
+
+const defaultHeaderNavigation: SiteNavigationItem[] = [
+  { id: 'home', labelFa: 'خانه', labelEn: 'Home', href: '/', enabled: true },
+  { id: 'blog', labelFa: 'وبلاگ', labelEn: 'Blog', href: '/blog', enabled: true },
+  {
+    id: 'portfolio',
+    labelFa: 'نمونه‌کارها',
+    labelEn: 'Portfolio',
+    href: '/portfolio',
+    enabled: true,
+  },
+  { id: 'about', labelFa: 'درباره', labelEn: 'About', href: '/about', enabled: true },
+  { id: 'contact', labelFa: 'تماس', labelEn: 'Contact', href: '/contact', enabled: true },
+];
+
 export interface SiteConfig {
+  accentColor: 'violet' | 'blue' | 'green' | 'rose';
+  headerNavigation: SiteNavigationItem[];
+  footerNavigation: SiteNavigationItem[];
   name: string;
   subtitle: string;
   description: string;
@@ -44,6 +81,19 @@ export function resolveFooterTemplate(text: string, year: number, name: string):
 
 export function resolveSiteConfig(settings: SettingRecord[], locale: string): SiteConfig {
   const isFa = locale === 'fa';
+  const configuredAccent = pick(settings, 'site_appearance')?.valueJson?.accent;
+  const accentColor = ['violet', 'blue', 'green', 'rose'].includes(String(configuredAccent))
+    ? (configuredAccent as SiteConfig['accentColor'])
+    : 'violet';
+  const navigationData = pick(settings, 'site_navigation')?.valueJson;
+  const configuredNavigation = navigationData?.header;
+  const configuredFooterNavigation = navigationData?.footer;
+  const headerNavigation = Array.isArray(configuredNavigation)
+    ? configuredNavigation.filter(isNavigationItem).filter((item) => item.enabled)
+    : defaultHeaderNavigation;
+  const footerNavigation = Array.isArray(configuredFooterNavigation)
+    ? configuredFooterNavigation.filter(isNavigationItem).filter((item) => item.enabled)
+    : defaultHeaderNavigation;
   const descriptionRecord = pick(settings, 'site_description') ?? pick(settings, 'site_tagline');
   const name =
     localizedValue(pick(settings, 'site_name'), isFa) ||
@@ -51,6 +101,9 @@ export function resolveSiteConfig(settings: SettingRecord[], locale: string): Si
     'Blogy';
 
   return {
+    accentColor,
+    headerNavigation,
+    footerNavigation,
     name,
     subtitle: localizedValue(pick(settings, 'site_subtitle'), isFa),
     description: localizedValue(descriptionRecord, isFa),
