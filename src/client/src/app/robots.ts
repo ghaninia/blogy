@@ -1,13 +1,15 @@
 import type { MetadataRoute } from 'next';
+import { fetchSiteConfig, getSiteBaseUrl } from '@/lib/site-config';
 
-export default function robots(): MetadataRoute.Robots {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3001';
+export default async function robots(): Promise<MetadataRoute.Robots> {
+  const config = await fetchSiteConfig('en');
+  const baseUrl = getSiteBaseUrl(config.siteUrl);
 
   return {
     rules: {
       userAgent: '*',
       allow: '/',
     },
-    sitemap: `${baseUrl}/sitemap.xml`,
+    ...(config.sitemapEnabled ? { sitemap: `${baseUrl}/sitemap.xml` } : {}),
   };
 }

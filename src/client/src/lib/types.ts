@@ -15,11 +15,13 @@ export interface PostListFilters {
 export interface PostSummary {
   id: string;
   slug: string;
+  canonicalUrl?: string | null;
   titleFa?: string | null;
   titleEn?: string | null;
   excerptFa?: string | null;
   excerptEn?: string | null;
   publishedAt?: string | null;
+  updatedAt?: string;
   createdAt: string;
   coverMedia?: MediaRef | null;
 }

@@ -26,15 +26,34 @@ export async function generateMetadata({
   const title = config.metaTitle || config.name;
   const description = config.metaDescription || config.description || config.tagline;
   const favicon = config.faviconPath ? getMediaUrl(config.faviconPath) : undefined;
+  const socialImage = config.ogImagePath ? getMediaUrl(config.ogImagePath) : undefined;
+  const keywords = config.metaKeywords
+    .split(',')
+    .map((keyword) => keyword.trim())
+    .filter(Boolean);
 
   return {
     title,
     description: description || undefined,
+    keywords: keywords.length ? keywords : undefined,
+    robots: config.robots,
+    verification: config.googleVerification
+      ? { google: config.googleVerification }
+      : undefined,
     icons: favicon ? { icon: favicon, shortcut: favicon } : undefined,
     openGraph: {
       title,
       description: description || undefined,
       locale: locale === 'fa' ? 'fa_IR' : 'en_US',
+      siteName: config.name,
+      images: socialImage ? [{ url: socialImage }] : undefined,
+    },
+    twitter: {
+      card: socialImage ? 'summary_large_image' : 'summary',
+      title,
+      description: description || undefined,
+      images: socialImage ? [socialImage] : undefined,
+      creator: config.twitterHandle || undefined,
     },
   };
 }
@@ -53,6 +72,9 @@ export default async function LocaleLayout({
   const config = await fetchSiteConfig(locale);
   const dir = locale === 'fa' ? 'rtl' : 'ltr';
   const isFa = locale === 'fa';
+  const structuredData = config.structuredData
+    ? JSON.stringify(config.structuredData).replace(/</g, '\\u003c')
+    : null;
 
   return (
     <html
@@ -68,10 +90,21 @@ export default async function LocaleLayout({
       )}
     >
       <body className="min-h-screen bg-background font-sans text-foreground antialiased">
+        {structuredData ? (
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: structuredData }}
+          />
+        ) : null}
         <NextIntlClientProvider messages={messages}>
           <AppProviders>
             <ThemeProvider>
-              <SiteHeader name={config.name} locale={locale} items={config.headerNavigation} />
+              <SiteHeader
+                name={config.name}
+                logoPath={config.logoPath}
+                locale={locale}
+                items={config.headerNavigation}
+              />
               {children}
             </ThemeProvider>
           </AppProviders>

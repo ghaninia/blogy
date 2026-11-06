@@ -8,7 +8,14 @@ import { Button, Card, CardContent, CardHeader, CardTitle, Skeleton, useToast } 
 import { api } from '@/shared/api-client';
 import { PageHeader } from '@/features/layout/components/page-header';
 import { ThemeSelector } from '@/features/layout/components/theme-selector';
-import { accentPresets, isAccentPreset, type AccentPreset } from '@/features/appearance/presets';
+import {
+  accentPresets,
+  homepageLayouts,
+  isAccentPreset,
+  isHomepageLayout,
+  type AccentPreset,
+  type HomepageLayout,
+} from '@/features/appearance/presets';
 
 interface SettingRecord {
   key: string;
@@ -23,6 +30,7 @@ export default function DashboardAppearancePage() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [accent, setAccent] = useState<AccentPreset>('violet');
+  const [homepageLayout, setHomepageLayout] = useState<HomepageLayout>('editorial');
   const [saving, setSaving] = useState(false);
 
   const {
@@ -39,8 +47,9 @@ export default function DashboardAppearancePage() {
   });
 
   useEffect(() => {
-    const saved = data.find((setting) => setting.key === 'site_appearance')?.valueJson?.accent;
-    if (isAccentPreset(saved)) setAccent(saved);
+    const saved = data.find((setting) => setting.key === 'site_appearance')?.valueJson;
+    if (isAccentPreset(saved?.accent)) setAccent(saved.accent);
+    if (isHomepageLayout(saved?.homepageLayout)) setHomepageLayout(saved.homepageLayout);
   }, [data]);
 
   const applyAccent = (next: AccentPreset) => {
@@ -51,7 +60,10 @@ export default function DashboardAppearancePage() {
   const save = async () => {
     setSaving(true);
     try {
-      await api.put('/api/settings', { key: 'site_appearance', valueJson: { accent } });
+      await api.put('/api/settings', {
+        key: 'site_appearance',
+        valueJson: { accent, homepageLayout },
+      });
       applyAccent(accent);
       await queryClient.invalidateQueries({ queryKey: ['settings'] });
       toast({ title: toastText('saved'), variant: 'success' });
@@ -154,6 +166,40 @@ export default function DashboardAppearancePage() {
           </Card>
         </div>
       )}
+      {!isLoading && !isError ? (
+        <Card variant="glass" className="mt-4">
+          <CardHeader>
+            <CardTitle className="text-base">{ta('homeLayoutTitle')}</CardTitle>
+            <p className="text-sm text-muted-foreground">{ta('homeLayoutDescription')}</p>
+          </CardHeader>
+          <CardContent className="grid gap-3 md:grid-cols-3">
+            {homepageLayouts.map((layout) => (
+              <button
+                key={layout}
+                type="button"
+                aria-pressed={homepageLayout === layout}
+                onClick={() => setHomepageLayout(layout)}
+                className="rounded-xl border border-border p-4 text-start transition hover:border-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring aria-pressed:border-primary aria-pressed:bg-primary/5"
+              >
+                <span className="flex items-center justify-between gap-2">
+                  <span className="text-sm font-medium">{ta(layout)}</span>
+                  {homepageLayout === layout ? (
+                    <Check className="h-4 w-4 text-primary" aria-hidden="true" />
+                  ) : null}
+                </span>
+                <span className="mt-3 grid gap-1.5" aria-hidden="true">
+                  {[0, 1, 2].map((index) => (
+                    <span
+                      key={index}
+                      className={`block h-2 rounded-full ${index === 0 ? 'w-full bg-primary/60' : index === 1 ? 'w-4/5 bg-muted' : 'w-3/5 bg-muted'}`}
+                    />
+                  ))}
+                </span>
+              </button>
+            ))}
+          </CardContent>
+        </Card>
+      ) : null}
     </div>
   );
 }

@@ -1,16 +1,20 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { getTranslations } from 'next-intl/server';
 import { ExternalLink, Menu } from 'lucide-react';
 import type { SiteNavigationItem } from '@/lib/site-config';
+import { getMediaUrl } from '@/lib/api';
 import { LocaleSwitcher } from '@/components/layout/locale-switcher';
 import { ThemeToggle } from '@/components/theme-toggle';
 
 export async function SiteHeader({
   name,
+  logoPath,
   locale,
   items,
 }: {
   name: string;
+  logoPath: string;
   locale: string;
   items: SiteNavigationItem[];
 }) {
@@ -48,7 +52,18 @@ export async function SiteHeader({
           href={`/${locale}`}
           className="shrink-0 truncate text-base font-semibold tracking-tight text-foreground"
         >
-          {name}
+          {logoPath ? (
+            <Image
+              src={getMediaUrl(logoPath)}
+              alt={name}
+              width={144}
+              height={48}
+              unoptimized
+              className="h-9 w-auto max-w-36 object-contain"
+            />
+          ) : (
+            name
+          )}
         </Link>
         <nav className="hidden items-center gap-1 md:flex" aria-label={t('mainNavigation')}>
           {visibleItems.map(renderItem)}

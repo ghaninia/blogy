@@ -197,10 +197,15 @@
       "range7": "۷ روز",
       "range30": "۳۰ روز",
       "range90": "۹۰ روز",
+      "rangeCustom": "بازهٔ دلخواه",
+      "fromDate": "از تاریخ",
+      "toDate": "تا تاریخ",
+      "invalidDateRange": "بازهٔ معتبر تا حداکثر ۳۶۵ روز انتخاب کنید.",
+      "customChartLabel": "بازدید نمونه از {from} تا {to}",
       "samplePostViews": "بازدید نمونه",
       "chartLabel": "بازدید نمونه در {days} روز گذشته",
       "exportCsv": "دریافت CSV",
-      "csvDate": "روز نمونه",
+      "csvDate": "تاریخ",
       "csvViews": "بازدید نمونه",
       "trafficSources": "منابع ورودی",
       "audienceDevices": "دستگاه‌های مخاطبان",
@@ -239,7 +244,12 @@
       "rose": "رزگلد",
       "themeTitle": "ترجیح ظاهری",
       "themeDescription": "تم روشن یا تیره را انتخاب کنید یا آن را با دستگاه هماهنگ کنید.",
-      "themePreference": "حالت رنگ"
+      "themePreference": "حالت رنگ",
+      "homeLayoutTitle": "چیدمان صفحهٔ اصلی",
+      "homeLayoutDescription": "ترتیب بخش‌های برجسته در صفحهٔ عمومی سایت را انتخاب کنید.",
+      "editorial": "مجله‌ای",
+      "blog-first": "ابتدا وبلاگ",
+      "portfolio-first": "ابتدا نمونه‌کارها"
     },
     "navigationPage": {
       "description": "پیوندهای سربرگ و پابرگ را به هر دو زبان مدیریت کنید.",
@@ -559,7 +569,14 @@
       "copyrightRightsFa": "متن حقوق (FA)",
       "copyrightRightsEn": "متن حقوق (EN)",
       "copyrightPlaceholder": "© '{year}' '{name}'.",
-      "copyrightHint": "از '{year}' و '{name}' به‌عنوان placeholder استفاده کنید. این متن‌ها در فوتر سایت نمایش داده می‌شوند."
+      "copyrightHint": "از '{year}' و '{name}' به‌عنوان جای‌نگهدار استفاده کنید. این متن‌ها در فوتر سایت نمایش داده می‌شوند.",
+      "backupTitle": "پشتیبان محتوای سایت",
+      "backupDescription": "محتوا و تنظیمات سایت را به‌صورت فایل JSON قابل‌انتقال دریافت کنید.",
+      "backupPrivacyHint": "شامل پست‌ها، صفحه‌ها، دسته‌ها، برچسب‌ها، نمونه‌کارها، سوابق کاری، مشخصات فایل‌های رسانه و تنظیمات ذخیره‌شده است. حساب‌های کاربری و ایمیل مشترکان و نظرها در فایل قرار نمی‌گیرند.",
+      "exportBackup": "دریافت نسخهٔ پشتیبان JSON",
+      "exportingBackup": "در حال آماده‌سازی…",
+      "backupDownloaded": "نسخهٔ پشتیبان محتوا دریافت شد",
+      "backupError": "ساخت نسخهٔ پشتیبان ناموفق بود. دوباره تلاش کنید."
     }
   },
   "status": {

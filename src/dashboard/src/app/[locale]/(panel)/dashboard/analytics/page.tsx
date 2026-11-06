@@ -29,10 +29,17 @@ interface PostRecord {
   status: string;
 }
 
-const sampleSeries: Record<Range, number[]> = {
+function makeSampleSeries(days: number, baseline: number, trend: number): number[] {
+  return Array.from({ length: days }, (_, index) => {
+    const weeklyVariation = ((index * 17) % 23) - 11;
+    return Math.max(8, Math.round(baseline + index * trend + weeklyVariation));
+  });
+}
+
+const sampleSeries: Record<Exclude<Range, 'custom'>, number[]> = {
   7: [34, 46, 39, 62, 55, 76, 68],
-  30: [28, 41, 36, 58, 49, 72, 64, 82, 69, 91, 76, 95, 84, 108],
-  90: [21, 32, 28, 49, 43, 62, 56, 77, 70, 94, 81, 103, 95, 118],
+  30: makeSampleSeries(30, 36, 0.7),
+  90: makeSampleSeries(90, 28, 0.55),
 };
 
 const trafficSources = [
@@ -54,25 +61,34 @@ function toDateInputValue(date: Date): string {
 }
 
 function getDateRangeLength(from: string, to: string): number {
-  const start = new Date(`${from}T00:00:00`).getTime();
-  const end = new Date(`${to}T00:00:00`).getTime();
+  const start = new Date(`${from}T00:00:00Z`).getTime();
+  const end = new Date(`${to}T00:00:00Z`).getTime();
   return Math.floor((end - start) / 86_400_000) + 1;
 }
 
 function getCustomSampleSeries(days: number): number[] {
-  const bucketCount = Math.min(days, 14);
+  const bucketCount = Math.min(days, 90);
   return Array.from({ length: bucketCount }, (_, index) => {
-    const sampleIndex = Math.floor((index / Math.max(bucketCount - 1, 1)) * 13);
-    return sampleSeries[30][sampleIndex];
+    const sampleIndex = Math.floor(
+      (index / Math.max(bucketCount - 1, 1)) * (sampleSeries[90].length - 1),
+    );
+    return sampleSeries[90][sampleIndex];
   });
 }
 
 function formatCsvDate(from: string, to: string, index: number, count: number, locale: string) {
-  const start = new Date(`${from}T00:00:00`);
+  const start = new Date(`${from}T00:00:00Z`);
   const days = getDateRangeLength(from, to);
   const offset = Math.round((index / Math.max(count - 1, 1)) * (days - 1));
-  start.setDate(start.getDate() + offset);
-  return new Intl.DateTimeFormat(locale, { dateStyle: 'short' }).format(start);
+  start.setUTCDate(start.getUTCDate() + offset);
+  return new Intl.DateTimeFormat(locale, { dateStyle: 'short', timeZone: 'UTC' }).format(start);
+}
+
+function getPeriodBounds(days: number): { from: string; to: string } {
+  const end = new Date();
+  const start = new Date(end);
+  start.setDate(start.getDate() - days + 1);
+  return { from: toDateInputValue(start), to: toDateInputValue(end) };
 }
 
 function SampleViewsChart({ values, label }: { values: number[]; label: string }) {
@@ -187,12 +203,11 @@ export default function DashboardAnalyticsPage() {
 
   const exportSampleCsv = () => {
     if (range === 'custom' && !isCustomRangeValid) return;
+    const period = range === 'custom' ? { from: customFrom, to: customTo } : getPeriodBounds(range);
     const rows = [
       [ta('csvDate'), ta('csvViews')],
       ...chartValues.map((views, index) => [
-        range === 'custom'
-          ? formatCsvDate(customFrom, customTo, index, chartValues.length, locale)
-          : String(index + 1),
+        formatCsvDate(period.from, period.to, index, chartValues.length, locale),
         String(views),
       ]),
     ];

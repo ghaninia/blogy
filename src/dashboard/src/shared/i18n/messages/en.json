@@ -197,10 +197,15 @@
       "range7": "7 days",
       "range30": "30 days",
       "range90": "90 days",
+      "rangeCustom": "Custom",
+      "fromDate": "From",
+      "toDate": "To",
+      "invalidDateRange": "Choose a valid date range of up to 365 days.",
+      "customChartLabel": "Sample views from {from} through {to}",
       "samplePostViews": "sample views",
       "chartLabel": "Sample daily views for the last {days} days",
       "exportCsv": "Export CSV",
-      "csvDate": "Sample day",
+      "csvDate": "Date",
       "csvViews": "Sample views",
       "trafficSources": "Traffic sources",
       "audienceDevices": "Audience devices",
@@ -239,7 +244,12 @@
       "rose": "Rose",
       "themeTitle": "Theme preference",
       "themeDescription": "Choose a fixed theme or follow your device setting.",
-      "themePreference": "Color mode"
+      "themePreference": "Color mode",
+      "homeLayoutTitle": "Homepage layout",
+      "homeLayoutDescription": "Choose the order of the featured sections on your public homepage.",
+      "editorial": "Editorial",
+      "blog-first": "Blog first",
+      "portfolio-first": "Portfolio first"
     },
     "navigationPage": {
       "description": "Manage header and footer links in both languages.",
@@ -559,7 +569,14 @@
       "copyrightRightsFa": "Rights notice (FA)",
       "copyrightRightsEn": "Rights notice (EN)",
       "copyrightPlaceholder": "© '{year}' '{name}'.",
-      "copyrightHint": "Use '{year}' and '{name}' as placeholders. These lines appear in the site footer."
+      "copyrightHint": "Use '{year}' and '{name}' as placeholders. These lines appear in the site footer.",
+      "backupTitle": "Content backup",
+      "backupDescription": "Download your publishing content and site settings as a portable JSON file.",
+      "backupPrivacyHint": "Includes posts, pages, categories, tags, portfolio, experience, media metadata, and persisted settings. User accounts and subscriber or comment emails are excluded.",
+      "exportBackup": "Download JSON backup",
+      "exportingBackup": "Preparing backup…",
+      "backupDownloaded": "Content backup downloaded",
+      "backupError": "Could not prepare the content backup. Try again."
     }
   },
   "status": {

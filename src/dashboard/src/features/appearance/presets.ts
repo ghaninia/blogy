@@ -7,6 +7,13 @@ export const accentPresets = [
 
 export type AccentPreset = (typeof accentPresets)[number]['id'];
 
+export const homepageLayouts = ['editorial', 'blog-first', 'portfolio-first'] as const;
+export type HomepageLayout = (typeof homepageLayouts)[number];
+
+export function isHomepageLayout(value: unknown): value is HomepageLayout {
+  return homepageLayouts.includes(value as HomepageLayout);
+}
+
 export function isAccentPreset(value: unknown): value is AccentPreset {
   return accentPresets.some((preset) => preset.id === value);
 }

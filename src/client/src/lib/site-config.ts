@@ -16,6 +16,12 @@ export interface SiteNavigationItem {
   enabled: boolean;
 }
 
+export type HomepageLayout = 'editorial' | 'blog-first' | 'portfolio-first';
+
+function isHomepageLayout(value: unknown): value is HomepageLayout {
+  return value === 'editorial' || value === 'blog-first' || value === 'portfolio-first';
+}
+
 function isNavigationItem(value: unknown): value is SiteNavigationItem {
   if (!value || typeof value !== 'object') return false;
   const item = value as Partial<SiteNavigationItem>;
@@ -44,6 +50,7 @@ const defaultHeaderNavigation: SiteNavigationItem[] = [
 
 export interface SiteConfig {
   accentColor: 'violet' | 'blue' | 'green' | 'rose';
+  homepageLayout: HomepageLayout;
   headerNavigation: SiteNavigationItem[];
   footerNavigation: SiteNavigationItem[];
   name: string;
@@ -55,9 +62,14 @@ export interface SiteConfig {
   metaTitle: string;
   metaDescription: string;
   metaKeywords: string;
+  canonicalUrl: string;
+  structuredData: Record<string, unknown> | null;
+  robots: { index: boolean; follow: boolean };
+  sitemapEnabled: boolean;
   ogImagePath: string;
   siteUrl: string;
   twitterHandle: string;
+  googleVerification: string;
   email: string;
   githubUrl: string;
   linkedinUrl: string;
@@ -82,6 +94,7 @@ export function resolveFooterTemplate(text: string, year: number, name: string):
 export function resolveSiteConfig(settings: SettingRecord[], locale: string): SiteConfig {
   const isFa = locale === 'fa';
   const configuredAccent = pick(settings, 'site_appearance')?.valueJson?.accent;
+  const configuredHomepageLayout = pick(settings, 'site_appearance')?.valueJson?.homepageLayout;
   const accentColor = ['violet', 'blue', 'green', 'rose'].includes(String(configuredAccent))
     ? (configuredAccent as SiteConfig['accentColor'])
     : 'violet';
@@ -95,6 +108,8 @@ export function resolveSiteConfig(settings: SettingRecord[], locale: string): Si
     ? configuredFooterNavigation.filter(isNavigationItem).filter((item) => item.enabled)
     : defaultHeaderNavigation;
   const descriptionRecord = pick(settings, 'site_description') ?? pick(settings, 'site_tagline');
+  const robotsValue = pick(settings, 'robots')?.valueEn ?? 'index, follow';
+  const robotsDirectives = new Set(robotsValue.toLowerCase().split(/[\s,]+/).filter(Boolean));
   const name =
     localizedValue(pick(settings, 'site_name'), isFa) ||
     pick(settings, 'site_name')?.valueEn ||
@@ -102,6 +117,9 @@ export function resolveSiteConfig(settings: SettingRecord[], locale: string): Si
 
   return {
     accentColor,
+    homepageLayout: isHomepageLayout(configuredHomepageLayout)
+      ? configuredHomepageLayout
+      : 'editorial',
     headerNavigation,
     footerNavigation,
     name,
@@ -113,9 +131,17 @@ export function resolveSiteConfig(settings: SettingRecord[], locale: string): Si
     metaTitle: localizedValue(pick(settings, 'meta_title'), isFa),
     metaDescription: localizedValue(pick(settings, 'meta_description'), isFa),
     metaKeywords: localizedValue(pick(settings, 'meta_keywords'), isFa),
+    canonicalUrl: pick(settings, 'canonical_url')?.valueEn ?? '',
+    structuredData: pick(settings, 'structured_data')?.valueJson ?? null,
+    robots: {
+      index: !robotsDirectives.has('noindex'),
+      follow: !robotsDirectives.has('nofollow'),
+    },
+    sitemapEnabled: pick(settings, 'sitemap_enabled')?.valueEn !== 'false',
     ogImagePath: pick(settings, 'og_image')?.valueEn ?? '',
     siteUrl: pick(settings, 'site_url')?.valueEn ?? '',
     twitterHandle: pick(settings, 'twitter_handle')?.valueEn ?? '',
+    googleVerification: pick(settings, 'google_verification')?.valueEn ?? '',
     email: pick(settings, 'contact_email')?.valueEn ?? '',
     githubUrl: pick(settings, 'github_url')?.valueEn ?? '',
     linkedinUrl: pick(settings, 'linkedin_url')?.valueEn ?? '',
@@ -132,4 +158,20 @@ export function resolveSiteConfig(settings: SettingRecord[], locale: string): Si
 export async function fetchSiteConfig(locale: string): Promise<SiteConfig> {
   const { data } = await apiGet<SettingRecord[]>('/api/settings', undefined, 60);
   return resolveSiteConfig(data ?? [], locale);
+}
+
+export function getSiteBaseUrl(siteUrl?: string): string {
+  const candidate = siteUrl || process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3001';
+  try {
+    const url = new URL(candidate);
+    if (url.protocol === 'http:' || url.protocol === 'https:') return url.origin;
+  } catch {
+    // Use the configured environment fallback when the saved value is invalid.
+  }
+  const fallback = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3001';
+  try {
+    return new URL(fallback).origin;
+  } catch {
+    return 'http://localhost:3001';
+  }
 }
